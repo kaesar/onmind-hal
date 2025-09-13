@@ -1,0 +1,29 @@
+{
+  "name": "n8n-service",
+  "description": "n8n workflow automation service",
+  "image": "n8nio/n8n:latest",
+  "commands": {
+    "install": [
+      "docker pull n8nio/n8n:latest"
+    ],
+    "setup": [
+      "mkdir -p /opt/n8n/data",
+      "docker volume create n8n_data"
+    ],
+    "run": "docker run -d --name n8n --network {{networkName}} -p 5678:5678 -e N8N_HOST={{domain}} -e N8N_PORT=5678 -e N8N_PROTOCOL=https -e WEBHOOK_URL=https://n8n.{{domain}} -v n8n_data:/home/node/.n8n n8nio/n8n:latest"
+  },
+  "variables": ["networkName", "domain"],
+  "ports": ["5678:5678"],
+  "volumes": [
+    "n8n_data:/home/node/.n8n"
+  ],
+  "environment": {
+    "N8N_HOST": "{{domain}}",
+    "N8N_PORT": "5678",
+    "N8N_PROTOCOL": "https",
+    "WEBHOOK_URL": "https://n8n.{{domain}}"
+  },
+  "accessUrl": "https://n8n.{{domain}}",
+  "dependencies": [],
+  "isCore": false
+}

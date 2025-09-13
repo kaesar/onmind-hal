@@ -1,0 +1,24 @@
+{
+  "name": "copyparty-service",
+  "description": "Copyparty file sharing service",
+  "image": "copyparty/ac:latest",
+  "commands": {
+    "install": [
+      "docker pull copyparty/ac:latest"
+    ],
+    "setup": [
+      "mkdir -p /opt/copyparty/config",
+      "mkdir -p /opt/copyparty/data"
+    ],
+    "run": "docker run -d --name copyparty --network {{networkName}} -p 3923:3923 -v /opt/copyparty/data:/mnt -v /opt/copyparty/config:/cfg copyparty/ac:latest --cfg-vol /cfg --listen 0.0.0.0 3923"
+  },
+  "variables": ["networkName", "domain"],
+  "ports": ["3923:3923"],
+  "volumes": [
+    "/opt/copyparty/data:/mnt",
+    "/opt/copyparty/config:/cfg"
+  ],
+  "accessUrl": "https://files.{{domain}}",
+  "dependencies": [],
+  "isCore": true
+}

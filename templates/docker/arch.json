@@ -1,0 +1,20 @@
+{
+  "name": "arch-docker",
+  "description": "Docker installation commands for Arch Linux",
+  "commands": {
+    "install": [
+      "pacman -Syu --noconfirm",
+      "pacman -S --noconfirm docker docker-compose"
+    ],
+    "setup": [
+      "systemctl enable docker",
+      "systemctl start docker",
+      "usermod -aG docker $USER",
+      "docker network create {{networkName}}"
+    ],
+    "run": "docker --version"
+  },
+  "variables": ["networkName"],
+  "packageManager": "pacman",
+  "dependencies": []
+}

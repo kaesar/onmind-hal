@@ -1,0 +1,20 @@
+{
+  "name": "amazon-docker",
+  "description": "Docker installation commands for Amazon Linux 2023",
+  "commands": {
+    "install": [
+      "dnf update -y",
+      "dnf install -y docker"
+    ],
+    "setup": [
+      "systemctl enable docker",
+      "systemctl start docker",
+      "usermod -aG docker $USER",
+      "docker network create {{networkName}}"
+    ],
+    "run": "docker --version"
+  },
+  "variables": ["networkName"],
+  "packageManager": "dnf",
+  "dependencies": []
+}

@@ -1,0 +1,17 @@
+{
+  "name": "MongoDB Database Server",
+  "description": "NoSQL document database",
+  "commands": {
+    "install": [
+      "docker pull mongo:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/mongodb/data"
+    ],
+    "run": "docker run -d --name mongodb --network {{NETWORK_NAME}} -p 27017:27017 -v /opt/homelab/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=homelab123 mongo:latest"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": [],
+  "accessUrl": "mongodb://admin:homelab123@{{IP}}:27017/admin"
+}

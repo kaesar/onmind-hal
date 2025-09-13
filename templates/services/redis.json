@@ -1,0 +1,23 @@
+{
+  "name": "redis-service",
+  "description": "Redis in-memory database service",
+  "image": "redis:7-alpine",
+  "commands": {
+    "install": [
+      "docker pull redis:7-alpine"
+    ],
+    "setup": [
+      "mkdir -p /opt/redis/data",
+      "docker volume create redis_data"
+    ],
+    "run": "docker run -d --name redis --network {{networkName}} -p 6379:6379 -v redis_data:/data redis:7-alpine redis-server --appendonly yes"
+  },
+  "variables": ["networkName", "ip"],
+  "ports": ["6379:6379"],
+  "volumes": [
+    "redis_data:/data"
+  ],
+  "accessUrl": "redis://{{ip}}:6379",
+  "dependencies": [],
+  "isCore": false
+}

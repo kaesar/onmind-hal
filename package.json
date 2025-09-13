@@ -1,0 +1,36 @@
+{
+  "name": "homelab-typescript-bun",
+  "version": "1.0.0",
+  "description": "HomeLab automation script migrated to TypeScript/Bun with multi-distribution support",
+  "main": "src/main.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/main.ts",
+    "build": "bun build src/main.ts --outdir ./dist --target bun",
+    "start": "bun run dist/main.js",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "lint": "bun run tsc --noEmit"
+  },
+  "keywords": [
+    "homelab",
+    "docker",
+    "automation",
+    "typescript",
+    "bun",
+    "linux"
+  ],
+  "author": "HomeLab Project",
+  "license": "MIT",
+  "dependencies": {
+    "inquirer": "^9.2.12"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "bun-types": "^1.2.21",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

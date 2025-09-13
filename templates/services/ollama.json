@@ -1,0 +1,17 @@
+{
+  "name": "Ollama LLM Server",
+  "description": "Local large language model server",
+  "commands": {
+    "install": [
+      "docker pull ollama/ollama:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/ollama/data"
+    ],
+    "run": "docker run -d --name ollama --network {{NETWORK_NAME}} -p 11434:11434 -v /opt/homelab/ollama/data:/root/.ollama ollama/ollama"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": [],
+  "accessUrl": "https://ollama.{{DOMAIN}}"
+}
