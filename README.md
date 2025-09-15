@@ -1,16 +1,16 @@
 # Home Apps Labs (OnMind-HAL)
 
-Home Apps Labs (OnMind-HAL) is a comprehensive HomeLab setup or automation tool that deploys and manages a collection of open-source applications using Docker containers. It's designed for Virtual Machines, Cloud Instances, or Virtual Private Servers (VPS).
+**Home Apps Labs (OnMind-HAL)** is a comprehensive HomeLab setup or automation tool that deploys and manages a collection of open-source applications using Docker containers. It's designed for Virtual Machines, Cloud Instances, or Virtual Private Servers (VPS).
 
 > This started from my Article about making your HomeLab: [here](https://onmind.net/devops/es/YourHomeLab)
 
 ## Features
 
-- 🚀 **Automated Installation**: One-command setup for multiple services
-- 🔧 **Multi-Distribution Support**: Ubuntu/Debian (even WSL), Arch Linux, Amazon Linux 2023
-- 📝 **Template-Based Configuration**: JSON templates for easy service customization
-- 🔄 **Rollback Support**: Some recovery from failed installations
-- 📊 **Comprehensive Logging**: Detailed execution tracking and debugging
+- **Automated Installation**: One-command setup for multiple services
+- **Multi-Distribution Support**: Ubuntu/Debian (even WSL), Arch Linux, Amazon Linux 2023
+- **Template-Based Configuration**: JSON templates for easy service customization
+- **Rollback Support**: Some recovery from failed installations
+- **Comprehensive Logging**: Detailed execution tracking and debugging
 
 ## Services
 
@@ -63,6 +63,7 @@ curl -fsSL https://bun.com/install | bash
 
 2. **Run Setup**
    ```bash
+   bun run build
    bun run start
    ```
 
@@ -70,7 +71,7 @@ curl -fsSL https://bun.com/install | bash
    - Enter server IP address
    - Configure domain name
    - Select optional services
-   - Set PostgreSQL password (if needed)
+   - Set database password (if needed)
 
 ## Project Structure
 
@@ -114,7 +115,9 @@ tests/                      # Test suite
 
 ## Adding New Services
 
-To add a new service like MongoDB, follow these steps:
+**Core vs. Optional Services**: Consider when defining a service, the third parameter in the `BaseService` constructor indicates if it's a core service (always installed) or an optional one. Core services are automatically included in every setup, while optional services are presented to the user for selection during the interactive prompts.
+
+To add a new service like **MongoDB**, follow these steps...
 
 ### 1. Define Service Type
 
@@ -143,11 +146,14 @@ export class MongoDBService extends BaseService {
       'MongoDB',
       ServiceType.MONGODB,
       false, // not a core service
-      [], // dependencies (empty for MongoDB)
+      [], // dependencies (e.g., [ServiceType.POSTGRESQL] if it depends on PostgreSQL)
       config,
       templateEngine
     );
   }
+
+  // The getAccessUrl() method provides the URL for accessing the service,
+  // which is used by the CLI to inform the user after successful installation.
 
   async install(): Promise<void> {
     try {
@@ -209,6 +215,8 @@ Create `templates/services/mongodb.json`:
   "dependencies": []
 }
 ```
+
+> **Configuration Variables**: Variables like `{{NETWORK_NAME}}` and `{{MONGODB_PASSWORD}}` are dynamically replaced by the `TemplateEngine` using values from the `HomelabConfig` object, which is populated during the interactive setup.
 
 ### 5. Update CLI Prompts (Optional)
 

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
 import { TemplateValidator, ValidationResult, TemplateSchema } from '../../src/templates/validator.js';
-import { TemplateError } from '../../src/core/types.js';
+import { TemplateError } from '../../src/utils/errors.js';
 
 describe('TemplateValidator', () => {
   let validator: TemplateValidator;

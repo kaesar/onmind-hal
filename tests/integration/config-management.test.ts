@@ -4,7 +4,8 @@
 
 import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test';
 import { ConfigurationManager, ConfigFile, BackupInfo } from '../../src/core/config.js';
-import { HomelabConfig, ServiceType, DistributionType, HomelabError } from '../../src/core/types.js';
+import { HomelabConfig, ServiceType, DistributionType } from '../../src/core/types.js';
+import { HomelabError } from '../../src/utils/errors.js';
 import { TemplateEngine } from '../../src/templates/engine.js';
 import { mkdir, writeFile, readFile, rmdir, access } from 'fs/promises';
 import { join } from 'path';
@@ -14,9 +15,9 @@ const testConfig: HomelabConfig = {
   ip: '192.168.1.100',
   domain: 'homelab.local',
   networkName: 'homelab-network',
-  selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY, ServiceType.N8N],
+  selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY, ServiceType.N8N, ServiceType.POSTGRESQL, ServiceType.MARIADB],
   distribution: DistributionType.UBUNTU,
-  postgresPassword: 'test-password'
+  databasePassword: 'test-password'
 };
 
 // Mock template engine

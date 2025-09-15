@@ -4,14 +4,14 @@ import { TemplateEngine } from '../../templates/engine.js';
 import { BaseService } from '../base.js';
 
 /**
- * PostgreSQL database service implementation
+ * MariaDB database service implementation
  * Provides relational database capabilities for other services
  */
-export class PostgreSQLService extends BaseService {
+export class MariaDBService extends BaseService {
   constructor(config: HomelabConfig, templateEngine: TemplateEngine) {
     super(
-      'PostgreSQL',
-      ServiceType.POSTGRESQL,
+      'MariaDB',
+      ServiceType.MARIADB,
       false, // isCore = false (optional service)
       [], // no dependencies
       config,
@@ -20,14 +20,14 @@ export class PostgreSQLService extends BaseService {
   }
 
   /**
-   * Validate PostgreSQL configuration before installation
+   * Validate MariaDB configuration before installation
    */
   async install(): Promise<void> {
-    // Validate that postgres password is set
+    // Validate that mariadb password is set
     if (!this.config.databasePassword || this.config.databasePassword.trim() === '') {
       throw new ServiceInstallationError(
-        ServiceType.POSTGRESQL,
-        'PostgreSQL password is required but not provided in configuration'
+        ServiceType.MARIADB,
+        'MariaDB password is required but not provided in configuration'
       );
     }
 
@@ -36,33 +36,33 @@ export class PostgreSQLService extends BaseService {
   }
 
   /**
-   * PostgreSQL uses environment variables for configuration, no custom config files needed
+   * MariaDB uses environment variables for configuration, no custom config files needed
    */
   protected async generateConfigFiles(): Promise<void> {
-    // PostgreSQL configuration is handled through environment variables in the Docker run command
-    console.log('PostgreSQL uses environment variable configuration');
+    // MariaDB configuration is handled through environment variables in the Docker run command
+    console.log('MariaDB uses environment variable configuration');
   }
 
   /**
-   * Get PostgreSQL connection URL
+   * Get MariaDB connection URL
    */
   getAccessUrl(): string {
     if (!this.config.databasePassword) {
-      return 'postgresql://homelab:PASSWORD_NOT_SET@' + this.config.ip + ':5432/homelab';
+      return 'mysql://homelab:PASSWORD_NOT_SET@' + this.config.ip + ':3306/homelab';
     }
-    return `postgresql://homelab:${this.config.databasePassword}@${this.config.ip}:5432/homelab`;
+    return `mysql://homelab:${this.config.databasePassword}@${this.config.ip}:3306/homelab`;
   }
 
   /**
-   * Override getTemplateContext to ensure postgres password is available
+   * Override getTemplateContext to ensure mariadb password is available
    */
   protected getTemplateContext(): Record<string, any> {
     const context = super.getTemplateContext();
     
     if (!this.config.databasePassword) {
       throw new ServiceInstallationError(
-        ServiceType.POSTGRESQL,
-        'PostgreSQL password is required for template rendering'
+        ServiceType.MARIADB,
+        'MariaDB password is required for template rendering'
       );
     }
     

@@ -178,6 +178,7 @@ export class ConfigurationManager {
         'mongodb': 'mongodb.conf',
         'minio': 'minio.conf',
         'ollama': 'ollama.conf',
+        'mariadb': 'mariadb.conf',
       };
 
       const configFileName = serviceConfigMap[serviceType];
@@ -190,7 +191,7 @@ export class ConfigurationManager {
         domain: config.domain,
         ip: config.ip,
         networkName: config.networkName,
-        postgresPassword: config.postgresPassword
+        databasePassword: config.databasePassword
       });
 
       const configFile: ConfigFile = {

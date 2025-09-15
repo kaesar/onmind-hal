@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { ServiceFactory } from '../../src/services/factory.js';
-import { ServiceType, HomelabConfig, DistributionType, ServiceInstallationError } from '../../src/core/types.js';
+import { ServiceType, HomelabConfig, DistributionType } from '../../src/core/types.js';
+import { ServiceInstallationError } from '../../src/utils/errors.js';
 import { TemplateEngine } from '../../src/templates/engine.js';
 
 // Mock Bun shell
@@ -23,7 +24,7 @@ describe('ServiceFactory', () => {
       networkName: 'homelab-network',
       selectedServices: [ServiceType.N8N, ServiceType.POSTGRESQL],
       distribution: DistributionType.UBUNTU,
-      postgresPassword: 'secure-password'
+      databasePassword: 'secure-password'
     };
   });
 
@@ -92,7 +93,11 @@ describe('ServiceFactory', () => {
     expect(optionalServices).toEqual([
       ServiceType.N8N,
       ServiceType.POSTGRESQL,
-      ServiceType.REDIS
+      ServiceType.REDIS,
+      ServiceType.MONGODB,
+      ServiceType.MINIO,
+      ServiceType.OLLAMA,
+      ServiceType.MARIADB
     ]);
   });
 
@@ -103,7 +108,7 @@ describe('ServiceFactory', () => {
   });
 
   it('should throw error when PostgreSQL is selected without password', () => {
-    config.postgresPassword = '';
+    config.databasePassword = '';
     
     expect(() => {
       factory.validateConfiguration(config);

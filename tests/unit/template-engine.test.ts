@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
 import { mkdir, writeFile, rm } from 'fs/promises';
 import { join } from 'path';
 import { TemplateEngine } from '../../src/templates/engine.js';
-import { TemplateError } from '../../src/core/types.js';
+import { TemplateError } from '../../src/utils/errors.js';
 
 describe('TemplateEngine', () => {
   const testTemplateDir = 'test-templates';

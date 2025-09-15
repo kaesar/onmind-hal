@@ -74,7 +74,7 @@ describe('Template Loading Integration', () => {
     it('should load all service templates', async () => {
       const templates = await loader.loadAllTemplates('services');
       
-      expect(templates.size).toBe(9);
+      expect(templates.size).toBe(10);
       allServices.forEach(service => {
         expect(templates.has(service)).toBe(true);
       });

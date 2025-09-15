@@ -62,8 +62,8 @@ export class CLIInterface {
       const coreServices = this.config.selectedServices.filter(s => 
         ['caddy', 'portainer', 'copyparty'].includes(s)
       );
-      const optionalServices = this.config.selectedServices.filter(s => 
-        ['n8n', 'postgresql', 'redis', 'mongodb', 'minio', 'ollama'].includes(s)
+      const optionalServices = this.config.selectedServices.filter(s =>
+        ['n8n', 'postgresql', 'redis', 'mongodb', 'minio', 'ollama', 'mariadb'].includes(s)
       );
 
       console.log('   Core services:');
@@ -78,8 +78,8 @@ export class CLIInterface {
         });
       }
 
-      if (this.config.postgresPassword) {
-        console.log('   🔐 PostgreSQL password: [CONFIGURED]');
+      if (this.config.databasePassword) {
+        console.log('   🔐 Database password: [CONFIGURED]');
       }
     }
     console.log('═'.repeat(50));
@@ -98,7 +98,8 @@ export class CLIInterface {
       redis: 'Redis (Cache/Queue)',
       mongodb: 'MongoDB (NoSQL Database)',
       minio: 'Minio (Object Storage)',
-      ollama: 'Ollama (LLM Server)'
+      ollama: 'Ollama (LLM Server)',
+      mariadb: 'MariaDB (Database)'
     };
     return serviceNames[service] || service;
   }
@@ -135,7 +136,7 @@ export class CLIInterface {
       domain: this.config.domain!,
       networkName: this.config.networkName!,
       selectedServices: this.config.selectedServices!,
-      postgresPassword: this.config.postgresPassword,
+      databasePassword: this.config.databasePassword,
       distribution: DistributionType.UBUNTU // Will be overridden by detection
     };
   }

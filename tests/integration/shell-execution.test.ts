@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
-import { ShellExecutor } from '../../src/utils/shell.js';
+import { ShellExecutor, ShellExecutionError } from '../../src/utils/shell.js';
 import { logger, LogLevel } from '../../src/utils/logger.js';
 
 describe('Shell Command Execution Integration', () => {
@@ -28,12 +28,12 @@ describe('Shell Command Execution Integration', () => {
       expect(commandHistory[0].success).toBe(true);
     });
 
-    it('should handle command failure', async () => {
-      const result = await shellExecutor.executeQuiet('false');
+    it('should handle command failure (validation)', async () => {
+      const result = await shellExecutor.executeQuiet('false'); // 'false' is not in allowed list
 
       expect(result.success).toBe(false);
-      expect(result.exitCode).toBe(1);
-      expect(result.executionTime).toBeGreaterThan(0);
+      expect(result.exitCode).toBe(-1); // Validation failure exit code
+      expect(result.stderr).toContain('Command validation failed: Validation failed for shellCommand: Command not in allowed list: false');
 
       // Check that failed command was logged
       const failedCommands = logger.getFailedCommands();
@@ -42,15 +42,23 @@ describe('Shell Command Execution Integration', () => {
       expect(failedCommands[0].success).toBe(false);
     });
 
+    it('should handle command failure (execution)', async () => {
+      // This command is allowed but will fail execution
+      const result = await shellExecutor.executeQuiet('ls /nonexistent-dir'); 
+
+      expect(result.success).toBe(false);
+      expect(result.exitCode).toBeGreaterThan(0);
+      expect(result.stderr).toContain('No such file or directory');
+    });
+
     it('should execute command with working directory', async () => {
       const result = await shellExecutor.execute('pwd', { cwd: '/tmp' });
-
       expect(result.success).toBe(true);
       expect(result.stdout.trim()).toMatch(/\/tmp$/);
     });
 
     it('should execute command with environment variables', async () => {
-      const result = await shellExecutor.execute('echo $TEST_VAR', {
+      const result = await shellExecutor.execute('printenv TEST_VAR', {
         env: { TEST_VAR: 'test-value' },
       });
 
@@ -82,10 +90,10 @@ describe('Shell Command Execution Integration', () => {
       expect(commandHistory.every(cmd => cmd.success)).toBe(true);
     });
 
-    it('should stop sequence on first failure', async () => {
+    it('should stop sequence on first failure (validation)', async () => {
       const commands = [
         'echo "first"',
-        'false', // This will fail
+        'false', // This will fail validation
         'echo "third"',
       ];
 
@@ -93,14 +101,39 @@ describe('Shell Command Execution Integration', () => {
         await shellExecutor.executeSequence(commands);
         expect(true).toBe(false); // Should not reach here
       } catch (error) {
-        expect(error).toBeDefined();
+        expect(error).toBeInstanceOf(ShellExecutionError);
+        expect((error as ShellExecutionError).result.stderr).toContain('Command validation failed');
       }
 
-      // Should have executed only first two commands
+      // Should have executed only the first command successfully, and the second command failed validation.
       const commandHistory = logger.getCommandHistory();
       expect(commandHistory).toHaveLength(2);
       expect(commandHistory[0].success).toBe(true);
       expect(commandHistory[1].success).toBe(false);
+      expect(commandHistory[1].stderr).toContain('Command validation failed');
+    });
+
+    it('should stop sequence on first failure (execution)', async () => {
+      const commands = [
+        'echo "first"',
+        'ls /nonexistent-dir', // This will fail execution
+        'echo "third"',
+      ];
+
+      try {
+        await shellExecutor.executeSequence(commands);
+        expect(true).toBe(false); // Should not reach here
+      } catch (error) {
+        expect(error).toBeInstanceOf(ShellExecutionError);
+        expect((error as ShellExecutionError).result.stderr).toContain('No such file or directory');
+      }
+
+      // Should have executed only the first command successfully, and the second command failed execution.
+      const commandHistory = logger.getCommandHistory();
+      expect(commandHistory).toHaveLength(2);
+      expect(commandHistory[0].success).toBe(true);
+      expect(commandHistory[1].success).toBe(false);
+      expect(commandHistory[1].stderr).toContain('No such file or directory');
     });
   });
 
@@ -127,6 +160,30 @@ describe('Shell Command Execution Integration', () => {
       expect(commandHistory).toHaveLength(3);
       expect(commandHistory.every(cmd => cmd.success)).toBe(true);
     });
+
+    it('should throw if any command fails in parallel and throwOnError is true (validation)', async () => {
+      const commands = [
+        'echo "parallel1"',
+        'false', // This will fail validation
+        'echo "parallel3"',
+      ];
+
+      await expect(shellExecutor.executeParallel(commands, { throwOnError: true })).rejects.toThrow(ShellExecutionError);
+      const error = await shellExecutor.executeParallel(commands, { throwOnError: true }).catch(e => e);
+      expect(error.result.stderr).toContain('Command validation failed');
+    });
+
+    it('should throw if any command fails in parallel and throwOnError is true (execution)', async () => {
+      const commands = [
+        'echo "parallel1"',
+        'ls /nonexistent-dir', // This will fail execution
+        'echo "parallel3"',
+      ];
+
+      await expect(shellExecutor.executeParallel(commands, { throwOnError: true })).rejects.toThrow(ShellExecutionError);
+      const error = await shellExecutor.executeParallel(commands, { throwOnError: true }).catch(e => e);
+      expect(error.result.stderr).toContain('No such file or directory');
+    });
   });
 
   describe('utility methods', () => {
@@ -145,9 +202,9 @@ describe('Shell Command Execution Integration', () => {
     });
 
     it('should execute command in specific directory', async () => {
-      const result = await shellExecutor.executeInDirectory('/tmp', 'pwd');
+      const result = await shellExecutor.executeInDirectory('/tmp', 'echo "in_tmp"');
       expect(result.success).toBe(true);
-      expect(result.stdout.trim()).toMatch(/\/tmp$/);
+      expect(result.stdout.trim()).toBe('in_tmp');
     });
   });
 
@@ -157,14 +214,14 @@ describe('Shell Command Execution Integration', () => {
       await shellExecutor.execute('echo "success1"');
       await shellExecutor.execute('echo "success2"');
       
-      // Execute a failed command
-      await shellExecutor.executeQuiet('false');
+      // Execute a failed command (validation)
+      await shellExecutor.executeQuiet('false'); // 'false' is not in allowed list
 
       const stats = logger.getExecutionStats();
-      expect(stats.totalCommands).toBe(3);
+      expect(stats.totalCommands).toBe(3); // 2 successful, 1 validation failed
       expect(stats.successfulCommands).toBe(2);
       expect(stats.failedCommands).toBe(1);
-      expect(stats.successRate).toBeCloseTo(66.67, 1);
+      expect(stats.successRate).toBeCloseTo(66.67, 1); // 2/3 successful
       expect(stats.averageExecutionTime).toBeGreaterThan(0);
     });
 
@@ -188,8 +245,8 @@ describe('Shell Command Execution Integration', () => {
       expect(endLog?.context?.success).toBe(true);
     });
 
-    it('should log failed command details', async () => {
-      await shellExecutor.executeQuiet('false');
+    it('should log failed command details (validation)', async () => {
+      await shellExecutor.executeQuiet('false'); // 'false' is not in allowed list
 
       const logs = logger.getLogs();
       const errorLog = logs.find(log => log.message.includes('Command failed'));
@@ -198,7 +255,22 @@ describe('Shell Command Execution Integration', () => {
       expect(errorLog?.level).toBe(LogLevel.ERROR);
       expect(errorLog?.context?.command).toBe('false');
       expect(errorLog?.context?.success).toBe(false);
-      expect(errorLog?.context?.exitCode).toBe(1);
+      expect(errorLog?.context?.exitCode).toBe(-1); // Validation failure exit code
+      expect(errorLog?.context?.stderr).toContain('Command validation failed');
+    });
+
+    it('should log failed command details (execution)', async () => {
+      await shellExecutor.executeQuiet('ls /nonexistent-dir');
+
+      const logs = logger.getLogs();
+      const errorLog = logs.find(log => log.message.includes('Command failed'));
+      
+      expect(errorLog).toBeDefined();
+      expect(errorLog?.level).toBe(LogLevel.ERROR);
+      expect(errorLog?.context?.command).toBe('ls /nonexistent-dir');
+      expect(errorLog?.context?.success).toBe(false);
+      expect(errorLog?.context?.exitCode).toBeGreaterThan(0);
+      expect(errorLog?.context?.stderr).toContain('No such file or directory');
     });
   });
 
@@ -207,7 +279,8 @@ describe('Shell Command Execution Integration', () => {
       const result = await shellExecutor.executeQuiet('sleep 10', { timeout: 100 });
 
       expect(result.success).toBe(false);
-      expect(result.exitCode).toBeGreaterThan(0); // Process was killed, so exit code > 0
+      expect(result.exitCode).toBe(-1); // Timeout exit code
+      expect(result.stderr).toContain('Command timed out');
       expect(result.executionTime).toBeGreaterThan(90); // Should be close to timeout
 
       // Check that timeout was logged

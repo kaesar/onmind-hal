@@ -4,7 +4,8 @@
 
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { CLIInterface } from '../../src/cli/interface.js';
-import { ServiceType, HomelabError } from '../../src/core/types.js';
+import { ServiceType } from '../../src/core/types.js';
+import { HomelabError } from '../../src/utils/errors.js';
 
 // Mock inquirer module
 const mockInquirer = {
@@ -40,7 +41,7 @@ describe('CLI Interface Integration', () => {
         domain: 'homelab.local',
         networkName: 'homelab-network',
         selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY],
-        postgresPassword: undefined
+        databasePassword: undefined
       };
 
       cli.setConfig(mockConfig);
@@ -72,7 +73,7 @@ describe('CLI Interface Integration', () => {
           //ServiceType.MINIO,
           //ServiceType.OLLAMA,
         ],
-        postgresPassword: 'securepassword123'
+        databasePassword: 'securepassword123'
       };
 
       cli.setConfig(mockConfig);
@@ -80,7 +81,7 @@ describe('CLI Interface Integration', () => {
 
       expect(result.selectedServices).toContain(ServiceType.N8N);
       expect(result.selectedServices).toContain(ServiceType.POSTGRESQL);
-      expect(result.postgresPassword).toBe('securepassword123');
+      expect(result.databasePassword).toBe('securepassword123');
     });
   });
 
@@ -172,7 +173,7 @@ describe('CLI Interface Integration', () => {
           ServiceType.COPYPARTY,
           ServiceType.N8N
         ],
-        postgresPassword: undefined
+        databasePassword: undefined
       };
 
       cli.setConfig(mockConfig);
@@ -190,13 +191,13 @@ describe('CLI Interface Integration', () => {
         domain: 'homelab.local',
         networkName: 'homelab-network',
         selectedServices: [ServiceType.CADDY, ServiceType.POSTGRESQL],
-        postgresPassword: 'secret123'
+        databasePassword: 'secret123'
       };
 
       cli.setConfig(mockConfig);
       await (cli as any).displayConfigurationSummary();
 
-      expect(consoleSpy.log).toHaveBeenCalledWith('   🔐 PostgreSQL password: [CONFIGURED]');
+      expect(consoleSpy.log).toHaveBeenCalledWith('   🔐 Database password: [CONFIGURED]');
     });
   });
 

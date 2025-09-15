@@ -19,7 +19,8 @@ export enum ServiceType {
   REDIS = 'redis',
   MONGODB = 'mongodb',
   MINIO = 'minio',
-  OLLAMA = 'ollama'
+  OLLAMA = 'ollama',
+  MARIADB = 'mariadb'
 }
 
 // Configuration interface
@@ -27,7 +28,7 @@ export interface HomelabConfig {
   ip: string;
   domain: string;
   networkName: string;
-  postgresPassword?: string;
+  databasePassword?: string;
   selectedServices: ServiceType[];
   distribution: DistributionType;
 }

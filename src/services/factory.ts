@@ -14,6 +14,7 @@ import { RedisService } from './optional/redis.js';
 import { MongoDBService } from './optional/mongodb.js';
 import { MinioService } from './optional/minio.js';
 import { OllamaService } from './optional/ollama.js';
+import { MariaDBService } from './optional/mariadb.js';
 
 /**
  * Service factory for creating service instances based on configuration
@@ -69,9 +70,12 @@ export class ServiceFactory {
       case ServiceType.OLLAMA:
         service = new OllamaService(config, this.templateEngine);
         break;
+      case ServiceType.MARIADB:
+        service = new MariaDBService(config, this.templateEngine);
+        break;
       default:
         throw new ServiceInstallationError(
-          'ServiceFactory',
+          ServiceType.CADDY, // Generic error, Caddy is a core service
           `Unknown service type: ${serviceType}`
         );
     }
@@ -118,7 +122,7 @@ export class ServiceFactory {
     const visit = (service: Service) => {
       if (visiting.has(service.name)) {
         throw new ServiceInstallationError(
-          'ServiceFactory',
+          ServiceType.CADDY, // Generic error, Caddy is a core service
           `Circular dependency detected involving service: ${service.name}`
         );
       }
@@ -203,7 +207,8 @@ export class ServiceFactory {
       ServiceType.REDIS,
       ServiceType.MONGODB,
       ServiceType.MINIO,
-      ServiceType.OLLAMA
+      ServiceType.OLLAMA,
+      ServiceType.MARIADB
     ];
   }
 
@@ -213,12 +218,12 @@ export class ServiceFactory {
    * @throws ServiceInstallationError if configuration is invalid
    */
   validateConfiguration(config: HomelabConfig): void {
-    // Check if PostgreSQL is selected but password is not provided
-    if (config.selectedServices.includes(ServiceType.POSTGRESQL)) {
-      if (!config.postgresPassword || config.postgresPassword.trim() === '') {
+    // Check if PostgreSQL or MariaDB is selected but password is not provided
+    if (config.selectedServices.includes(ServiceType.POSTGRESQL) || config.selectedServices.includes(ServiceType.MARIADB)) {
+      if (!config.databasePassword || config.databasePassword.trim() === '') {
         throw new ServiceInstallationError(
-          'ServiceFactory',
-          'PostgreSQL is selected but no password is provided in configuration'
+          ServiceType.CADDY, // Use a generic service type for this combined error
+          'Database service (PostgreSQL or MariaDB) is selected but no database password is provided in configuration'
         );
       }
     }
@@ -228,7 +233,7 @@ export class ServiceFactory {
     for (const serviceType of config.selectedServices) {
       if (!allValidServices.includes(serviceType)) {
         throw new ServiceInstallationError(
-          'ServiceFactory',
+          ServiceType.CADDY, // Generic error, Caddy is a core service
           `Invalid service type in configuration: ${serviceType}`
         );
       }
@@ -264,7 +269,8 @@ export class ServiceFactory {
       'Redis': ServiceType.REDIS,
       'MongoDB': ServiceType.MONGODB,
       'Minio': ServiceType.MINIO,
-      'Ollama': ServiceType.OLLAMA
+      'Ollama': ServiceType.OLLAMA,
+      'MariaDB': ServiceType.MARIADB
     };
 
     return serviceNameMap[serviceName];

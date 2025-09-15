@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
 import { mkdir, writeFile, rm } from 'fs/promises';
 import { join } from 'path';
 import { TemplateLoader } from '../../src/templates/loader.js';
-import { TemplateError } from '../../src/core/types.js';
+import { TemplateError } from '../../src/utils/errors.js';
 
 describe('TemplateLoader', () => {
   const testTemplateDir = 'test-templates-loader';

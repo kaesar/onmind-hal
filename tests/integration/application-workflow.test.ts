@@ -4,7 +4,8 @@
 
 import { describe, it, expect, beforeEach, afterEach, mock, spyOn } from 'bun:test';
 import { HomelabApplication } from '../../src/core/application.js';
-import { HomelabConfig, ServiceType, DistributionType, HomelabError, ServiceInstallationError } from '../../src/core/types.js';
+import { HomelabConfig, ServiceType, DistributionType } from '../../src/core/types.js';
+import { HomelabError, ServiceInstallationError } from '../../src/utils/errors.js';
 
 // Mock the CLI interface
 const mockCLIInterface = {
@@ -338,6 +339,13 @@ describe('HomelabApplication Integration Tests', () => {
     it('should fail when distribution strategy is not available for firewall config', async () => {
       // Create application without distribution strategy
       const appWithoutStrategy = new HomelabApplication();
+      const validConfig: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY],
+        distribution: DistributionType.UBUNTU
+      };
       appWithoutStrategy.setConfig(validConfig);
 
       // Expect workflow to fail

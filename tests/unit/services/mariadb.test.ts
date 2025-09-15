@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { PostgreSQLService } from '../../../src/services/optional/postgresql.js';
+import { MariaDBService } from '../../../src/services/optional/mariadb.js';
 import { ServiceType, HomelabConfig, DistributionType } from '../../../src/core/types.js';
 import { ServiceInstallationError } from '../../../src/utils/errors.js';
 import { TemplateEngine } from '../../../src/templates/engine.js';
@@ -9,65 +9,65 @@ mock.module('bun', () => ({
   $: mock(() => Promise.resolve({ exitCode: 0, stderr: '' }))
 }));
 
-describe('PostgreSQLService', () => {
+describe('MariaDBService', () => {
   let config: HomelabConfig;
   let templateEngine: TemplateEngine;
-  let postgresService: PostgreSQLService;
+  let mariadbService: MariaDBService;
 
   beforeEach(() => {
     config = {
       ip: '192.168.1.100',
       domain: 'homelab.local',
       networkName: 'homelab-network',
-      databasePassword: 'secure-password-123',
-      selectedServices: [ServiceType.POSTGRESQL],
+      databasePassword: 'secure-mariadb-password-123',
+      selectedServices: [ServiceType.MARIADB],
       distribution: DistributionType.UBUNTU
     };
 
     templateEngine = new TemplateEngine('tests/fixtures/templates');
-    postgresService = new PostgreSQLService(config, templateEngine);
+    mariadbService = new MariaDBService(config, templateEngine);
   });
 
   it('should initialize as optional service', () => {
-    expect(postgresService.name).toBe('PostgreSQL');
-    expect(postgresService.type).toBe(ServiceType.POSTGRESQL);
-    expect(postgresService.isCore).toBe(false);
-    expect(postgresService.dependencies).toEqual([]);
+    expect(mariadbService.name).toBe('MariaDB');
+    expect(mariadbService.type).toBe(ServiceType.MARIADB);
+    expect(mariadbService.isCore).toBe(false);
+    expect(mariadbService.dependencies).toEqual([]);
   });
 
   it('should return correct connection URL with password', () => {
-    const url = postgresService.getAccessUrl();
-    expect(url).toBe('postgresql://homelab:secure-password-123@192.168.1.100:5432/homelab');
+    const url = mariadbService.getAccessUrl();
+    expect(url).toBe('mysql://homelab:secure-mariadb-password-123@192.168.1.100:3306/homelab');
   });
 
   it('should return safe URL when password is not set', () => {
     config.databasePassword = undefined;
-    postgresService = new PostgreSQLService(config, templateEngine);
+    mariadbService = new MariaDBService(config, templateEngine);
     
-    const url = postgresService.getAccessUrl();
-    expect(url).toBe('postgresql://homelab:PASSWORD_NOT_SET@192.168.1.100:5432/homelab');
+    const url = mariadbService.getAccessUrl();
+    expect(url).toBe('mysql://homelab:PASSWORD_NOT_SET@192.168.1.100:3306/homelab');
   });
 
   it('should throw error during install if password is missing', async () => {
     config.databasePassword = '';
-    postgresService = new PostgreSQLService(config, templateEngine);
+    mariadbService = new MariaDBService(config, templateEngine);
     
-    await expect(postgresService.install()).rejects.toThrow(ServiceInstallationError);
+    await expect(mariadbService.install()).rejects.toThrow(ServiceInstallationError);
   });
 
   it('should throw error during install if password is undefined', async () => {
     config.databasePassword = undefined;
-    postgresService = new PostgreSQLService(config, templateEngine);
+    mariadbService = new MariaDBService(config, templateEngine);
     
-    await expect(postgresService.install()).rejects.toThrow(ServiceInstallationError);
+    await expect(mariadbService.install()).rejects.toThrow(ServiceInstallationError);
   });
 
   it('should throw error when getting template context without password', () => {
     config.databasePassword = undefined;
-    postgresService = new PostgreSQLService(config, templateEngine);
+    mariadbService = new MariaDBService(config, templateEngine);
     
     expect(() => {
-      (postgresService as any).getTemplateContext();
+      (mariadbService as any).getTemplateContext();
     }).toThrow(ServiceInstallationError);
   });
 });

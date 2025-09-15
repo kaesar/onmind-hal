@@ -1,0 +1,28 @@
+{
+  "name": "mariadb-service",
+  "description": "MariaDB database service",
+  "image": "mariadb:10-alpine",
+  "commands": {
+    "install": [
+      "docker pull mariadb:10-alpine"
+    ],
+    "setup": [
+      "mkdir -p /opt/mariadb/data",
+      "docker volume create mariadb_data"
+    ],
+    "run": "docker run -d --name mariadb --network {{networkName}} -p 3306:3306 -e MARIADB_DATABASE=homelab -e MARIADB_USER=homelab -e MARIADB_PASSWORD={{databasePassword}} -v mariadb_data:/var/lib/mysql mariadb:10-alpine"
+  },
+  "variables": ["networkName", "databasePassword"],
+  "ports": ["3306:3306"],
+  "volumes": [
+    "mariadb_data:/var/lib/mysql"
+  ],
+  "environment": {
+    "MARIADB_DATABASE": "homelab",
+    "MARIADB_USER": "homelab",
+    "MARIADB_PASSWORD": "{{databasePassword}}"
+  },
+  "accessUrl": "mysql://homelab:{{databasePassword}}@{{ip}}:3306/homelab",
+  "dependencies": [],
+  "isCore": false
+}
