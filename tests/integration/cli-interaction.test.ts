@@ -70,6 +70,7 @@ describe('CLI Interface Integration', () => {
           ServiceType.POSTGRESQL,
           //ServiceType.REDIS,
           //ServiceType.MONGODB,
+          //ServiceType.MARIADB,
           //ServiceType.MINIO,
           //ServiceType.OLLAMA,
         ],

@@ -63,7 +63,7 @@ export class CLIInterface {
         ['caddy', 'portainer', 'copyparty'].includes(s)
       );
       const optionalServices = this.config.selectedServices.filter(s =>
-        ['n8n', 'postgresql', 'redis', 'mongodb', 'minio', 'ollama', 'mariadb'].includes(s)
+        ['n8n', 'postgresql', 'redis', 'mongodb', 'mariadb', 'minio', 'ollama'].includes(s)
       );
 
       console.log('   Core services:');
@@ -97,9 +97,9 @@ export class CLIInterface {
       postgresql: 'PostgreSQL (Database)',
       redis: 'Redis (Cache/Queue)',
       mongodb: 'MongoDB (NoSQL Database)',
+      mariadb: 'MariaDB (Database)',
       minio: 'Minio (Object Storage)',
       ollama: 'Ollama (LLM Server)',
-      mariadb: 'MariaDB (Database)'
     };
     return serviceNames[service] || service;
   }

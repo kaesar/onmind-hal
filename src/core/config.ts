@@ -176,9 +176,9 @@ export class ConfigurationManager {
         'n8n': 'n8n.conf',
         'redis': 'redis.conf',
         'mongodb': 'mongodb.conf',
+        'mariadb': 'mariadb.conf',
         'minio': 'minio.conf',
         'ollama': 'ollama.conf',
-        'mariadb': 'mariadb.conf',
       };
 
       const configFileName = serviceConfigMap[serviceType];

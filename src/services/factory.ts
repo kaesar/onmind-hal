@@ -12,9 +12,9 @@ import { N8nService } from './optional/n8n.js';
 import { PostgreSQLService } from './optional/postgresql.js';
 import { RedisService } from './optional/redis.js';
 import { MongoDBService } from './optional/mongodb.js';
+import { MariaDBService } from './optional/mariadb.js';
 import { MinioService } from './optional/minio.js';
 import { OllamaService } from './optional/ollama.js';
-import { MariaDBService } from './optional/mariadb.js';
 
 /**
  * Service factory for creating service instances based on configuration
@@ -64,14 +64,14 @@ export class ServiceFactory {
       case ServiceType.MONGODB:
         service = new MongoDBService(config, this.templateEngine);
         break;
+      case ServiceType.MARIADB:
+        service = new MariaDBService(config, this.templateEngine);
+        break;
       case ServiceType.MINIO:
         service = new MinioService(config, this.templateEngine);
         break;
       case ServiceType.OLLAMA:
         service = new OllamaService(config, this.templateEngine);
-        break;
-      case ServiceType.MARIADB:
-        service = new MariaDBService(config, this.templateEngine);
         break;
       default:
         throw new ServiceInstallationError(
@@ -206,9 +206,9 @@ export class ServiceFactory {
       ServiceType.POSTGRESQL,
       ServiceType.REDIS,
       ServiceType.MONGODB,
+      ServiceType.MARIADB,
       ServiceType.MINIO,
       ServiceType.OLLAMA,
-      ServiceType.MARIADB
     ];
   }
 
@@ -268,9 +268,9 @@ export class ServiceFactory {
       'PostgreSQL': ServiceType.POSTGRESQL,
       'Redis': ServiceType.REDIS,
       'MongoDB': ServiceType.MONGODB,
+      'MariaDB': ServiceType.MARIADB,
       'Minio': ServiceType.MINIO,
       'Ollama': ServiceType.OLLAMA,
-      'MariaDB': ServiceType.MARIADB
     };
 
     return serviceNameMap[serviceName];

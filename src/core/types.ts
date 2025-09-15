@@ -18,9 +18,9 @@ export enum ServiceType {
   POSTGRESQL = 'postgresql',
   REDIS = 'redis',
   MONGODB = 'mongodb',
+  MARIADB = 'mariadb',
   MINIO = 'minio',
   OLLAMA = 'ollama',
-  MARIADB = 'mariadb'
 }
 
 // Configuration interface

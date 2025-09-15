@@ -95,9 +95,9 @@ describe('ServiceFactory', () => {
       ServiceType.POSTGRESQL,
       ServiceType.REDIS,
       ServiceType.MONGODB,
+      ServiceType.MARIADB,
       ServiceType.MINIO,
       ServiceType.OLLAMA,
-      ServiceType.MARIADB
     ]);
   });
 

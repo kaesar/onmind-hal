@@ -116,7 +116,7 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'n8n'
     },
     {
-      name: 'PostgreSQL - Database server',
+      name: 'PostgreSQL - SQL database server',
       value: ServiceType.POSTGRESQL,
       short: 'PostgreSQL'
     },
@@ -129,6 +129,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'MongoDB - NoSQL document database',
       value: ServiceType.MONGODB,
       short: 'MongoDB'
+    },
+    {
+      name: 'MariaDB - SQL database server',
+      value: ServiceType.MARIADB,
+      short: 'MariaDB'
     },
     {
       name: 'Minio - S3-compatible object storage',
@@ -207,7 +212,7 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
     ip,
     domain,
     networkName,
-    postgresPassword,
+    databasePassword: postgresPassword,
     selectedServices
   };
 }

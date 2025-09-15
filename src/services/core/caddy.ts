@@ -62,6 +62,7 @@ export class CaddyService extends BaseService {
       [ServiceType.POSTGRESQL]: null, // No web interface
       [ServiceType.REDIS]: null, // No web interface
       [ServiceType.MONGODB]: null, // No web interface
+      [ServiceType.MARIADB]: null, // No web interface
       [ServiceType.MINIO]: null, // No web interface
       [ServiceType.OLLAMA]: null, // No web interface
     };

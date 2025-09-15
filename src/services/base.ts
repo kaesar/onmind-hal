@@ -42,7 +42,7 @@ export abstract class BaseService implements Service {
       this.serviceTemplate = JSON.parse(template.content);
     } catch (error) {
       throw new ServiceInstallationError(
-        this.name,
+        this.type,
         `Failed to load service template: ${error}`
       );
     }
@@ -56,7 +56,7 @@ export abstract class BaseService implements Service {
       networkName: this.config.networkName,
       domain: this.config.domain,
       ip: this.config.ip,
-      postgresPassword: this.config.postgresPassword || ''
+      databasePassword: this.config.databasePassword || ''
     };
   }
 
@@ -78,7 +78,7 @@ export abstract class BaseService implements Service {
         }
       } catch (error) {
         throw new ServiceInstallationError(
-          this.name,
+          this.type,
           `Command execution failed: ${command} - ${error}`
         );
       }
@@ -93,7 +93,7 @@ export abstract class BaseService implements Service {
       const value = context[variableName];
       if (value === undefined || value === null) {
         throw new ServiceInstallationError(
-          this.name,
+          this.type,
           `Missing required variable in command: ${variableName}`
         );
       }
@@ -125,7 +125,7 @@ export abstract class BaseService implements Service {
       console.log(`${this.name} installation completed`);
     } catch (error) {
       throw new ServiceInstallationError(
-        this.name,
+        this.type,
         `Installation failed: ${error}`
       );
     }
@@ -153,7 +153,7 @@ export abstract class BaseService implements Service {
       console.log(`${this.name} configuration completed`);
     } catch (error) {
       throw new ServiceInstallationError(
-        this.name,
+        this.type,
         `Configuration failed: ${error}`
       );
     }
