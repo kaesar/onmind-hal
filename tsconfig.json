@@ -21,9 +21,9 @@
     "declarationMap": false,
     "sourceMap": false,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "typeRoots": ["./node_modules/@types", "./src/types"],
-    "types": ["bun-types"]
+    "types": ["bun-types", "node"]
   },
   "include": [
     "src/**/*",

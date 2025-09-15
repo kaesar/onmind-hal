@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * HomeLab Migration Tool - Main Entry Point
+ * OnMind-HAL (Home Apps Labs) - Main Entry Point
  * 
  * This is the main entry point for the HomeLab automation tool.
  * It orchestrates the entire installation and configuration process.
@@ -20,11 +20,11 @@ async function main(): Promise<void> {
   
   try {
     // Display welcome banner
-    console.log('🏠 Welcome to HomeLab Migration Tool');
-    console.log('=====================================');
+    console.log('🏠 Welcome to OnMind-HAL (Home Apps Labs)');
+    console.log('=========================================');
     console.log('');
     
-    logger.info('Starting HomeLab Migration Tool...');
+    logger.info('Starting HomeLab Tool by Cesar Andres...');
     
     // Initialize CLI interface
     const cli = new CLIInterface();
@@ -33,9 +33,16 @@ async function main(): Promise<void> {
     const app = new HomelabApplication();
     
     // Start the interactive setup process
-    await cli.start();
+    // Start the interactive setup process and collect configuration
+    const config = await cli.start();
+
+    // Set the collected configuration to the application
+    app.setConfig(config);
+
+    // Run the main application workflow
+    await app.run();
     
-    logger.info('HomeLab Migration Tool completed successfully! 🎉');
+    logger.info('OnMind-HAL has finished successfully! 🎉');
     console.log('');
     console.log('🎉 Installation completed successfully!');
     console.log('');

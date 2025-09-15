@@ -26,6 +26,7 @@ Home Apps Labs (OnMind-HAL) is a comprehensive HomeLab setup or automation tool 
 - **PostgreSQL**: Relational database server
 - **Redis**: In-memory data store and cache
 - **MongoDB**: NoSQL database server
+- **MariaDB**: Relational database server
 - **Minio**: S3-compatible object storage
 - **Ollama**: Server for your LLM
 
@@ -55,8 +56,8 @@ curl -fsSL https://bun.com/install | bash
 
 1. **Clone and Install**
    ```bash
-   git clone <repository-url>
-   cd homelab-migration-typescript-bun
+   git clone https://github.com/kaesar/onmind-hal.git hal
+   cd hal
    bun install
    ```
 
@@ -253,7 +254,8 @@ Add the service to the README.md services list and any specific configuration no
 
 ## Development
 
-### Running Tests
+### Running Tests and Build
+
 ```bash
 # All tests
 bun test
@@ -263,21 +265,7 @@ bun test tests/unit/services/mongodb.test.ts
 
 # With coverage
 bun test --coverage
+
+# Building the Project
+bun build
 ```
-
-### Debugging
-```bash
-# Enable debug logging
-DEBUG=true bun run start
-
-# Run with verbose output
-bun run start --verbose
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure all tests pass
-5. Submit a pull request

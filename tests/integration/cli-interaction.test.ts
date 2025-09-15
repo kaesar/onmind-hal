@@ -66,7 +66,11 @@ describe('CLI Interface Integration', () => {
           ServiceType.PORTAINER,
           ServiceType.COPYPARTY,
           ServiceType.N8N,
-          ServiceType.POSTGRESQL
+          ServiceType.POSTGRESQL,
+          //ServiceType.REDIS,
+          //ServiceType.MONGODB,
+          //ServiceType.MINIO,
+          //ServiceType.OLLAMA,
         ],
         postgresPassword: 'securepassword123'
       };

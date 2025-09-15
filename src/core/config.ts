@@ -174,7 +174,10 @@ export class ConfigurationManager {
       const serviceConfigMap: Record<string, string> = {
         'postgresql': 'postgresql.conf',
         'n8n': 'n8n.conf',
-        'redis': 'redis.conf'
+        'redis': 'redis.conf',
+        'mongodb': 'mongodb.conf',
+        'minio': 'minio.conf',
+        'ollama': 'ollama.conf',
       };
 
       const configFileName = serviceConfigMap[serviceType];

@@ -60,7 +60,10 @@ export class CaddyService extends BaseService {
       [ServiceType.COPYPARTY]: { subdomain: 'files', port: 3923 },
       [ServiceType.N8N]: { subdomain: 'n8n', port: 5678 },
       [ServiceType.POSTGRESQL]: null, // No web interface
-      [ServiceType.REDIS]: null // No web interface
+      [ServiceType.REDIS]: null, // No web interface
+      [ServiceType.MONGODB]: null, // No web interface
+      [ServiceType.MINIO]: null, // No web interface
+      [ServiceType.OLLAMA]: null, // No web interface
     };
 
     return this.config.selectedServices

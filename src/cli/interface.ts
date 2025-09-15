@@ -63,7 +63,7 @@ export class CLIInterface {
         ['caddy', 'portainer', 'copyparty'].includes(s)
       );
       const optionalServices = this.config.selectedServices.filter(s => 
-        ['n8n', 'postgresql', 'redis'].includes(s)
+        ['n8n', 'postgresql', 'redis', 'mongodb', 'minio', 'ollama'].includes(s)
       );
 
       console.log('   Core services:');

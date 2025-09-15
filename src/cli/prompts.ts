@@ -34,7 +34,7 @@ export function validateDomain(input: string): boolean | string {
     validateDomainUtil(sanitizeUserInput(input));
     return true;
   } catch (error) {
-    return 'Please enter a valid domain (e.g., homelab.local or example.com)';
+    return 'Please enter a valid domain (e.g., homelab.lan or example.com)';
   }
 }
 
@@ -89,7 +89,7 @@ export async function promptForDomain(): Promise<string> {
       name: 'domain',
       message: 'Enter your domain name:',
       validate: validateDomain,
-      default: 'homelab.local'
+      default: 'homelab.lan'
     }
   ]);
   return domain.trim();
