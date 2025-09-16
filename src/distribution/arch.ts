@@ -54,8 +54,8 @@ export class ArchStrategy extends BaseDistributionStrategy {
    */
   async installDocker(): Promise<void> {
     try {
-      // Update package database
-      await $`sudo pacman -Syu --noconfirm`;
+      // Update package database only (no system upgrade)
+      await $`sudo pacman -Sy --noconfirm`;
 
       // Install Docker and Docker Compose
       await $`sudo pacman -S --noconfirm docker docker-compose`;
@@ -113,8 +113,7 @@ export class ArchStrategy extends BaseDistributionStrategy {
    */
   async configureFirewall(): Promise<void> {
     try {
-      // Update package database and install UFW
-      await $`sudo pacman -Sy --noconfirm`;
+      // Install UFW without full system update
       await $`sudo pacman -S --noconfirm ufw`;
 
       // Reset UFW to default settings
