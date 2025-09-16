@@ -218,7 +218,7 @@ describe('HomeLab Configuration Validation', () => {
 
   it('should validate configuration with PostgreSQL', () => {
     validConfig.selectedServices.push(ServiceType.POSTGRESQL);
-    validConfig.postgresPassword = 'SecurePassword123!';
+    validConfig.databasePassword = 'SecurePassword123!';
     expect(() => validateHomelabConfig(validConfig)).not.toThrow();
   });
 

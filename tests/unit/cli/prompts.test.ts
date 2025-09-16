@@ -49,10 +49,10 @@ describe('CLI Prompts Validation', () => {
 
     it('should reject invalid domain names', () => {
       expect(validateDomain('invalid..domain')).toBe('Please enter a valid domain (e.g., homelab.lan or example.com)');
-      expect(validateDomain('.com')).toBe('Please enter a valid domain (e.g., homelab.local or example.com)');
-      expect(validateDomain('domain.')).toBe('Please enter a valid domain (e.g., homelab.local or example.com)');
-      expect(validateDomain('-domain.com')).toBe('Please enter a valid domain (e.g., homelab.local or example.com)');
-      expect(validateDomain('domain-.com')).toBe('Please enter a valid domain (e.g., homelab.local or example.com)');
+      expect(validateDomain('.com')).toBe('Please enter a valid domain (e.g., homelab.lan or example.com)');
+      expect(validateDomain('domain.')).toBe('Please enter a valid domain (e.g., homelab.lan or example.com)');
+      expect(validateDomain('-domain.com')).toBe('Please enter a valid domain (e.g., homelab.lan or example.com)');
+      expect(validateDomain('domain-.com')).toBe('Please enter a valid domain (e.g., homelab.lan or example.com)');
     });
 
     it('should reject empty input', () => {

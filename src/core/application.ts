@@ -49,22 +49,19 @@ export class HomelabApplication {
       // Step 1: Detect Linux distribution
       await this.detectDistribution();
 
-      // Step 2: Collect user configuration
-      await this.collectUserConfiguration();
-
-      // Step 3: Validate configuration
+      // Step 2: Validate configuration (config should already be set)
       this.validateConfiguration();
 
-      // Step 4: Install Docker if needed
+      // Step 3: Install Docker if needed
       await this.installDocker();
 
-      // Step 5: Configure firewall
+      // Step 4: Configure firewall
       await this.configureFirewall();
 
-      // Step 6: Install and configure services
+      // Step 5: Install and configure services
       await this.installServices();
 
-      // Step 7: Display completion summary
+      // Step 6: Display completion summary
       this.displayCompletionSummary();
 
       this.logger.info('✅ HomeLab installation completed successfully!');
@@ -98,28 +95,7 @@ export class HomelabApplication {
     }
   }
 
-  /**
-   * Collect user configuration through CLI interface
-   */
-  private async collectUserConfiguration(): Promise<void> {
-    try {
-      this.logger.info('📝 Collecting user configuration...');
-      
-      this.config = await this.cliInterface.run();
-      
-      // Set the detected distribution
-      if (this.distributionStrategy) {
-        const distributionType = this.distributionDetector.getDistributionType(this.distributionStrategy);
-        this.config.distribution = distributionType;
-      }
 
-      this.logger.info('✅ User configuration collected successfully');
-
-    } catch (error) {
-      this.logger.error('❌ Failed to collect user configuration');
-      throw error;
-    }
-  }
 
   /**
    * Validate the collected configuration

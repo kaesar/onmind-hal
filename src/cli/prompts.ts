@@ -8,7 +8,7 @@ import {
   validateIP as validateIPUtil,
   validateDomain as validateDomainUtil,
   validateNetworkName as validateNetworkNameUtil,
-  validatePostgresPassword,
+  validateDatabasePassword,
   sanitizeUserInput
 } from '../utils/validation.js';
 import { ValidationError } from '../utils/errors.js';
@@ -61,10 +61,10 @@ export function validatePassword(input: string): boolean | string {
     if (input.trim().length < 8) {
       return 'Password must be at least 8 characters long';
     }
-    validatePostgresPassword(sanitizeUserInput(input));
+    validateDatabasePassword(sanitizeUserInput(input));
     return true;
   } catch (error) {
-    return 'Password must be at least 8 characters long';
+    return error instanceof ValidationError ? error.message : 'Password must be at least 8 characters long';
   }
 }
 
@@ -163,12 +163,12 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
   return services;
 }
 
-export async function promptForPostgresPassword(): Promise<string> {
+export async function promptForDatabasePassword(): Promise<string> {
   const { password } = await inquirer.prompt([
     {
       type: 'password',
       name: 'password',
-      message: 'Enter PostgreSQL password:',
+      message: 'Enter database password (for PostgreSQL/MariaDB):',
       validate: validatePassword,
       mask: '*'
     }
@@ -199,9 +199,9 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
   
   const optionalServices = await promptForOptionalServices();
   
-  let postgresPassword: string | undefined;
-  if (optionalServices.includes(ServiceType.POSTGRESQL)) {
-    postgresPassword = await promptForPostgresPassword();
+  let databasePassword: string | undefined;
+  if (optionalServices.includes(ServiceType.POSTGRESQL) || optionalServices.includes(ServiceType.MARIADB)) {
+    databasePassword = await promptForDatabasePassword();
   }
 
   // Core services are always included
@@ -212,7 +212,7 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
     ip,
     domain,
     networkName,
-    databasePassword: postgresPassword,
+    databasePassword,
     selectedServices
   };
 }

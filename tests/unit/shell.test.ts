@@ -427,7 +427,7 @@ describe('ShellExecutor', () => {
       );
 
       expect(error.message).toContain('failing-command');
-      expect(error.message).toContain('Command failed');
+      expect(error.message).toContain('Shell command failed');
       expect(error.code).toBe('SHELL_EXECUTION_FAILED');
       expect(error.result).toBe(result);
     });

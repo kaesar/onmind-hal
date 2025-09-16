@@ -106,15 +106,22 @@ describe('HomelabApplication Integration Tests', () => {
 
   describe('Complete Installation Workflow', () => {
     it('should execute complete installation workflow successfully', async () => {
+      // Set configuration before running
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
       // Execute the complete workflow
       await application.run();
 
       // Verify distribution detection was called
       expect(mockDistributionDetector.detectDistribution).toHaveBeenCalled();
       expect(mockDistributionDetector.getDistributionType).toHaveBeenCalled();
-
-      // Verify CLI interface was called
-      expect(mockCLIInterface.run).toHaveBeenCalled();
 
       // Verify configuration validation
       expect(mockServiceFactory.validateConfiguration).toHaveBeenCalled();
@@ -146,18 +153,40 @@ describe('HomelabApplication Integration Tests', () => {
       expect(mockLogger.error).toHaveBeenCalledWith('❌ Failed to detect Linux distribution');
     });
 
-    it('should handle CLI configuration failure', async () => {
-      // Mock CLI failure
-      mockCLIInterface.run.mockRejectedValueOnce(new Error('User cancelled'));
+    it('should handle configuration validation failure', async () => {
+      // Set invalid configuration
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
+      // Mock validation failure
+      mockServiceFactory.validateConfiguration.mockImplementationOnce(() => {
+        throw new HomelabError('Invalid configuration', 'CONFIG_INVALID');
+      });
 
       // Expect the workflow to fail
-      await expect(application.run()).rejects.toThrow('User cancelled');
+      await expect(application.run()).rejects.toThrow('Invalid configuration');
 
       // Verify error handling
-      expect(mockLogger.error).toHaveBeenCalledWith('❌ Failed to collect user configuration');
+      expect(mockLogger.error).toHaveBeenCalledWith('❌ Configuration validation failed');
     });
 
     it('should handle Docker installation failure', async () => {
+      // Set configuration
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
       // Mock Docker installation failure
       mockDistributionStrategy.installDocker.mockRejectedValueOnce(
         new Error('Docker installation failed')
@@ -171,6 +200,16 @@ describe('HomelabApplication Integration Tests', () => {
     });
 
     it('should handle service installation failure with rollback', async () => {
+      // Set configuration
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
       // Mock service installation failure
       mockService.install.mockRejectedValueOnce(new Error('Service installation failed'));
 
@@ -197,9 +236,7 @@ describe('HomelabApplication Integration Tests', () => {
         selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER],
         distribution: DistributionType.UBUNTU
       };
-
-      // Mock CLI to return our specific config
-      mockCLIInterface.run.mockResolvedValueOnce(validConfig);
+      application.setConfig(validConfig);
 
       // Mock successful validation
       mockServiceFactory.validateConfiguration.mockImplementationOnce(() => {});
@@ -212,6 +249,16 @@ describe('HomelabApplication Integration Tests', () => {
     });
 
     it('should handle configuration validation failure', async () => {
+      // Set configuration
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
       // Mock validation failure
       mockServiceFactory.validateConfiguration.mockImplementationOnce(() => {
         throw new HomelabError('Invalid configuration', 'CONFIG_INVALID');
@@ -227,6 +274,16 @@ describe('HomelabApplication Integration Tests', () => {
 
   describe('Service Installation Order', () => {
     it('should install services in correct dependency order', async () => {
+      // Set configuration
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
       // Create mock services with dependencies
       const caddyService = {
         ...mockService,
@@ -258,6 +315,16 @@ describe('HomelabApplication Integration Tests', () => {
 
   describe('Error Handling and Rollback', () => {
     it('should attempt rollback when service installation fails', async () => {
+      // Set configuration
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
       // Create multiple services
       const service1 = { ...mockService, name: 'Service1' };
       const service2 = { ...mockService, name: 'Service2' };
@@ -285,6 +352,16 @@ describe('HomelabApplication Integration Tests', () => {
     });
 
     it('should handle rollback errors gracefully', async () => {
+      // Set configuration
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
       // Mock service that fails during installation
       mockService.install.mockRejectedValueOnce(new Error('Installation failed'));
 
@@ -298,6 +375,16 @@ describe('HomelabApplication Integration Tests', () => {
 
   describe('Completion Summary', () => {
     it('should display completion summary with service URLs', async () => {
+      // Set configuration
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
       // Mock successful workflow
       await application.run();
 
@@ -312,6 +399,16 @@ describe('HomelabApplication Integration Tests', () => {
 
   describe('Firewall Configuration', () => {
     it('should configure firewall after Docker installation', async () => {
+      // Set configuration
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
       // Mock successful workflow
       await application.run();
 
@@ -324,6 +421,16 @@ describe('HomelabApplication Integration Tests', () => {
     });
 
     it('should handle firewall configuration failure', async () => {
+      // Set configuration
+      const config: HomelabConfig = {
+        ip: '192.168.1.100',
+        domain: 'homelab.local',
+        networkName: 'homelab-network',
+        selectedServices: [ServiceType.CADDY],
+        distribution: DistributionType.UBUNTU
+      };
+      application.setConfig(config);
+
       // Mock firewall configuration failure
       mockDistributionStrategy.configureFirewall.mockRejectedValueOnce(
         new Error('UFW installation failed')

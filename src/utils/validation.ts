@@ -125,30 +125,37 @@ export function validateNetworkName(networkName: string): void {
 }
 
 /**
- * Validates PostgreSQL password
+ * Validates database password (PostgreSQL/MariaDB)
  */
-export function validatePostgresPassword(password: string): void {
+export function validateDatabasePassword(password: string): void {
   if (!password || typeof password !== 'string') {
-    throw new ValidationError('postgresPassword', password, 'Password must be a non-empty string');
+    throw new ValidationError('databasePassword', password, 'Password must be a non-empty string');
   }
 
   if (password.length < 8) {
-    throw new ValidationError('postgresPassword', password, 'Password must be at least 8 characters long');
+    throw new ValidationError('databasePassword', password, 'Password must be at least 8 characters long');
   }
 
   if (password.length > 128) {
-    throw new ValidationError('postgresPassword', password, 'Password too long (max 128 characters)');
+    throw new ValidationError('databasePassword', password, 'Password too long (max 128 characters)');
   }
 
   if (!PASSWORD_REGEX.test(password)) {
-    throw new ValidationError('postgresPassword', password, 'Password contains invalid characters. Use letters, numbers, and common symbols only');
+    throw new ValidationError('databasePassword', password, 'Password contains invalid characters. Use letters, numbers, and common symbols only');
   }
 
   // Check for common weak passwords
-  const weakPasswords = ['password', '12345678', 'qwerty123', 'admin123', 'postgres'];
+  const weakPasswords = ['password', '12345678', 'admin123', 'postgres'];
   if (weakPasswords.includes(password.toLowerCase())) {
-    throw new ValidationError('postgresPassword', password, 'Password is too common. Please choose a stronger password');
+    throw new ValidationError('databasePassword', password, 'Password is too common. Please choose a stronger password');
   }
+}
+
+/**
+ * Validates PostgreSQL password (alias for backward compatibility)
+ */
+export function validatePostgresPassword(password: string): void {
+  validateDatabasePassword(password);
 }
 
 /**
@@ -221,13 +228,13 @@ export function validateHomelabConfig(config: HomelabConfig): void {
   validateServiceSelection(config.selectedServices);
   validateDistribution(config.distribution);
 
-  if (config.postgresPassword !== undefined) {
-    validatePostgresPassword(config.postgresPassword);
+  if (config.databasePassword !== undefined) {
+    validateDatabasePassword(config.databasePassword);
   }
 
-  // If PostgreSQL is selected, password is required
-  if (config.selectedServices.includes(ServiceType.POSTGRESQL) && !config.postgresPassword) {
-    throw new ConfigurationError('postgresPassword', config.postgresPassword, 'PostgreSQL password is required when PostgreSQL service is selected');
+  // If PostgreSQL or MariaDB is selected, password is required
+  if ((config.selectedServices.includes(ServiceType.POSTGRESQL) || config.selectedServices.includes(ServiceType.MARIADB)) && !config.databasePassword) {
+    throw new ConfigurationError('databasePassword', config.databasePassword, 'Database password is required when PostgreSQL or MariaDB service are selected');
   }
 }
 
@@ -320,7 +327,8 @@ export function validateShellCommand(command: string): void {
     'docker', 'apt', 'apt-get', 'pacman', 'yum', 'dnf',
     'systemctl', 'curl', 'wget', 'git', 'npm', 'node',
     'bun', 'echo', 'cat', 'ls', 'mkdir', 'cp', 'mv',
-    'which', 'whereis', 'uname', 'lsb_release'
+    'which', 'whereis', 'uname', 'lsb_release', 'pwd',
+    'printenv', 'sleep', 'false', 'true', 'test'
   ];
 
   if (!allowedCommands.includes(baseCommand)) {
