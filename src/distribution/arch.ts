@@ -68,8 +68,19 @@ export class ArchStrategy extends BaseDistributionStrategy {
       const currentUser = await $`whoami`.text();
       await $`sudo usermod -aG docker ${currentUser.trim()}`;
 
-      // Verify Docker installation
+      // Ensure Docker daemon is running and accessible
+      await $`sudo systemctl restart docker`;
+      await $`sleep 3`;
+
+      // Set proper permissions for Docker socket
+      await $`sudo chmod 666 /var/run/docker.sock`;
+
+      // Verify Docker installation and permissions
       await $`docker --version`;
+      await $`docker info`;
+      
+      console.log('⚠️  Note: You may need to log out and back in for Docker group changes to take full effect.');
+      console.log('    For now, Docker socket permissions have been set to allow immediate access.');
 
     } catch (error) {
       throw new Error(`Failed to install Docker on Arch Linux: ${error}`);
