@@ -7,16 +7,16 @@
       "docker pull caddy:latest"
     ],
     "setup": [
-      "mkdir -p /opt/caddy/config",
-      "mkdir -p /opt/caddy/data"
+      "mkdir -p ~/wsconf",
+      "mkdir -p ~/wsdata/caddy"
     ],
-    "run": "docker run -d --name caddy --network {{networkName}} -p 80:80 -p 443:443 -v /opt/caddy/config/Caddyfile:/etc/caddy/Caddyfile -v /opt/caddy/data:/data caddy:latest"
+    "run": "docker run -d --name caddy --network {{networkName}} -p 80:80 -p 443:443 -v ~/wsconf/Caddyfile:/etc/caddy/Caddyfile -v ~/wsdata/caddy:/data caddy:latest"
   },
   "variables": ["networkName"],
   "ports": ["80:80", "443:443"],
   "volumes": [
-    "/opt/caddy/config/Caddyfile:/etc/caddy/Caddyfile",
-    "/opt/caddy/data:/data"
+    "~/wsconf/Caddyfile:/etc/caddy/Caddyfile",
+    "~/wsdata/caddy:/data"
   ],
   "configFiles": ["Caddyfile"],
   "accessUrl": "https://{{domain}}",
