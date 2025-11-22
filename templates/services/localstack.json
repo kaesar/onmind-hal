@@ -1,0 +1,16 @@
+{
+  "name": "LocalStack",
+  "description": "Local AWS cloud stack for development",
+  "commands": {
+    "install": [
+      "docker pull localstack/localstack:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/localstack/data"
+    ],
+    "run": "docker run -d --name localstack --network {{NETWORK_NAME}} -p 4566:4566 -p 4571:4571 -v /opt/homelab/localstack/data:/var/lib/localstack -v /var/run/docker.sock:/var/run/docker.sock -e SERVICES=s3,dynamodb,sqs,sns,lambda,ec2,ecs,cloudformation -e DEBUG=1 -e DATA_DIR=/var/lib/localstack localstack/localstack:latest"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}

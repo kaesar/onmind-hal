@@ -15,6 +15,17 @@ import { MongoDBService } from './optional/mongodb.js';
 import { MariaDBService } from './optional/mariadb.js';
 import { MinioService } from './optional/minio.js';
 import { OllamaService } from './optional/ollama.js';
+import { KafkaService } from './optional/kafka.js';
+import { AutheliaService } from './optional/authelia.js';
+import { LocalStackService } from './optional/localstack.js';
+import { OneDevService } from './optional/onedev.js';
+import { RegistryService } from './optional/registry.js';
+import { VaultService } from './optional/vault.js';
+import { PalmrService } from './optional/palmr.js';
+import { ExcalidrawService } from './optional/excalidraw.js';
+import { OutlineService } from './optional/outline.js';
+import { KestraService } from './optional/kestra.js';
+import { GristService } from './optional/grist.js';
 
 /**
  * Service factory for creating service instances based on configuration
@@ -72,6 +83,39 @@ export class ServiceFactory {
         break;
       case ServiceType.OLLAMA:
         service = new OllamaService(config, this.templateEngine);
+        break;
+      case ServiceType.KAFKA:
+        service = new KafkaService(config, this.templateEngine);
+        break;
+      case ServiceType.AUTHELIA:
+        service = new AutheliaService(config, this.templateEngine);
+        break;
+      case ServiceType.LOCALSTACK:
+        service = new LocalStackService(config, this.templateEngine);
+        break;
+      case ServiceType.ONEDEV:
+        service = new OneDevService(config, this.templateEngine);
+        break;
+      case ServiceType.REGISTRY:
+        service = new RegistryService(config, this.templateEngine);
+        break;
+      case ServiceType.VAULT:
+        service = new VaultService(config, this.templateEngine);
+        break;
+      case ServiceType.PALMR:
+        service = new PalmrService(config, this.templateEngine);
+        break;
+      case ServiceType.EXCALIDRAW:
+        service = new ExcalidrawService(config, this.templateEngine);
+        break;
+      case ServiceType.OUTLINE:
+        service = new OutlineService(config, this.templateEngine);
+        break;
+      case ServiceType.KESTRA:
+        service = new KestraService(config, this.templateEngine);
+        break;
+      case ServiceType.GRIST:
+        service = new GristService(config, this.templateEngine);
         break;
       default:
         throw new ServiceInstallationError(
@@ -209,6 +253,17 @@ export class ServiceFactory {
       ServiceType.MARIADB,
       ServiceType.MINIO,
       ServiceType.OLLAMA,
+      ServiceType.KAFKA,
+      ServiceType.AUTHELIA,
+      ServiceType.LOCALSTACK,
+      ServiceType.ONEDEV,
+      ServiceType.KESTRA,
+      ServiceType.REGISTRY,
+      ServiceType.VAULT,
+      ServiceType.PALMR,
+      ServiceType.EXCALIDRAW,
+      ServiceType.OUTLINE,
+      ServiceType.GRIST,
     ];
   }
 
@@ -271,6 +326,17 @@ export class ServiceFactory {
       'MariaDB': ServiceType.MARIADB,
       'Minio': ServiceType.MINIO,
       'Ollama': ServiceType.OLLAMA,
+      'Kafka': ServiceType.KAFKA,
+      'Authelia': ServiceType.AUTHELIA,
+      'LocalStack': ServiceType.LOCALSTACK,
+      'OneDev': ServiceType.ONEDEV,
+      'Registry': ServiceType.REGISTRY,
+      'Vault': ServiceType.VAULT,
+      'Palmr': ServiceType.PALMR,
+      'Excalidraw': ServiceType.EXCALIDRAW,
+      'Outline': ServiceType.OUTLINE,
+      'Kestra': ServiceType.KESTRA,
+      'Grist': ServiceType.GRIST,
     };
 
     return serviceNameMap[serviceName];

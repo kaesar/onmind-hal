@@ -1,0 +1,16 @@
+{
+  "name": "Grist",
+  "description": "Modern spreadsheet with relational database capabilities",
+  "commands": {
+    "install": [
+      "docker pull gristlabs/grist:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/grist/data"
+    ],
+    "run": "docker run -d --name grist --network {{NETWORK_NAME}} -p 8484:8484 -v /opt/homelab/grist/data:/persist -e GRIST_SINGLE_ORG=homelab gristlabs/grist:latest"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}

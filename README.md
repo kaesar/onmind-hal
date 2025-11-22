@@ -29,8 +29,19 @@
 - **MariaDB**: Relational database server
 - **Minio**: S3-compatible object storage
 - **Ollama**: Server for your LLM
+- **Kafka**: Distributed streaming platform (with KRaft)
+- **Authelia**: Authentication and authorization server
+- **LocalStack**: Local AWS cloud stack for development
+- **OneDev**: Self-hosted Git server with CI/CD
+- **Kestra**: Orchestration and scheduling platform
+- **Registry**: Private Docker container registry
+- **Vault**: Secrets and encryption management (HashiCorp)
+- **Palmr**: File sharing platform (like WeTransfer)
+- **Excalidraw**: Virtual whiteboard for sketching diagrams
+- **Outline**: Team knowledge base and wiki
+- **Grist**: Modern spreadsheet with relational database capabilities
 
-> *Perhaps, I will consider includes in a future*: Kafka, LocalStack, OneDev, Vaultwarden (Bitwarden), Obsidian (or rwMarkable), Excalidraw, Draw, Grist, RapiDoc, Zulip (or Rocket.Chat), Jitsi
+> *Perhaps, I will consider includes in a future*: Vaultwarden (Bitwarden), Draw.io, RapiDoc, Zulip (or Rocket.Chat), Jitsi
 
 ## Prerequisites
 

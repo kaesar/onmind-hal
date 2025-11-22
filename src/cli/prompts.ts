@@ -116,7 +116,7 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'n8n'
     },
     {
-      name: 'PostgreSQL - SQL database server',
+      name: 'PostgreSQL - SQL database server (alternative to Oracle DB)',
       value: ServiceType.POSTGRESQL,
       short: 'PostgreSQL'
     },
@@ -144,6 +144,61 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Ollama - Local LLM server',
       value: ServiceType.OLLAMA,
       short: 'Ollama'
+    },
+    {
+      name: 'Kafka - Distributed streaming platform (with KRaft)',
+      value: ServiceType.KAFKA,
+      short: 'Kafka'
+    },
+    {
+      name: 'Authelia - Authentication and authorization server (requires Redis)',
+      value: ServiceType.AUTHELIA,
+      short: 'Authelia'
+    },
+    {
+      name: 'LocalStack - Local AWS cloud stack',
+      value: ServiceType.LOCALSTACK,
+      short: 'LocalStack'
+    },
+    {
+      name: 'OneDev - Self-hosted Git server with CI/CD',
+      value: ServiceType.ONEDEV,
+      short: 'OneDev'
+    },
+    {
+      name: 'Kestra - Orchestration and scheduling platform',
+      value: ServiceType.KESTRA,
+      short: 'Kestra'
+    },
+    {
+      name: 'Registry - Private Docker container registry',
+      value: ServiceType.REGISTRY,
+      short: 'Registry'
+    },
+    {
+      name: 'Vault - Secrets and encryption management (HashiCorp)',
+      value: ServiceType.VAULT,
+      short: 'Vault'
+    },
+    {
+      name: 'Palmr - File sharing platform (like WeTransfer)',
+      value: ServiceType.PALMR,
+      short: 'Palmr'
+    },
+    {
+      name: 'Excalidraw - Virtual whiteboard for sketching',
+      value: ServiceType.EXCALIDRAW,
+      short: 'Excalidraw'
+    },
+    {
+      name: 'Outline - Team knowledge base and wiki (requires PostgreSQL + Redis)',
+      value: ServiceType.OUTLINE,
+      short: 'Outline'
+    },
+    {
+      name: 'Grist - Modern spreadsheet with relational database',
+      value: ServiceType.GRIST,
+      short: 'Grist'
     }
   ];
 

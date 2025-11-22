@@ -1,0 +1,17 @@
+{
+  "name": "Docker Registry",
+  "description": "Private Docker container registry",
+  "commands": {
+    "install": [
+      "docker pull registry:2"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/registry/data",
+      "mkdir -p /opt/homelab/registry/auth"
+    ],
+    "run": "docker run -d --name registry --network {{NETWORK_NAME}} -p 5000:5000 -v /opt/homelab/registry/data:/var/lib/registry -e REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry registry:2"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}

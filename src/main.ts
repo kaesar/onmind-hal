@@ -24,6 +24,20 @@ async function main(): Promise<void> {
     console.log('=========================================');
     console.log('');
     
+    // Verify sudo access
+    console.log('⚠️  This script requires sudo privileges for installation.');
+    console.log('   Please run first: sudo -v');
+    console.log('');
+    
+    // Test sudo access
+    try {
+      await Bun.spawn(['sudo', '-n', 'true'], { stdout: 'ignore', stderr: 'ignore' }).exited;
+      console.log('✅ Sudo access verified.');
+    } catch {
+      console.log('⚠️  Sudo access not cached. You will be prompted for password during installation.');
+    }
+    console.log('');
+    
     logger.info('Starting HomeLab Tool by Cesar Andres...');
     
     // Initialize CLI interface

@@ -98,6 +98,17 @@ describe('ServiceFactory', () => {
       ServiceType.MARIADB,
       ServiceType.MINIO,
       ServiceType.OLLAMA,
+      ServiceType.KAFKA,
+      ServiceType.AUTHELIA,
+      ServiceType.LOCALSTACK,
+      ServiceType.ONEDEV,
+      ServiceType.KESTRA,
+      ServiceType.REGISTRY,
+      ServiceType.VAULT,
+      ServiceType.PALMR,
+      ServiceType.EXCALIDRAW,
+      ServiceType.OUTLINE,
+      ServiceType.GRIST,
     ]);
   });
 

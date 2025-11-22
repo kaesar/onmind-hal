@@ -21,6 +21,17 @@ export enum ServiceType {
   MARIADB = 'mariadb',
   MINIO = 'minio',
   OLLAMA = 'ollama',
+  KAFKA = 'kafka',
+  AUTHELIA = 'authelia',
+  LOCALSTACK = 'localstack',
+  ONEDEV = 'onedev',
+  KESTRA = 'kestra',
+  REGISTRY = 'registry',
+  VAULT = 'vault',
+  PALMR = 'palmr',
+  EXCALIDRAW = 'excalidraw',
+  OUTLINE = 'outline',
+  GRIST = 'grist',
 }
 
 // Configuration interface
