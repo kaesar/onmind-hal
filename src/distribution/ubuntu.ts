@@ -134,20 +134,20 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
       await $`sudo apt install -y ufw`.quiet();
 
       // Reset UFW to default settings
-      await $`sudo ufw --force reset`;
+      await $`sudo ufw --force reset`.quiet();
 
       // Set default policies
-      await $`sudo ufw default deny incoming`;
-      await $`sudo ufw default allow outgoing`;
+      await $`sudo ufw default deny incoming`.quiet();
+      await $`sudo ufw default allow outgoing`.quiet();
 
       // Allow SSH (port 22) - critical to maintain access
-      await $`sudo ufw allow 22/tcp`;
+      await $`sudo ufw allow 22/tcp`.quiet();
 
       // Allow HTTP (port 80) for web services
-      await $`sudo ufw allow 80/tcp`;
+      await $`sudo ufw allow 80/tcp`.quiet();
 
       // Allow HTTPS (port 443) for secure web services
-      await $`sudo ufw allow 443/tcp`;
+      await $`sudo ufw allow 443/tcp`.quiet();
 
       // Enable UFW
       await $`sudo ufw --force enable`;

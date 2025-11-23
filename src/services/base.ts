@@ -54,9 +54,13 @@ export abstract class BaseService implements Service {
   protected getTemplateContext(): Record<string, any> {
     return {
       networkName: this.config.networkName,
+      NETWORK_NAME: this.config.networkName,
       domain: this.config.domain,
+      DOMAIN: this.config.domain,
       ip: this.config.ip,
-      databasePassword: this.config.databasePassword || ''
+      IP: this.config.ip,
+      databasePassword: this.config.databasePassword || '',
+      DATABASE_PASSWORD: this.config.databasePassword || ''
     };
   }
 

@@ -140,18 +140,18 @@ export class AmazonLinuxStrategy extends BaseDistributionStrategy {
       await $`sudo ${packageManager} install -y firewalld`.quiet();
 
       // Start and enable firewalld service
-      await $`sudo systemctl enable firewalld`;
-      await $`sudo systemctl start firewalld`;
+      await $`sudo systemctl enable firewalld`.quiet();
+      await $`sudo systemctl start firewalld`.quiet();
 
       // Configure firewall rules
       // Allow SSH (port 22) - critical to maintain access
-      await $`sudo firewall-cmd --permanent --add-service=ssh`;
+      await $`sudo firewall-cmd --permanent --add-service=ssh`.quiet();
 
       // Allow HTTP (port 80) for web services
-      await $`sudo firewall-cmd --permanent --add-service=http`;
+      await $`sudo firewall-cmd --permanent --add-service=http`.quiet();
 
       // Allow HTTPS (port 443) for secure web services
-      await $`sudo firewall-cmd --permanent --add-service=https`;
+      await $`sudo firewall-cmd --permanent --add-service=https`.quiet();
 
       // Reload firewall to apply changes
       await $`sudo firewall-cmd --reload`;
