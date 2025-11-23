@@ -26,7 +26,7 @@ async function main(): Promise<void> {
     
     // Verify sudo access
     console.log('⚠️  This script requires sudo privileges for installation.');
-    console.log('   Please run first: sudo -v');
+    console.log('   It is convenient to run first: sudo -v');
     console.log('');
     
     // Test sudo access
@@ -38,7 +38,7 @@ async function main(): Promise<void> {
     }
     console.log('');
     
-    logger.info('Starting HomeLab Tool by Cesar Andres...');
+    logger.info('Starting HomeLab Tool...');
     
     // Initialize CLI interface
     const cli = new CLIInterface();

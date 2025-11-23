@@ -1,7 +1,6 @@
 {
   "name": "portainer-service",
   "description": "Portainer Docker management interface",
-  "image": "portainer/portainer-ce:latest",
   "commands": {
     "install": [
       "docker pull portainer/portainer-ce:latest"

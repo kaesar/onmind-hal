@@ -1,7 +1,6 @@
 {
   "name": "copyparty-service",
   "description": "Copyparty file sharing service",
-  "image": "copyparty/ac:latest",
   "commands": {
     "install": [
       "docker pull copyparty/ac:latest"

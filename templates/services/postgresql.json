@@ -1,7 +1,6 @@
 {
   "name": "postgresql-service",
   "description": "PostgreSQL database service",
-  "image": "postgres:15-alpine",
   "commands": {
     "install": [
       "docker pull postgres:15-alpine"

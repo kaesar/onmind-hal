@@ -1,7 +1,6 @@
 {
   "name": "redis-service",
   "description": "Redis in-memory database service",
-  "image": "redis:7-alpine",
   "commands": {
     "install": [
       "docker pull redis:7-alpine"

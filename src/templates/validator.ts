@@ -162,8 +162,8 @@ export class TemplateValidator {
 
     // Service template schema
     this.registerSchema('service', {
-      requiredFields: ['name', 'image'],
-      optionalFields: ['ports', 'volumes', 'environment', 'depends_on'],
+      requiredFields: ['name'],
+      optionalFields: ['image', 'ports', 'volumes', 'environment', 'depends_on'],
       fieldTypes: {
         name: 'string',
         image: 'string',

@@ -1,7 +1,6 @@
 {
   "name": "mariadb-service",
   "description": "MariaDB database service",
-  "image": "mariadb:latest",
   "commands": {
     "install": [
       "docker pull mariadb:latest"

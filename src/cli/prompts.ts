@@ -223,7 +223,7 @@ export async function promptForDatabasePassword(): Promise<string> {
     {
       type: 'password',
       name: 'password',
-      message: 'Enter database password (for PostgreSQL/MariaDB):',
+      message: 'Enter database password (for PostgreSQL/MariaDB/MongoDB):',
       validate: validatePassword,
       mask: '*'
     }
@@ -255,7 +255,9 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
   const optionalServices = await promptForOptionalServices();
   
   let databasePassword: string | undefined;
-  if (optionalServices.includes(ServiceType.POSTGRESQL) || optionalServices.includes(ServiceType.MARIADB)) {
+  if (optionalServices.includes(ServiceType.POSTGRESQL) || 
+      optionalServices.includes(ServiceType.MARIADB) || 
+      optionalServices.includes(ServiceType.MONGODB)) {
     databasePassword = await promptForDatabasePassword();
   }
 

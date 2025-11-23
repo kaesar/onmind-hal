@@ -273,12 +273,14 @@ export class ServiceFactory {
    * @throws ServiceInstallationError if configuration is invalid
    */
   validateConfiguration(config: HomelabConfig): void {
-    // Check if PostgreSQL or MariaDB is selected but password is not provided
-    if (config.selectedServices.includes(ServiceType.POSTGRESQL) || config.selectedServices.includes(ServiceType.MARIADB)) {
+    // Check if PostgreSQL, MariaDB, or MongoDB is selected but password is not provided
+    if (config.selectedServices.includes(ServiceType.POSTGRESQL) || 
+        config.selectedServices.includes(ServiceType.MARIADB) || 
+        config.selectedServices.includes(ServiceType.MONGODB)) {
       if (!config.databasePassword || config.databasePassword.trim() === '') {
         throw new ServiceInstallationError(
           ServiceType.CADDY, // Use a generic service type for this combined error
-          'Database service (PostgreSQL or MariaDB) is selected but no database password is provided in configuration'
+          'Database service (PostgreSQL, MariaDB, or MongoDB) is selected but no database password is provided in configuration'
         );
       }
     }

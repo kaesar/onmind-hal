@@ -1,7 +1,6 @@
 {
   "name": "n8n-service",
   "description": "n8n workflow automation service",
-  "image": "n8nio/n8n:latest",
   "commands": {
     "install": [
       "docker pull n8nio/n8n:latest"

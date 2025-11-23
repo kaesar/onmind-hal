@@ -1,7 +1,6 @@
 {
   "name": "caddy-service",
   "description": "Caddy reverse proxy service",
-  "image": "caddy:latest",
   "commands": {
     "install": [
       "docker pull caddy:latest"

@@ -83,8 +83,6 @@ export class CLIInterface {
       }
     }
     console.log('═'.repeat(50));
-    console.log('\n⚠️  Note: This script requires sudo privileges for installation.');
-    console.log('   Please run first: sudo -v\n');
   }
 
   /**
