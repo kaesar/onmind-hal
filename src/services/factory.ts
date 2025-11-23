@@ -21,7 +21,7 @@ import { LocalStackService } from './optional/localstack.js';
 import { OneDevService } from './optional/onedev.js';
 import { RegistryService } from './optional/registry.js';
 import { VaultService } from './optional/vault.js';
-import { PalmrService } from './optional/palmr.js';
+import { PsiTransferService } from './optional/psitransfer.js';
 import { ExcalidrawService } from './optional/excalidraw.js';
 import { OutlineService } from './optional/outline.js';
 import { KestraService } from './optional/kestra.js';
@@ -102,8 +102,8 @@ export class ServiceFactory {
       case ServiceType.VAULT:
         service = new VaultService(config, this.templateEngine);
         break;
-      case ServiceType.PALMR:
-        service = new PalmrService(config, this.templateEngine);
+      case ServiceType.PSITRANSFER:
+        service = new PsiTransferService(config, this.templateEngine);
         break;
       case ServiceType.EXCALIDRAW:
         service = new ExcalidrawService(config, this.templateEngine);
@@ -260,7 +260,7 @@ export class ServiceFactory {
       ServiceType.KESTRA,
       ServiceType.REGISTRY,
       ServiceType.VAULT,
-      ServiceType.PALMR,
+      ServiceType.PSITRANSFER,
       ServiceType.EXCALIDRAW,
       ServiceType.OUTLINE,
       ServiceType.GRIST,
@@ -332,7 +332,7 @@ export class ServiceFactory {
       'OneDev': ServiceType.ONEDEV,
       'Registry': ServiceType.REGISTRY,
       'Vault': ServiceType.VAULT,
-      'Palmr': ServiceType.PALMR,
+      'PsiTransfer': ServiceType.PSITRANSFER,
       'Excalidraw': ServiceType.EXCALIDRAW,
       'Outline': ServiceType.OUTLINE,
       'Kestra': ServiceType.KESTRA,

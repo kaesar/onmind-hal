@@ -181,9 +181,9 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Vault'
     },
     {
-      name: 'Palmr - File sharing platform (like WeTransfer)',
-      value: ServiceType.PALMR,
-      short: 'Palmr'
+      name: 'PsiTransfer - File sharing platform (like WeTransfer)',
+      value: ServiceType.PSITRANSFER,
+      short: 'PsiTransfer'
     },
     {
       name: 'Excalidraw - Virtual whiteboard for sketching',

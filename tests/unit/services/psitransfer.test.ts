@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
-import { PalmrService } from '../../../src/services/optional/palmr.js';
+import { PsiTransferService } from '../../../src/services/optional/psitransfer.js';
 import { ServiceType, DistributionType, HomelabConfig } from '../../../src/core/types.js';
 import { TemplateEngine } from '../../../src/templates/engine.js';
 
-describe('PalmrService', () => {
-  let service: PalmrService;
+describe('PsiTransferService', () => {
+  let service: PsiTransferService;
   let mockConfig: HomelabConfig;
   let mockTemplateEngine: TemplateEngine;
 
@@ -13,25 +13,25 @@ describe('PalmrService', () => {
       ip: '192.168.1.100',
       domain: 'homelab.local',
       networkName: 'homelab-network',
-      selectedServices: [ServiceType.PALMR],
+      selectedServices: [ServiceType.PSITRANSFER],
       distribution: DistributionType.UBUNTU
     };
 
     mockTemplateEngine = new TemplateEngine();
-    service = new PalmrService(mockConfig, mockTemplateEngine);
+    service = new PsiTransferService(mockConfig, mockTemplateEngine);
   });
 
   describe('constructor', () => {
-    it('should create Palmr service with correct properties', () => {
-      expect(service.name).toBe('Palmr');
-      expect(service.type).toBe(ServiceType.PALMR);
+    it('should create PsiTransfer service with correct properties', () => {
+      expect(service.name).toBe('PsiTransfer');
+      expect(service.type).toBe(ServiceType.PSITRANSFER);
       expect(service.isCore).toBe(false);
       expect(service.dependencies).toEqual([]);
     });
   });
 
   describe('getAccessUrl', () => {
-    it('should return correct Palmr URL', () => {
+    it('should return correct PsiTransfer URL', () => {
       const expectedUrl = 'http://192.168.1.100:3000';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });

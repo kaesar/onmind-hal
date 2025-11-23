@@ -109,7 +109,7 @@ export class CLIInterface {
       kestra: 'Kestra (Orchestration)',
       registry: 'Registry (Docker Registry)',
       vault: 'Vault (Secrets Management)',
-      palmr: 'Palmr (File Sharing)',
+      psitransfer: 'PsiTransfer (File Sharing)',
       excalidraw: 'Excalidraw (Whiteboard)',
       outline: 'Outline (Wiki)',
       grist: 'Grist (Spreadsheet)',

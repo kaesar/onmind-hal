@@ -28,7 +28,7 @@ export enum ServiceType {
   KESTRA = 'kestra',
   REGISTRY = 'registry',
   VAULT = 'vault',
-  PALMR = 'palmr',
+  PSITRANSFER = 'psitransfer',
   EXCALIDRAW = 'excalidraw',
   OUTLINE = 'outline',
   GRIST = 'grist',

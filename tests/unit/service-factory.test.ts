@@ -105,7 +105,7 @@ describe('ServiceFactory', () => {
       ServiceType.KESTRA,
       ServiceType.REGISTRY,
       ServiceType.VAULT,
-      ServiceType.PALMR,
+      ServiceType.PSITRANSFER,
       ServiceType.EXCALIDRAW,
       ServiceType.OUTLINE,
       ServiceType.GRIST,

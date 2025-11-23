@@ -3,13 +3,13 @@ import { TemplateEngine } from '../../templates/engine.js';
 import { BaseService } from '../base.js';
 
 /**
- * Palmr - File sharing like WeTransfer
+ * PsiTransfer - File sharing like WeTransfer
  */
-export class PalmrService extends BaseService {
+export class PsiTransferService extends BaseService {
   constructor(config: HomelabConfig, templateEngine: TemplateEngine) {
     super(
-      'Palmr',
-      ServiceType.PALMR,
+      'PsiTransfer',
+      ServiceType.PSITRANSFER,
       false,
       [],
       config,
@@ -18,7 +18,7 @@ export class PalmrService extends BaseService {
   }
 
   protected async generateConfigFiles(): Promise<void> {
-    console.log('Palmr uses environment variable configuration');
+    console.log('PsiTransfer uses environment variable configuration');
   }
 
   getAccessUrl(): string {

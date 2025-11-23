@@ -1,0 +1,16 @@
+{
+  "name": "PsiTransfer",
+  "description": "File sharing platform like WeTransfer",
+  "commands": {
+    "install": [
+      "docker pull psitrax/psitransfer:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p ~/wsdata/psitransfer/data"
+    ],
+    "run": "docker run -d --name psitransfer --network {{NETWORK_NAME}} -p 3000:3000 -v ~/wsdata/psitransfer/data:/data -e PSITRANSFER_UPLOAD_DIR=/data psitrax/psitransfer:latest"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}
