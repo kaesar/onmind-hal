@@ -63,7 +63,7 @@ export class CLIInterface {
         ['caddy', 'portainer', 'copyparty'].includes(s)
       );
       const optionalServices = this.config.selectedServices.filter(s =>
-        ['n8n', 'postgresql', 'redis', 'mongodb', 'mariadb', 'minio', 'ollama'].includes(s)
+        !['caddy', 'portainer', 'copyparty'].includes(s)
       );
 
       console.log('   Core services:');
@@ -102,6 +102,17 @@ export class CLIInterface {
       mariadb: 'MariaDB (Database)',
       minio: 'Minio (Object Storage)',
       ollama: 'Ollama (LLM Server)',
+      kafka: 'Kafka (Streaming Platform)',
+      authelia: 'Authelia (Authentication)',
+      localstack: 'LocalStack (AWS Local)',
+      onedev: 'OneDev (Git Server)',
+      kestra: 'Kestra (Orchestration)',
+      registry: 'Registry (Docker Registry)',
+      vault: 'Vault (Secrets Management)',
+      palmr: 'Palmr (File Sharing)',
+      excalidraw: 'Excalidraw (Whiteboard)',
+      outline: 'Outline (Wiki)',
+      grist: 'Grist (Spreadsheet)',
     };
     return serviceNames[service] || service;
   }

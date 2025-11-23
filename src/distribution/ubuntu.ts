@@ -56,6 +56,18 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
    */
   async installDocker(): Promise<void> {
     try {
+      // Check if Docker is already installed
+      const dockerInstalled = await this.commandExists('docker');
+      if (dockerInstalled) {
+        console.log('✅ Docker is already installed, skipping installation...');
+        // Ensure Docker service is running
+        await $`sudo systemctl enable docker`;
+        await $`sudo systemctl start docker`;
+        return;
+      }
+
+      console.log('📦 Installing Docker on Ubuntu...');
+      
       // Update package index
       await $`sudo apt update`;
 

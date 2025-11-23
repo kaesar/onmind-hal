@@ -54,11 +54,23 @@ export class ArchStrategy extends BaseDistributionStrategy {
    */
   async installDocker(): Promise<void> {
     try {
+      // Check if Docker is already installed
+      const dockerInstalled = await this.commandExists('docker');
+      if (dockerInstalled) {
+        console.log('✅ Docker is already installed, skipping installation...');
+        // Ensure Docker service is running
+        await $`sudo systemctl enable docker`;
+        await $`sudo systemctl start docker`;
+        return;
+      }
+
+      console.log('📦 Installing Docker on Arch Linux...');
+      
       // Update package database
       await $`sudo pacman -Syu --noconfirm`;
 
-      // Install Docker and Docker Compose
-      await $`sudo pacman -S --noconfirm docker docker-compose`;
+      // Install Docker packages
+      await $`sudo pacman -S --noconfirm docker docker-buildx`;
 
       // Start and enable Docker service
       await $`sudo systemctl enable docker`;
