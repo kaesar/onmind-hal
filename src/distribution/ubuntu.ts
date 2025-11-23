@@ -153,7 +153,7 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
       await $`sudo ufw --force enable`;
 
       // Show status for verification
-      await $`sudo ufw status verbose`;
+      await $`sudo ufw status`;  // +verbose
 
     } catch (error) {
       throw new Error(`Failed to configure UFW firewall on Ubuntu: ${error}`);
