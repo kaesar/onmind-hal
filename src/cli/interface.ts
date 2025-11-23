@@ -107,6 +107,7 @@ export class CLIInterface {
       kestra: 'Kestra (Orchestration)',
       registry: 'Registry (Docker Registry)',
       vault: 'Vault (Secrets Management)',
+      php: 'FrankenPHP (PHP + Caddy)',
       psitransfer: 'PsiTransfer (File Sharing)',
       excalidraw: 'Excalidraw (Whiteboard)',
       outline: 'Outline (Wiki)',

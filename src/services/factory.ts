@@ -22,6 +22,7 @@ import { OneDevService } from './optional/onedev.js';
 import { RegistryService } from './optional/registry.js';
 import { VaultService } from './optional/vault.js';
 import { PsiTransferService } from './optional/psitransfer.js';
+import { PHPService } from './optional/php.js';
 import { ExcalidrawService } from './optional/excalidraw.js';
 import { OutlineService } from './optional/outline.js';
 import { KestraService } from './optional/kestra.js';
@@ -101,6 +102,9 @@ export class ServiceFactory {
         break;
       case ServiceType.VAULT:
         service = new VaultService(config, this.templateEngine);
+        break;
+      case ServiceType.PHP:
+        service = new PHPService(config, this.templateEngine);
         break;
       case ServiceType.PSITRANSFER:
         service = new PsiTransferService(config, this.templateEngine);
@@ -260,6 +264,7 @@ export class ServiceFactory {
       ServiceType.KESTRA,
       ServiceType.REGISTRY,
       ServiceType.VAULT,
+      ServiceType.PHP,
       ServiceType.PSITRANSFER,
       ServiceType.EXCALIDRAW,
       ServiceType.OUTLINE,
@@ -334,6 +339,7 @@ export class ServiceFactory {
       'OneDev': ServiceType.ONEDEV,
       'Registry': ServiceType.REGISTRY,
       'Vault': ServiceType.VAULT,
+      'FrankenPHP': ServiceType.PHP,
       'PsiTransfer': ServiceType.PSITRANSFER,
       'Excalidraw': ServiceType.EXCALIDRAW,
       'Outline': ServiceType.OUTLINE,

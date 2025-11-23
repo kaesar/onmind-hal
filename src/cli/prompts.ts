@@ -181,6 +181,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Vault'
     },
     {
+      name: 'FrankenPHP - Modern PHP app server (Caddy + PHP in one)',
+      value: ServiceType.PHP,
+      short: 'FrankenPHP'
+    },
+    {
       name: 'PsiTransfer - File sharing platform (like WeTransfer)',
       value: ServiceType.PSITRANSFER,
       short: 'PsiTransfer'
