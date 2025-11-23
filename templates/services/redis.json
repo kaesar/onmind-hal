@@ -7,7 +7,7 @@
       "docker pull redis:7-alpine"
     ],
     "setup": [
-      "mkdir -p /opt/redis/data",
+      "mkdir -p ~/wsdata/redis/data",
       "docker volume create redis_data"
     ],
     "run": "docker run -d --name redis --network {{networkName}} -p 6379:6379 -v redis_data:/data redis:7-alpine redis-server --appendonly yes"

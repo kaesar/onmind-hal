@@ -7,7 +7,7 @@
       "docker pull mariadb:10-alpine"
     ],
     "setup": [
-      "mkdir -p /opt/mariadb/data",
+      "mkdir -p ~/wsdata/mariadb/data",
       "docker volume create mariadb_data"
     ],
     "run": "docker run -d --name mariadb --network {{networkName}} -p 3306:3306 -e MARIADB_DATABASE=homelab -e MARIADB_USER=homelab -e MARIADB_PASSWORD={{databasePassword}} -v mariadb_data:/var/lib/mysql mariadb:10-alpine"

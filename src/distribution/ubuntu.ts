@@ -69,10 +69,10 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
       console.log('📦 Installing Docker on Ubuntu...');
       
       // Update package index
-      await $`sudo apt update`;
+      await $`sudo apt update`.quiet();
 
       // Install prerequisites
-      await $`sudo apt install -y ca-certificates curl gnupg lsb-release`;
+      await $`sudo apt install -y ca-certificates curl gnupg lsb-release`.quiet();
 
       // Add Docker's official GPG key
       await $`sudo mkdir -p /etc/apt/keyrings`;
@@ -85,10 +85,10 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
       await $`echo "deb [arch=${arch.trim()} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu ${codename.trim()} stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null`;
 
       // Update package index with Docker repository
-      await $`sudo apt update`;
+      await $`sudo apt update`.quiet();
 
       // Install Docker Engine
-      await $`sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`;
+      await $`sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`.quiet();
 
       // Start and enable Docker service
       await $`sudo systemctl start docker`;
@@ -113,11 +113,11 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
 
     try {
       // Update package index first
-      await $`sudo apt update`;
+      await $`sudo apt update`.quiet();
 
       // Install packages
       const packageList = packages.join(' ');
-      await $`sudo apt install -y ${packageList}`;
+      await $`sudo apt install -y ${packageList}`.quiet();
 
     } catch (error) {
       throw new Error(`Failed to install packages on Ubuntu: ${error}`);
@@ -130,8 +130,8 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
   async configureFirewall(): Promise<void> {
     try {
       // Install UFW if not already installed
-      await $`sudo apt update`;
-      await $`sudo apt install -y ufw`;
+      await $`sudo apt update`.quiet();
+      await $`sudo apt install -y ufw`.quiet();
 
       // Reset UFW to default settings
       await $`sudo ufw --force reset`;

@@ -7,9 +7,9 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/palmr/data"
+      "mkdir -p ~/wsdata/palmr/data"
     ],
-    "run": "docker run -d --name palmr --network {{NETWORK_NAME}} -p 3000:3000 -v /opt/homelab/palmr/data:/app/data -e NODE_ENV=production ghcr.io/kyantech/palmr:latest"
+    "run": "docker run -d --name palmr --network {{NETWORK_NAME}} -p 3000:3000 -v ~/wsdata/palmr/data:/app/data -e NODE_ENV=production ghcr.io/kyantech/palmr:latest"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

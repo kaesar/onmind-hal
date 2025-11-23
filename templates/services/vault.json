@@ -7,10 +7,10 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/vault/data",
-      "mkdir -p /opt/homelab/vault/config"
+      "mkdir -p ~/wsdata/vault/data",
+      "mkdir -p ~/wsdata/vault/config"
     ],
-    "run": "docker run -d --name vault --network {{NETWORK_NAME}} -p 8200:8200 -v /opt/homelab/vault/data:/vault/data -v /opt/homelab/vault/config:/vault/config -e VAULT_DEV_ROOT_TOKEN_ID=homelab-root-token -e VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200 --cap-add=IPC_LOCK hashicorp/vault:latest server -dev"
+    "run": "docker run -d --name vault --network {{NETWORK_NAME}} -p 8200:8200 -v ~/wsdata/vault/data:/vault/data -v ~/wsdata/vault/config:/vault/config -e VAULT_DEV_ROOT_TOKEN_ID=homelab-root-token -e VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200 --cap-add=IPC_LOCK hashicorp/vault:latest server -dev"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

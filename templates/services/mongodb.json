@@ -7,9 +7,9 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/mongodb/data"
+      "mkdir -p ~/wsdata/mongodb/data"
     ],
-    "run": "docker run -d --name mongodb --network {{NETWORK_NAME}} -p 27017:27017 -v /opt/homelab/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=homelab123 mongo:latest"
+    "run": "docker run -d --name mongodb --network {{NETWORK_NAME}} -p 27017:27017 -v ~/wsdata/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=homelab123 mongo:latest"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": [],

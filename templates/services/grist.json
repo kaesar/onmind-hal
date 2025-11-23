@@ -7,9 +7,9 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/grist/data"
+      "mkdir -p ~/wsdata/grist/data"
     ],
-    "run": "docker run -d --name grist --network {{NETWORK_NAME}} -p 8484:8484 -v /opt/homelab/grist/data:/persist -e GRIST_SINGLE_ORG=homelab gristlabs/grist:latest"
+    "run": "docker run -d --name grist --network {{NETWORK_NAME}} -p 8484:8484 -v ~/wsdata/grist/data:/persist -e GRIST_SINGLE_ORG=homelab gristlabs/grist:latest"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

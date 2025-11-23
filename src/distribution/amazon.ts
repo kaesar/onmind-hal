@@ -83,10 +83,10 @@ export class AmazonLinuxStrategy extends BaseDistributionStrategy {
       const packageManager = await this.getPreferredPackageManager();
 
       // Update package database
-      await $`sudo ${packageManager} update -y`;
+      await $`sudo ${packageManager} update -y`.quiet();
 
       // Install Docker
-      await $`sudo ${packageManager} install -y docker`;
+      await $`sudo ${packageManager} install -y docker`.quiet();
 
       // Start and enable Docker service
       await $`sudo systemctl enable docker`;
@@ -116,11 +116,11 @@ export class AmazonLinuxStrategy extends BaseDistributionStrategy {
       const packageManager = await this.getPreferredPackageManager();
 
       // Update package database first
-      await $`sudo ${packageManager} update -y`;
+      await $`sudo ${packageManager} update -y`.quiet();
 
       // Install packages
       const packageList = packages.join(' ');
-      await $`sudo ${packageManager} install -y ${packageList}`;
+      await $`sudo ${packageManager} install -y ${packageList}`.quiet();
 
     } catch (error) {
       throw new Error(`Failed to install packages on Amazon Linux: ${error}`);
@@ -136,8 +136,8 @@ export class AmazonLinuxStrategy extends BaseDistributionStrategy {
       const packageManager = await this.getPreferredPackageManager();
 
       // Install firewalld if not already installed
-      await $`sudo ${packageManager} update -y`;
-      await $`sudo ${packageManager} install -y firewalld`;
+      await $`sudo ${packageManager} update -y`.quiet();
+      await $`sudo ${packageManager} install -y firewalld`.quiet();
 
       // Start and enable firewalld service
       await $`sudo systemctl enable firewalld`;

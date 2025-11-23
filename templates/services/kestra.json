@@ -7,9 +7,9 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/kestra/data"
+      "mkdir -p ~/wsdata/kestra/data"
     ],
-    "run": "docker run -d --name kestra --network {{NETWORK_NAME}} -p 8080:8080 -v /opt/homelab/kestra/data:/app/storage -v /var/run/docker.sock:/var/run/docker.sock kestra/kestra:latest server standalone"
+    "run": "docker run -d --name kestra --network {{NETWORK_NAME}} -p 8080:8080 -v ~/wsdata/kestra/data:/app/storage -v /var/run/docker.sock:/var/run/docker.sock kestra/kestra:latest server standalone"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

@@ -7,9 +7,9 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/minio/data"
+      "mkdir -p ~/wsdata/minio/data"
     ],
-    "run": "docker run -d --name minio --network {{NETWORK_NAME}} -p 9001:9001 -p 9090:9090 -v /opt/homelab/minio/data:/data -e MINIO_ROOT_USER=admin -e MINIO_ROOT_PASSWORD=homelab123 minio/minio server /data --console-address \":9001\""
+    "run": "docker run -d --name minio --network {{NETWORK_NAME}} -p 9001:9001 -p 9090:9090 -v ~/wsdata/minio/data:/data -e MINIO_ROOT_USER=admin -e MINIO_ROOT_PASSWORD=homelab123 minio/minio server /data --console-address \":9001\""
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": [],

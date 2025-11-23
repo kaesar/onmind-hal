@@ -67,10 +67,10 @@ export class ArchStrategy extends BaseDistributionStrategy {
       console.log('📦 Installing Docker on Arch Linux...');
       
       // Update package database
-      await $`sudo pacman -Syu --noconfirm`;
+      await $`sudo pacman -Syu --noconfirm`.quiet();
 
       // Install Docker packages
-      await $`sudo pacman -S --noconfirm docker docker-buildx`;
+      await $`sudo pacman -S --noconfirm docker docker-buildx`.quiet();
 
       // Start and enable Docker service
       await $`sudo systemctl enable docker`;
@@ -109,11 +109,11 @@ export class ArchStrategy extends BaseDistributionStrategy {
 
     try {
       // Update package database first
-      await $`sudo pacman -Sy --noconfirm`;
+      await $`sudo pacman -Syu --noconfirm`.quiet();
 
       // Install packages
       const packageList = packages.join(' ');
-      await $`sudo pacman -S --noconfirm ${packageList}`;
+      await $`sudo pacman -S --noconfirm ${packageList}`.quiet();
 
     } catch (error) {
       throw new Error(`Failed to install packages on Arch Linux: ${error}`);
@@ -126,8 +126,8 @@ export class ArchStrategy extends BaseDistributionStrategy {
   async configureFirewall(): Promise<void> {
     try {
       // Update package database and install UFW
-      await $`sudo pacman -Sy --noconfirm`;
-      await $`sudo pacman -S --noconfirm ufw`;
+      await $`sudo pacman -Syu --noconfirm`.quiet();
+      await $`sudo pacman -S --noconfirm ufw`.quiet();
 
       // Reset UFW to default settings
       await $`sudo ufw --force reset`;

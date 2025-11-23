@@ -73,7 +73,8 @@ export abstract class BaseService implements Service {
         console.log(`Executing: ${interpolatedCommand}`);
         
         // Use sh -c to properly handle complex commands with pipes, redirects, etc.
-        const result = await $`sh -c ${interpolatedCommand}`;
+        // Suppress stdout to avoid visual clutter from package managers
+        const result = await $`sh -c ${interpolatedCommand}`.quiet();
         if (result.exitCode !== 0) {
           throw new Error(`Command failed with exit code ${result.exitCode}: ${result.stderr}`);
         }

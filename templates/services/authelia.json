@@ -7,10 +7,10 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/authelia/config",
-      "mkdir -p /opt/homelab/authelia/data"
+      "mkdir -p ~/wsdata/authelia/config",
+      "mkdir -p ~/wsdata/authelia/data"
     ],
-    "run": "docker run -d --name authelia --network {{NETWORK_NAME}} -p 9091:9091 -v /opt/homelab/authelia/config:/config -v /opt/homelab/authelia/data:/data -e AUTHELIA_JWT_SECRET=homelab-jwt-secret-change-in-production -e AUTHELIA_SESSION_SECRET=homelab-session-secret-change-in-production -e AUTHELIA_STORAGE_ENCRYPTION_KEY=homelab-encryption-key-32chars -e AUTHELIA_SESSION_REDIS_HOST=redis -e AUTHELIA_SESSION_REDIS_PORT=6379 authelia/authelia:latest"
+    "run": "docker run -d --name authelia --network {{NETWORK_NAME}} -p 9091:9091 -v ~/wsdata/authelia/config:/config -v ~/wsdata/authelia/data:/data -e AUTHELIA_JWT_SECRET=homelab-jwt-secret-change-in-production -e AUTHELIA_SESSION_SECRET=homelab-session-secret-change-in-production -e AUTHELIA_STORAGE_ENCRYPTION_KEY=homelab-encryption-key-32chars -e AUTHELIA_SESSION_REDIS_HOST=redis -e AUTHELIA_SESSION_REDIS_PORT=6379 authelia/authelia:latest"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": ["redis"]
