@@ -25,8 +25,11 @@ export class CaddyService extends BaseService {
    */
   protected async generateConfigFiles(): Promise<void> {
     try {
+      const homeDir = process.env.HOME || process.env.USERPROFILE || '~';
+      const configDir = join(homeDir, 'wsconf');
+      
       // Create config directory
-      await mkdir('/opt/caddy/config', { recursive: true });
+      await mkdir(configDir, { recursive: true });
 
       // Load Caddyfile template
       const caddyTemplate = await this.templateEngine.load('config/caddyfile');
@@ -42,7 +45,7 @@ export class CaddyService extends BaseService {
       const caddyfileContent = this.templateEngine.render(caddyTemplate, caddyContext);
       
       // Write Caddyfile
-      const caddyfilePath = '/opt/caddy/config/Caddyfile';
+      const caddyfilePath = join(configDir, 'Caddyfile');
       await writeFile(caddyfilePath, caddyfileContent);
       
       console.log(`Generated Caddyfile at ${caddyfilePath}`);
