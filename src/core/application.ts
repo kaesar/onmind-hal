@@ -13,6 +13,7 @@ import { UbuntuStrategy } from '../distribution/ubuntu.js';
 import { ArchStrategy } from '../distribution/arch.js';
 import { AmazonLinuxStrategy } from '../distribution/amazon.js';
 import { Logger } from '../utils/logger.js';
+import { $ } from 'bun';
 
 /**
  * Main application class that coordinates the entire HomeLab installation workflow
@@ -166,6 +167,27 @@ export class HomelabApplication {
   }
 
   /**
+   * Create Docker network for HomeLab services
+   */
+  private async createDockerNetwork(): Promise<void> {
+    if (!this.config) {
+      throw new HomelabError('Configuration is not available', 'CONFIG_NOT_AVAILABLE');
+    }
+
+    try {
+      this.logger.info(`🌐 Creating Docker network: ${this.config.networkName}...`);
+      
+      await $`sh -c "docker network create ${this.config.networkName} || true"`;
+      
+      this.logger.info('✅ Docker network ready');
+
+    } catch (error) {
+      this.logger.error('❌ Docker network creation failed');
+      throw new ServiceInstallationError('Docker Network', error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  /**
    * Install and configure all selected services
    */
   private async installServices(): Promise<void> {
@@ -175,6 +197,9 @@ export class HomelabApplication {
 
     try {
       this.logger.info('📦 Installing and configuring services...');
+
+      // Create Docker network first
+      await this.createDockerNetwork();
 
       // Create service instances
       const services = this.serviceFactory.createServices(this.config);
