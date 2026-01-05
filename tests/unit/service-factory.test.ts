@@ -91,24 +91,29 @@ describe('ServiceFactory', () => {
   it('should return correct optional services', () => {
     const optionalServices = factory.getOptionalServices();
     expect(optionalServices).toEqual([
-      ServiceType.N8N,
       ServiceType.POSTGRESQL,
       ServiceType.REDIS,
       ServiceType.MONGODB,
       ServiceType.MARIADB,
       ServiceType.MINIO,
-      ServiceType.OLLAMA,
       ServiceType.KAFKA,
+      ServiceType.RABBITMQ,
+      ServiceType.OLLAMA,
+      ServiceType.N8N,
+      ServiceType.KESTRA,
       ServiceType.AUTHELIA,
       ServiceType.LOCALSTACK,
       ServiceType.ONEDEV,
-      ServiceType.KESTRA,
+      ServiceType.SONARQUBE,
+      ServiceType.TRIVY,
       ServiceType.REGISTRY,
       ServiceType.VAULT,
+      ServiceType.PHP,
       ServiceType.PSITRANSFER,
       ServiceType.EXCALIDRAW,
       ServiceType.OUTLINE,
       ServiceType.GRIST,
+      ServiceType.NOCODB,
     ]);
   });
 

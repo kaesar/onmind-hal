@@ -416,7 +416,7 @@ describe('HomelabApplication Integration Tests', () => {
       expect(mockDistributionStrategy.configureFirewall).toHaveBeenCalled();
       
       // Verify logging
-      expect(mockLogger.info).toHaveBeenCalledWith('🔥 Configuring firewall...');
+      expect(mockLogger.info).toHaveBeenCalledWith('🔥 Configuring firewall...\n');
       expect(mockLogger.info).toHaveBeenCalledWith('✅ Firewall configuration completed');
     });
 

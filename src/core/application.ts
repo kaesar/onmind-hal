@@ -154,7 +154,7 @@ export class HomelabApplication {
     }
 
     try {
-      this.logger.info('🔥 Configuring firewall...');
+      this.logger.info('🔥 Configuring firewall...\n');
       
       await this.distributionStrategy.configureFirewall();
       

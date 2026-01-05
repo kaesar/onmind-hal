@@ -16,9 +16,12 @@ import { MariaDBService } from './optional/mariadb.js';
 import { MinioService } from './optional/minio.js';
 import { OllamaService } from './optional/ollama.js';
 import { KafkaService } from './optional/kafka.js';
+import { RabbitMQService } from './optional/rabbitmq.js';
 import { AutheliaService } from './optional/authelia.js';
 import { LocalStackService } from './optional/localstack.js';
 import { OneDevService } from './optional/onedev.js';
+import { SonarQubeService } from './optional/sonarqube.js';
+import { TrivyService } from './optional/trivy.js';
 import { RegistryService } from './optional/registry.js';
 import { VaultService } from './optional/vault.js';
 import { PsiTransferService } from './optional/psitransfer.js';
@@ -27,6 +30,7 @@ import { ExcalidrawService } from './optional/excalidraw.js';
 import { OutlineService } from './optional/outline.js';
 import { KestraService } from './optional/kestra.js';
 import { GristService } from './optional/grist.js';
+import { NocoDBService } from './optional/nocodb.js';
 
 /**
  * Service factory for creating service instances based on configuration
@@ -88,6 +92,9 @@ export class ServiceFactory {
       case ServiceType.KAFKA:
         service = new KafkaService(config, this.templateEngine);
         break;
+      case ServiceType.RABBITMQ:
+        service = new RabbitMQService(config, this.templateEngine);
+        break;
       case ServiceType.AUTHELIA:
         service = new AutheliaService(config, this.templateEngine);
         break;
@@ -96,6 +103,12 @@ export class ServiceFactory {
         break;
       case ServiceType.ONEDEV:
         service = new OneDevService(config, this.templateEngine);
+        break;
+      case ServiceType.SONARQUBE:
+        service = new SonarQubeService(config, this.templateEngine);
+        break;
+      case ServiceType.TRIVY:
+        service = new TrivyService(config, this.templateEngine);
         break;
       case ServiceType.REGISTRY:
         service = new RegistryService(config, this.templateEngine);
@@ -120,6 +133,9 @@ export class ServiceFactory {
         break;
       case ServiceType.GRIST:
         service = new GristService(config, this.templateEngine);
+        break;
+      case ServiceType.NOCODB:
+        service = new NocoDBService(config, this.templateEngine);
         break;
       default:
         throw new ServiceInstallationError(
@@ -250,18 +266,21 @@ export class ServiceFactory {
    */
   getOptionalServices(): ServiceType[] {
     return [
-      ServiceType.N8N,
       ServiceType.POSTGRESQL,
       ServiceType.REDIS,
       ServiceType.MONGODB,
       ServiceType.MARIADB,
       ServiceType.MINIO,
-      ServiceType.OLLAMA,
       ServiceType.KAFKA,
+      ServiceType.RABBITMQ,
+      ServiceType.OLLAMA,
+      ServiceType.N8N,
+      ServiceType.KESTRA,
       ServiceType.AUTHELIA,
       ServiceType.LOCALSTACK,
       ServiceType.ONEDEV,
-      ServiceType.KESTRA,
+      ServiceType.SONARQUBE,
+      ServiceType.TRIVY,
       ServiceType.REGISTRY,
       ServiceType.VAULT,
       ServiceType.PHP,
@@ -269,6 +288,7 @@ export class ServiceFactory {
       ServiceType.EXCALIDRAW,
       ServiceType.OUTLINE,
       ServiceType.GRIST,
+      ServiceType.NOCODB,
     ];
   }
 
@@ -334,9 +354,12 @@ export class ServiceFactory {
       'Minio': ServiceType.MINIO,
       'Ollama': ServiceType.OLLAMA,
       'Kafka': ServiceType.KAFKA,
+      'RabbitMQ': ServiceType.RABBITMQ,
       'Authelia': ServiceType.AUTHELIA,
       'LocalStack': ServiceType.LOCALSTACK,
       'OneDev': ServiceType.ONEDEV,
+      'SonarQube': ServiceType.SONARQUBE,
+      'Trivy': ServiceType.TRIVY,
       'Registry': ServiceType.REGISTRY,
       'Vault': ServiceType.VAULT,
       'FrankenPHP': ServiceType.PHP,
@@ -345,6 +368,7 @@ export class ServiceFactory {
       'Outline': ServiceType.OUTLINE,
       'Kestra': ServiceType.KESTRA,
       'Grist': ServiceType.GRIST,
+      'NocoDB': ServiceType.NOCODB,
     };
 
     return serviceNameMap[serviceName];

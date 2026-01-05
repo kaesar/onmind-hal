@@ -14,18 +14,21 @@ export enum ServiceType {
   CADDY = 'caddy',
   PORTAINER = 'portainer',
   COPYPARTY = 'copyparty',
-  N8N = 'n8n',
-  POSTGRESQL = 'postgresql',
+  POSTGRESQL = 'postgresql', // (alternative to Oracle DB)
   REDIS = 'redis',
   MONGODB = 'mongodb',
   MARIADB = 'mariadb',
   MINIO = 'minio',
-  OLLAMA = 'ollama',
   KAFKA = 'kafka',
+  RABBITMQ = 'rabbitmq',
+  OLLAMA = 'ollama',
+  N8N = 'n8n',
+  KESTRA = 'kestra',
   AUTHELIA = 'authelia',
   LOCALSTACK = 'localstack',
   ONEDEV = 'onedev',
-  KESTRA = 'kestra',
+  SONARQUBE = 'sonarqube',
+  TRIVY = 'trivy',
   REGISTRY = 'registry',
   VAULT = 'vault',
   PHP = 'php',
@@ -33,6 +36,7 @@ export enum ServiceType {
   EXCALIDRAW = 'excalidraw',
   OUTLINE = 'outline',
   GRIST = 'grist',
+  NOCODB = 'nocodb',
 }
 
 // Configuration interface

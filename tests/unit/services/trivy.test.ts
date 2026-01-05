@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
-import { ExcalidrawService } from '../../../src/services/optional/excalidraw.js';
+import { TrivyService } from '../../../src/services/optional/trivy.js';
 import { ServiceType, DistributionType, HomelabConfig } from '../../../src/core/types.js';
 import { TemplateEngine } from '../../../src/templates/engine.js';
 
-describe('ExcalidrawService', () => {
-  let service: ExcalidrawService;
+describe('TrivyService', () => {
+  let service: TrivyService;
   let mockConfig: HomelabConfig;
   let mockTemplateEngine: TemplateEngine;
 
@@ -13,26 +13,26 @@ describe('ExcalidrawService', () => {
       ip: '192.168.1.100',
       domain: 'homelab.local',
       networkName: 'homelab-network',
-      selectedServices: [ServiceType.EXCALIDRAW],
+      selectedServices: [ServiceType.TRIVY],
       distribution: DistributionType.UBUNTU
     };
 
     mockTemplateEngine = new TemplateEngine();
-    service = new ExcalidrawService(mockConfig, mockTemplateEngine);
+    service = new TrivyService(mockConfig, mockTemplateEngine);
   });
 
   describe('constructor', () => {
-    it('should create Excalidraw service with correct properties', () => {
-      expect(service.name).toBe('Excalidraw');
-      expect(service.type).toBe(ServiceType.EXCALIDRAW);
+    it('should create Trivy service with correct properties', () => {
+      expect(service.name).toBe('Trivy');
+      expect(service.type).toBe(ServiceType.TRIVY);
       expect(service.isCore).toBe(false);
       expect(service.dependencies).toEqual([]);
     });
   });
 
   describe('getAccessUrl', () => {
-    it('should return correct Excalidraw URL', () => {
-      const expectedUrl = 'http://192.168.1.100:8082';
+    it('should return correct Trivy URL', () => {
+      const expectedUrl = 'http://192.168.1.100:8080';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

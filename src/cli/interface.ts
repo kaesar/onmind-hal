@@ -101,9 +101,12 @@ export class CLIInterface {
       minio: 'Minio (Object Storage)',
       ollama: 'Ollama (LLM Server)',
       kafka: 'Kafka (Streaming Platform)',
+      rabbitmq: 'RabbitMQ (Message Broker)',
       authelia: 'Authelia (Authentication)',
       localstack: 'LocalStack (AWS Local)',
       onedev: 'OneDev (Git Server)',
+      sonarqube: 'SonarQube (Code Quality)',
+      trivy: 'Trivy (Security Scanner)',
       kestra: 'Kestra (Orchestration)',
       registry: 'Registry (Docker Registry)',
       vault: 'Vault (Secrets Management)',
@@ -112,6 +115,7 @@ export class CLIInterface {
       excalidraw: 'Excalidraw (Whiteboard)',
       outline: 'Outline (Wiki)',
       grist: 'Grist (Spreadsheet)',
+      nocodb: 'NocoDB (Airtable Alternative)',
     };
     return serviceNames[service] || service;
   }

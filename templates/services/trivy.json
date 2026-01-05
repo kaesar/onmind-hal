@@ -1,0 +1,16 @@
+{
+  "name": "Trivy",
+  "description": "Container security scanner",
+  "commands": {
+    "install": [
+      "docker pull aquasec/trivy:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/trivy/cache"
+    ],
+    "run": "docker run -d --name trivy --network {{NETWORK_NAME}} -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock -v /opt/homelab/trivy/cache:/root/.cache aquasec/trivy:latest server --listen 0.0.0.0:8080"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}

@@ -3,13 +3,13 @@ import { TemplateEngine } from '../../templates/engine.js';
 import { BaseService } from '../base.js';
 
 /**
- * Excalidraw - Virtual whiteboard for sketching
+ * Trivy - Container security scanner
  */
-export class ExcalidrawService extends BaseService {
+export class TrivyService extends BaseService {
   constructor(config: HomelabConfig, templateEngine: TemplateEngine) {
     super(
-      'Excalidraw',
-      ServiceType.EXCALIDRAW,
+      'Trivy',
+      ServiceType.TRIVY,
       false,
       [],
       config,
@@ -18,10 +18,10 @@ export class ExcalidrawService extends BaseService {
   }
 
   protected async generateConfigFiles(): Promise<void> {
-    console.log('Excalidraw uses environment variable configuration');
+    console.log('Trivy uses environment variable configuration');
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:8082`;
+    return `http://${this.config.ip}:8080`;
   }
 }

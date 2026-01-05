@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
-import { ExcalidrawService } from '../../../src/services/optional/excalidraw.js';
+import { SonarQubeService } from '../../../src/services/optional/sonarqube.js';
 import { ServiceType, DistributionType, HomelabConfig } from '../../../src/core/types.js';
 import { TemplateEngine } from '../../../src/templates/engine.js';
 
-describe('ExcalidrawService', () => {
-  let service: ExcalidrawService;
+describe('SonarQubeService', () => {
+  let service: SonarQubeService;
   let mockConfig: HomelabConfig;
   let mockTemplateEngine: TemplateEngine;
 
@@ -13,26 +13,26 @@ describe('ExcalidrawService', () => {
       ip: '192.168.1.100',
       domain: 'homelab.local',
       networkName: 'homelab-network',
-      selectedServices: [ServiceType.EXCALIDRAW],
+      selectedServices: [ServiceType.SONARQUBE],
       distribution: DistributionType.UBUNTU
     };
 
     mockTemplateEngine = new TemplateEngine();
-    service = new ExcalidrawService(mockConfig, mockTemplateEngine);
+    service = new SonarQubeService(mockConfig, mockTemplateEngine);
   });
 
   describe('constructor', () => {
-    it('should create Excalidraw service with correct properties', () => {
-      expect(service.name).toBe('Excalidraw');
-      expect(service.type).toBe(ServiceType.EXCALIDRAW);
+    it('should create SonarQube service with correct properties', () => {
+      expect(service.name).toBe('SonarQube');
+      expect(service.type).toBe(ServiceType.SONARQUBE);
       expect(service.isCore).toBe(false);
       expect(service.dependencies).toEqual([]);
     });
   });
 
   describe('getAccessUrl', () => {
-    it('should return correct Excalidraw URL', () => {
-      const expectedUrl = 'http://192.168.1.100:8082';
+    it('should return correct SonarQube URL', () => {
+      const expectedUrl = 'http://192.168.1.100:9000';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

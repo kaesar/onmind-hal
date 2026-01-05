@@ -22,24 +22,29 @@
 
 ### Optional Services
 
-- **n8n**: Workflow automation platform
-- **PostgreSQL**: Relational database server
+- **PostgreSQL**: Relational database server (alternative to Oracle DB)
 - **Redis**: In-memory data store and cache
 - **MongoDB**: NoSQL database server
 - **MariaDB**: Relational database server
 - **Minio**: S3-compatible object storage
-- **Ollama**: Server for your LLM
 - **Kafka**: Distributed streaming platform (with KRaft)
+- **RabbitMQ**: Message broker for distributed systems
+- **Ollama**: Server for your LLM
+- **n8n**: Workflow automation platform
+- **Kestra**: Orchestration and scheduling platform
 - **Authelia**: Authentication and authorization server
 - **LocalStack**: Local AWS cloud stack for development
 - **OneDev**: Self-hosted Git server with CI/CD
-- **Kestra**: Orchestration and scheduling platform
+- **SonarQube CE**: Code quality and security analysis
+- **Trivy**: Container security scanner
 - **Registry**: Private Docker container registry
 - **Vault**: Secrets and encryption management (HashiCorp)
-- **Palmr**: File sharing platform (like WeTransfer)
+- **FrankenPHP**: Modern PHP app server (Caddy + PHP in one)
+- **PsiTransfer**: File sharing platform (like WeTransfer)
 - **Excalidraw**: Virtual whiteboard for sketching diagrams
 - **Outline**: Team knowledge base and wiki
 - **Grist**: Modern spreadsheet with relational database capabilities
+- **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
 
 > *Perhaps, I will consider includes in a future*: Vaultwarden (Bitwarden), Draw.io, RapiDoc, Zulip (or Rocket.Chat), Jitsi
 

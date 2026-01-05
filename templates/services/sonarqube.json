@@ -1,0 +1,18 @@
+{
+  "name": "SonarQube CE",
+  "description": "Code quality and security analysis platform",
+  "commands": {
+    "install": [
+      "docker pull sonarqube:community"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/sonarqube/data",
+      "mkdir -p /opt/homelab/sonarqube/extensions",
+      "mkdir -p /opt/homelab/sonarqube/logs"
+    ],
+    "run": "docker run -d --name sonarqube --network {{NETWORK_NAME}} -p 9000:9000 -v /opt/homelab/sonarqube/data:/opt/sonarqube/data -v /opt/homelab/sonarqube/extensions:/opt/sonarqube/extensions -v /opt/homelab/sonarqube/logs:/opt/sonarqube/logs -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true sonarqube:community"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}

@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
-import { ExcalidrawService } from '../../../src/services/optional/excalidraw.js';
+import { RabbitMQService } from '../../../src/services/optional/rabbitmq.js';
 import { ServiceType, DistributionType, HomelabConfig } from '../../../src/core/types.js';
 import { TemplateEngine } from '../../../src/templates/engine.js';
 
-describe('ExcalidrawService', () => {
-  let service: ExcalidrawService;
+describe('RabbitMQService', () => {
+  let service: RabbitMQService;
   let mockConfig: HomelabConfig;
   let mockTemplateEngine: TemplateEngine;
 
@@ -13,26 +13,26 @@ describe('ExcalidrawService', () => {
       ip: '192.168.1.100',
       domain: 'homelab.local',
       networkName: 'homelab-network',
-      selectedServices: [ServiceType.EXCALIDRAW],
+      selectedServices: [ServiceType.RABBITMQ],
       distribution: DistributionType.UBUNTU
     };
 
     mockTemplateEngine = new TemplateEngine();
-    service = new ExcalidrawService(mockConfig, mockTemplateEngine);
+    service = new RabbitMQService(mockConfig, mockTemplateEngine);
   });
 
   describe('constructor', () => {
-    it('should create Excalidraw service with correct properties', () => {
-      expect(service.name).toBe('Excalidraw');
-      expect(service.type).toBe(ServiceType.EXCALIDRAW);
+    it('should create RabbitMQ service with correct properties', () => {
+      expect(service.name).toBe('RabbitMQ');
+      expect(service.type).toBe(ServiceType.RABBITMQ);
       expect(service.isCore).toBe(false);
       expect(service.dependencies).toEqual([]);
     });
   });
 
   describe('getAccessUrl', () => {
-    it('should return correct Excalidraw URL', () => {
-      const expectedUrl = 'http://192.168.1.100:8082';
+    it('should return correct RabbitMQ management URL', () => {
+      const expectedUrl = 'http://192.168.1.100:15672';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

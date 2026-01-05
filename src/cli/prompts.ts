@@ -111,11 +111,6 @@ export async function promptForNetworkName(): Promise<string> {
 export async function promptForOptionalServices(): Promise<ServiceType[]> {
   const optionalServices = [
     {
-      name: 'n8n - Workflow automation platform',
-      value: ServiceType.N8N,
-      short: 'n8n'
-    },
-    {
       name: 'PostgreSQL - SQL database server (alternative to Oracle DB)',
       value: ServiceType.POSTGRESQL,
       short: 'PostgreSQL'
@@ -141,14 +136,29 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Minio'
     },
     {
+      name: 'Kafka - Distributed streaming platform (with KRaft)',
+      value: ServiceType.KAFKA,
+      short: 'Kafka'
+    },
+    {
+      name: 'RabbitMQ - Message broker for distributed systems',
+      value: ServiceType.RABBITMQ,
+      short: 'RabbitMQ'
+    },
+    {
       name: 'Ollama - Local LLM server',
       value: ServiceType.OLLAMA,
       short: 'Ollama'
     },
     {
-      name: 'Kafka - Distributed streaming platform (with KRaft)',
-      value: ServiceType.KAFKA,
-      short: 'Kafka'
+      name: 'n8n - Workflow automation platform',
+      value: ServiceType.N8N,
+      short: 'n8n'
+    },
+    {
+      name: 'Kestra - Orchestration and scheduling platform',
+      value: ServiceType.KESTRA,
+      short: 'Kestra'
     },
     {
       name: 'Authelia - Authentication and authorization server (requires Redis)',
@@ -166,9 +176,14 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'OneDev'
     },
     {
-      name: 'Kestra - Orchestration and scheduling platform',
-      value: ServiceType.KESTRA,
-      short: 'Kestra'
+      name: 'SonarQube CE - Code quality and security analysis',
+      value: ServiceType.SONARQUBE,
+      short: 'SonarQube'
+    },
+    {
+      name: 'Trivy - Container security scanner',
+      value: ServiceType.TRIVY,
+      short: 'Trivy'
     },
     {
       name: 'Registry - Private Docker container registry',
@@ -204,6 +219,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Grist - Modern spreadsheet with relational database',
       value: ServiceType.GRIST,
       short: 'Grist'
+    },
+    {
+      name: 'NocoDB - Open-source Airtable alternative',
+      value: ServiceType.NOCODB,
+      short: 'NocoDB'
     }
   ];
 

@@ -8,7 +8,7 @@
     "setup": [
       "docker network create {{NETWORK_NAME}} || true"
     ],
-    "run": "docker run -d --name excalidraw --network {{NETWORK_NAME}} -p 8081:80 excalidraw/excalidraw:latest"
+    "run": "docker run -d --name excalidraw --network {{NETWORK_NAME}} -p 8082:80 excalidraw/excalidraw:latest"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

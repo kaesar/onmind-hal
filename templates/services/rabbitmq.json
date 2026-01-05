@@ -1,0 +1,16 @@
+{
+  "name": "RabbitMQ",
+  "description": "Message broker for distributed systems",
+  "commands": {
+    "install": [
+      "docker pull rabbitmq:3-management"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/rabbitmq/data"
+    ],
+    "run": "docker run -d --name rabbitmq --network {{NETWORK_NAME}} -p 5672:5672 -p 15672:15672 -v /opt/homelab/rabbitmq/data:/var/lib/rabbitmq -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=homelab123 rabbitmq:3-management"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}
