@@ -8,29 +8,36 @@ import { PortainerService } from './core/portainer.js';
 import { CopypartyService } from './core/copyparty.js';
 
 // Optional services
-import { N8nService } from './optional/n8n.js';
+import { CockpitService } from './optional/cockpit.js';
 import { PostgreSQLService } from './optional/postgresql.js';
 import { RedisService } from './optional/redis.js';
 import { MongoDBService } from './optional/mongodb.js';
 import { MariaDBService } from './optional/mariadb.js';
 import { MinioService } from './optional/minio.js';
-import { OllamaService } from './optional/ollama.js';
 import { KafkaService } from './optional/kafka.js';
 import { RabbitMQService } from './optional/rabbitmq.js';
+import { OllamaService } from './optional/ollama.js';
+import { N8nService } from './optional/n8n.js';
+import { KestraService } from './optional/kestra.js';
 import { AutheliaService } from './optional/authelia.js';
 import { LocalStackService } from './optional/localstack.js';
 import { OneDevService } from './optional/onedev.js';
 import { SonarQubeService } from './optional/sonarqube.js';
 import { TrivyService } from './optional/trivy.js';
+import { RapiDocService } from './optional/rapidoc.js';
+import { GrafanaService } from './optional/grafana.js';
+import { LokiService } from './optional/loki.js';
+import { FluentBitService } from './optional/fluentbit.js';
 import { RegistryService } from './optional/registry.js';
+import { NexusService } from './optional/nexus.js';
 import { VaultService } from './optional/vault.js';
 import { PsiTransferService } from './optional/psitransfer.js';
-import { PHPService } from './optional/php.js';
 import { ExcalidrawService } from './optional/excalidraw.js';
+import { KrokiService } from './optional/kroki.js';
 import { OutlineService } from './optional/outline.js';
-import { KestraService } from './optional/kestra.js';
 import { GristService } from './optional/grist.js';
 import { NocoDBService } from './optional/nocodb.js';
+import { MailserverService } from './optional/mailserver.js';
 
 /**
  * Service factory for creating service instances based on configuration
@@ -68,6 +75,36 @@ export class ServiceFactory {
       case ServiceType.COPYPARTY:
         service = new CopypartyService(config, this.templateEngine);
         break;
+      case ServiceType.COPYPARTY:
+        service = new CopypartyService(config, this.templateEngine);
+        break;
+      case ServiceType.COCKPIT:
+        service = new CockpitService(config, this.templateEngine);
+        break;
+      case ServiceType.POSTGRESQL:
+        service = new PostgreSQLService(config, this.templateEngine);
+        break;
+      case ServiceType.REDIS:
+        service = new RedisService(config, this.templateEngine);
+        break;
+      case ServiceType.MONGODB:
+        service = new MongoDBService(config, this.templateEngine);
+        break;
+      case ServiceType.MARIADB:
+        service = new MariaDBService(config, this.templateEngine);
+        break;
+      case ServiceType.MINIO:
+        service = new MinioService(config, this.templateEngine);
+        break;
+      case ServiceType.KAFKA:
+        service = new KafkaService(config, this.templateEngine);
+        break;
+      case ServiceType.RABBITMQ:
+        service = new RabbitMQService(config, this.templateEngine);
+        break;
+      case ServiceType.OLLAMA:
+        service = new OllamaService(config, this.templateEngine);
+        break;
       case ServiceType.N8N:
         service = new N8nService(config, this.templateEngine);
         break;
@@ -95,6 +132,15 @@ export class ServiceFactory {
       case ServiceType.RABBITMQ:
         service = new RabbitMQService(config, this.templateEngine);
         break;
+      case ServiceType.COCKPIT:
+        service = new CockpitService(config, this.templateEngine);
+        break;
+      case ServiceType.N8N:
+        service = new N8nService(config, this.templateEngine);
+        break;
+      case ServiceType.KESTRA:
+        service = new KestraService(config, this.templateEngine);
+        break;
       case ServiceType.AUTHELIA:
         service = new AutheliaService(config, this.templateEngine);
         break;
@@ -110,14 +156,26 @@ export class ServiceFactory {
       case ServiceType.TRIVY:
         service = new TrivyService(config, this.templateEngine);
         break;
+      case ServiceType.RAPIDOC:
+        service = new RapiDocService(config, this.templateEngine);
+        break;
+      case ServiceType.GRAFANA:
+        service = new GrafanaService(config, this.templateEngine);
+        break;
+      case ServiceType.LOKI:
+        service = new LokiService(config, this.templateEngine);
+        break;
+      case ServiceType.FLUENTBIT:
+        service = new FluentBitService(config, this.templateEngine);
+        break;
       case ServiceType.REGISTRY:
         service = new RegistryService(config, this.templateEngine);
         break;
+      case ServiceType.NEXUS:
+        service = new NexusService(config, this.templateEngine);
+        break;
       case ServiceType.VAULT:
         service = new VaultService(config, this.templateEngine);
-        break;
-      case ServiceType.PHP:
-        service = new PHPService(config, this.templateEngine);
         break;
       case ServiceType.PSITRANSFER:
         service = new PsiTransferService(config, this.templateEngine);
@@ -125,17 +183,20 @@ export class ServiceFactory {
       case ServiceType.EXCALIDRAW:
         service = new ExcalidrawService(config, this.templateEngine);
         break;
+      case ServiceType.KROKI:
+        service = new KrokiService(config, this.templateEngine);
+        break;
       case ServiceType.OUTLINE:
         service = new OutlineService(config, this.templateEngine);
-        break;
-      case ServiceType.KESTRA:
-        service = new KestraService(config, this.templateEngine);
         break;
       case ServiceType.GRIST:
         service = new GristService(config, this.templateEngine);
         break;
       case ServiceType.NOCODB:
         service = new NocoDBService(config, this.templateEngine);
+        break;
+      case ServiceType.MAILSERVER:
+        service = new MailserverService(config, this.templateEngine);
         break;
       default:
         throw new ServiceInstallationError(
@@ -266,6 +327,7 @@ export class ServiceFactory {
    */
   getOptionalServices(): ServiceType[] {
     return [
+      ServiceType.COCKPIT,
       ServiceType.POSTGRESQL,
       ServiceType.REDIS,
       ServiceType.MONGODB,
@@ -281,14 +343,20 @@ export class ServiceFactory {
       ServiceType.ONEDEV,
       ServiceType.SONARQUBE,
       ServiceType.TRIVY,
+      ServiceType.RAPIDOC,
+      ServiceType.GRAFANA,
+      ServiceType.LOKI,
+      ServiceType.FLUENTBIT,
       ServiceType.REGISTRY,
+      ServiceType.NEXUS,
       ServiceType.VAULT,
-      ServiceType.PHP,
       ServiceType.PSITRANSFER,
       ServiceType.EXCALIDRAW,
+      ServiceType.KROKI,
       ServiceType.OUTLINE,
       ServiceType.GRIST,
       ServiceType.NOCODB,
+      ServiceType.MAILSERVER,
     ];
   }
 
@@ -346,29 +414,36 @@ export class ServiceFactory {
       'Caddy': ServiceType.CADDY,
       'Portainer': ServiceType.PORTAINER,
       'Copyparty': ServiceType.COPYPARTY,
-      'n8n': ServiceType.N8N,
+      'Cockpit': ServiceType.COCKPIT,
       'PostgreSQL': ServiceType.POSTGRESQL,
       'Redis': ServiceType.REDIS,
       'MongoDB': ServiceType.MONGODB,
       'MariaDB': ServiceType.MARIADB,
       'Minio': ServiceType.MINIO,
-      'Ollama': ServiceType.OLLAMA,
       'Kafka': ServiceType.KAFKA,
       'RabbitMQ': ServiceType.RABBITMQ,
+      'Ollama': ServiceType.OLLAMA,
+      'n8n': ServiceType.N8N,
+      'Kestra': ServiceType.KESTRA,
       'Authelia': ServiceType.AUTHELIA,
       'LocalStack': ServiceType.LOCALSTACK,
       'OneDev': ServiceType.ONEDEV,
       'SonarQube': ServiceType.SONARQUBE,
       'Trivy': ServiceType.TRIVY,
+      'RapiDoc': ServiceType.RAPIDOC,
+      'Grafana': ServiceType.GRAFANA,
+      'Loki': ServiceType.LOKI,
+      'Fluent Bit': ServiceType.FLUENTBIT,
       'Registry': ServiceType.REGISTRY,
+      'Nexus Repository': ServiceType.NEXUS,
       'Vault': ServiceType.VAULT,
-      'FrankenPHP': ServiceType.PHP,
       'PsiTransfer': ServiceType.PSITRANSFER,
       'Excalidraw': ServiceType.EXCALIDRAW,
+      'Kroki': ServiceType.KROKI,
       'Outline': ServiceType.OUTLINE,
-      'Kestra': ServiceType.KESTRA,
       'Grist': ServiceType.GRIST,
       'NocoDB': ServiceType.NOCODB,
+      'Docker Mailserver': ServiceType.MAILSERVER,
     };
 
     return serviceNameMap[serviceName];

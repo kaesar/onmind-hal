@@ -1,0 +1,15 @@
+{
+  "name": "RapiDoc",
+  "description": "WebComponent for OpenAPI Spec viewer",
+  "commands": {
+    "install": [
+      "docker pull ghcr.io/mrin9/rapidoc:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true"
+    ],
+    "run": "docker run -d --name rapidoc --network {{NETWORK_NAME}} -p 8084:80 ghcr.io/mrin9/rapidoc:latest"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}

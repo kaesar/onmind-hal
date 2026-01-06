@@ -1,0 +1,18 @@
+{
+  "name": "Cockpit CMS with FrankenPHP",
+  "description": "Headless CMS powered by FrankenPHP (PHP + Caddy)",
+  "commands": {
+    "install": [
+      "docker pull dunglas/frankenphp:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p ~/wsdata/cockpit",
+      "cd ~/wsdata/cockpit && curl -L https://github.com/Cockpit-HQ/Cockpit/archive/refs/heads/next.zip -o cockpit.zip && unzip -q cockpit.zip && mv Cockpit-next/* . && rm -rf Cockpit-next cockpit.zip || echo 'Cockpit download skipped if already exists'"
+    ],
+    "run": "docker run -d --name cockpit --network {{NETWORK_NAME}} -p 8081:80 -p 8443:443 -v ~/wsdata/cockpit:/app/public -e SERVER_NAME=:80 dunglas/frankenphp:latest"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": [],
+  "accessUrl": "http://{{IP}}:8081"
+}

@@ -111,6 +111,11 @@ export async function promptForNetworkName(): Promise<string> {
 export async function promptForOptionalServices(): Promise<ServiceType[]> {
   const optionalServices = [
     {
+      name: 'Cockpit CMS - Headless CMS with FrankenPHP',
+      value: ServiceType.COCKPIT,
+      short: 'Cockpit'
+    },
+    {
       name: 'PostgreSQL - SQL database server (alternative to Oracle DB)',
       value: ServiceType.POSTGRESQL,
       short: 'PostgreSQL'
@@ -186,19 +191,39 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Trivy'
     },
     {
+      name: 'RapiDoc - WebComponent for OpenAPI Spec viewer',
+      value: ServiceType.RAPIDOC,
+      short: 'RapiDoc'
+    },
+    {
+      name: 'Grafana - Analytics and monitoring platform',
+      value: ServiceType.GRAFANA,
+      short: 'Grafana'
+    },
+    {
+      name: 'Loki - Log aggregation system',
+      value: ServiceType.LOKI,
+      short: 'Loki'
+    },
+    {
+      name: 'Fluent Bit - Lightweight log processor and forwarder',
+      value: ServiceType.FLUENTBIT,
+      short: 'Fluent Bit'
+    },
+    {
       name: 'Registry - Private Docker container registry',
       value: ServiceType.REGISTRY,
       short: 'Registry'
     },
     {
+      name: 'Nexus Repository - Universal artifact repository manager',
+      value: ServiceType.NEXUS,
+      short: 'Nexus'
+    },
+    {
       name: 'Vault - Secrets and encryption management (HashiCorp)',
       value: ServiceType.VAULT,
       short: 'Vault'
-    },
-    {
-      name: 'FrankenPHP - Modern PHP app server (Caddy + PHP in one)',
-      value: ServiceType.PHP,
-      short: 'FrankenPHP'
     },
     {
       name: 'PsiTransfer - File sharing platform (like WeTransfer)',
@@ -209,6 +234,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Excalidraw - Virtual whiteboard for sketching',
       value: ServiceType.EXCALIDRAW,
       short: 'Excalidraw'
+    },
+    {
+      name: 'Kroki - API for generating diagrams',
+      value: ServiceType.KROKI,
+      short: 'Kroki'
     },
     {
       name: 'Outline - Team knowledge base and wiki (requires PostgreSQL + Redis)',
@@ -224,6 +254,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'NocoDB - Open-source Airtable alternative',
       value: ServiceType.NOCODB,
       short: 'NocoDB'
+    },
+    {
+      name: 'Docker Mailserver - Full-featured mail server',
+      value: ServiceType.MAILSERVER,
+      short: 'Mailserver'
     }
   ];
 

@@ -1,0 +1,17 @@
+{
+  "name": "Grafana",
+  "description": "Analytics and monitoring platform",
+  "commands": {
+    "install": [
+      "docker pull grafana/grafana:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/grafana/data",
+      "chown -R 472:472 /opt/homelab/grafana/data"
+    ],
+    "run": "docker run -d --name grafana --network {{NETWORK_NAME}} -p 3001:3000 -v /opt/homelab/grafana/data:/var/lib/grafana -e GF_SECURITY_ADMIN_PASSWORD=admin --restart unless-stopped grafana/grafana:latest"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}

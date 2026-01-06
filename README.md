@@ -22,31 +22,38 @@
 
 ### Optional Services
 
-- **PostgreSQL**: Relational database server (alternative to Oracle DB)
-- **Redis**: In-memory data store and cache
-- **MongoDB**: NoSQL database server
-- **MariaDB**: Relational database server
-- **Minio**: S3-compatible object storage
-- **Kafka**: Distributed streaming platform (with KRaft)
-- **RabbitMQ**: Message broker for distributed systems
-- **Ollama**: Server for your LLM
-- **n8n**: Workflow automation platform
-- **Kestra**: Orchestration and scheduling platform
-- **Authelia**: Authentication and authorization server
-- **LocalStack**: Local AWS cloud stack for development
-- **OneDev**: Self-hosted Git server with CI/CD
-- **SonarQube CE**: Code quality and security analysis
-- **Trivy**: Container security scanner
-- **Registry**: Private Docker container registry
-- **Vault**: Secrets and encryption management (HashiCorp)
-- **FrankenPHP**: Modern PHP app server (Caddy + PHP in one)
-- **PsiTransfer**: File sharing platform (like WeTransfer)
-- **Excalidraw**: Virtual whiteboard for sketching diagrams
-- **Outline**: Team knowledge base and wiki
-- **Grist**: Modern spreadsheet with relational database capabilities
-- **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
+1. **Cockpit-CMS**: Headless CMS powered by FrankenPHP (PHP + Caddy)
+2. **PostgreSQL**: Relational database server (alternative to Oracle DB)
+3. **Redis**: In-memory data store and cache
+4. **MongoDB**: NoSQL database server
+5. **MariaDB**: Relational database server
+6. **Minio**: S3-compatible object storage
+7. **Kafka**: Distributed streaming platform (with KRaft)
+8. **RabbitMQ**: Message broker for distributed systems
+9. **Ollama**: Server for your LLM
+10. **n8n**: Workflow automation platform
+11. **Kestra**: Orchestration and scheduling platform
+12. **Authelia**: Authentication and authorization server
+13. **LocalStack**: Local AWS cloud stack for development
+14. **OneDev**: Self-hosted Git server with CI/CD
+15. **SonarQube**: Code quality and security analysis
+16. **Trivy**: Container security scanner
+17. **RapiDoc**: WebComponent for OpenAPI Spec viewer
+18. **Grafana**: Analytics and monitoring platform
+19. **Loki**: Log aggregation system by Grafana Labs
+20. **Fluent-Bit**: Lightweight log processor and forwarder
+21. **Registry**: Private Docker container registry
+22. **Nexus-Repository**: Universal artifact repository manager
+23. **Vault**: Secrets and encryption management (HashiCorp)
+24. **PsiTransfer**: File sharing platform (like WeTransfer)
+25. **Excalidraw**: Virtual whiteboard for sketching diagrams
+26. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
+27. **Outline**: Team knowledge base and wiki
+28. **Grist**: Modern spreadsheet with relational database capabilities
+29. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
+30. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
 
-> *Perhaps, I will consider includes in a future*: Vaultwarden (Bitwarden), Draw.io, RapiDoc, Zulip (or Rocket.Chat), Jitsi
+> *Perhaps, I will consider includes in a future*: Vaultwarden (Bitwarden), Draw.io, Zulip (or Rocket.Chat), Jitsi
 
 ## Prerequisites
 

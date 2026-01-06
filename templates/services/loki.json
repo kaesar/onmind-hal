@@ -1,0 +1,16 @@
+{
+  "name": "Loki",
+  "description": "Log aggregation system by Grafana Labs",
+  "commands": {
+    "install": [
+      "docker pull grafana/loki:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/loki/data"
+    ],
+    "run": "docker run -d --name loki --network {{NETWORK_NAME}} -p 3100:3100 -v /opt/homelab/loki/data:/loki --restart unless-stopped grafana/loki:latest -config.file=/etc/loki/local-config.yaml"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}

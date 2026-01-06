@@ -14,6 +14,7 @@ export enum ServiceType {
   CADDY = 'caddy',
   PORTAINER = 'portainer',
   COPYPARTY = 'copyparty',
+  COCKPIT = 'cockpit',
   POSTGRESQL = 'postgresql', // (alternative to Oracle DB)
   REDIS = 'redis',
   MONGODB = 'mongodb',
@@ -29,14 +30,20 @@ export enum ServiceType {
   ONEDEV = 'onedev',
   SONARQUBE = 'sonarqube',
   TRIVY = 'trivy',
+  RAPIDOC = 'rapidoc',
+  GRAFANA = 'grafana',
+  LOKI = 'loki',
+  FLUENTBIT = 'fluentbit',
   REGISTRY = 'registry',
+  NEXUS = 'nexus',
   VAULT = 'vault',
-  PHP = 'php',
   PSITRANSFER = 'psitransfer',
   EXCALIDRAW = 'excalidraw',
+  KROKI = 'kroki',
   OUTLINE = 'outline',
   GRIST = 'grist',
   NOCODB = 'nocodb',
+  MAILSERVER = 'mailserver',
 }
 
 // Configuration interface

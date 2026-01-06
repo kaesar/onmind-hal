@@ -1,0 +1,19 @@
+{
+  "name": "Docker Mailserver",
+  "description": "Full-featured mail server (SMTP, IMAP, POP3, antispam, antivirus)",
+  "commands": {
+    "install": [
+      "docker pull ghcr.io/docker-mailserver/docker-mailserver:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p /opt/homelab/mailserver/data",
+      "mkdir -p /opt/homelab/mailserver/state",
+      "mkdir -p /opt/homelab/mailserver/logs",
+      "mkdir -p /opt/homelab/mailserver/config"
+    ],
+    "run": "docker run -d --name mailserver --network {{NETWORK_NAME}} -p 25:25 -p 143:143 -p 587:587 -p 993:993 -v /opt/homelab/mailserver/data:/var/mail -v /opt/homelab/mailserver/state:/var/mail-state -v /opt/homelab/mailserver/logs:/var/log/mail -v /opt/homelab/mailserver/config:/tmp/docker-mailserver -e ENABLE_SPAMASSASSIN=1 -e ENABLE_CLAMAV=1 -e ENABLE_FAIL2BAN=1 --hostname mail.{{DOMAIN}} --restart unless-stopped ghcr.io/docker-mailserver/docker-mailserver:latest"
+  },
+  "variables": ["NETWORK_NAME", "DOMAIN"],
+  "dependencies": []
+}

@@ -40,7 +40,7 @@ describe('Template Loading Integration', () => {
 
   describe('Service Templates', () => {
     const coreServices = ['caddy', 'portainer', 'copyparty'];
-    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'authelia', 'localstack', 'onedev', 'sonarqube', 'trivy', 'registry', 'vault', 'php', 'psitransfer', 'excalidraw', 'outline', 'grist', 'nocodb'];
+    const optionalServices = ['cockpit', 'postgresql', 'redis', 'mongodb', 'mariadb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'authelia', 'localstack', 'onedev', 'sonarqube', 'trivy', 'rapidoc', 'grafana', 'loki', 'fluentbit', 'registry', 'nexus', 'vault', 'psitransfer', 'excalidraw', 'kroki', 'outline', 'grist', 'nocodb', 'mailserver'];
     const allServices = [...coreServices, ...optionalServices];
 
     allServices.forEach(service => {
@@ -71,7 +71,7 @@ describe('Template Loading Integration', () => {
     it('should load all service templates', async () => {
       const templates = await loader.loadAllTemplates('services');
       
-      expect(templates.size).toBe(26);
+      expect(templates.size).toBe(33);
       allServices.forEach(service => {
         expect(templates.has(service)).toBe(true);
       });
