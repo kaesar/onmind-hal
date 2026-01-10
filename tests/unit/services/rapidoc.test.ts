@@ -12,7 +12,7 @@ describe('RapiDocService', () => {
   beforeEach(() => {
     config = {
       ip: '192.168.1.100',
-      domain: 'homelab.lan',
+      domain: 'homelab.local',
       networkName: 'homelab-network',
       selectedServices: [ServiceType.RAPIDOC],
       distribution: DistributionType.UBUNTU
@@ -41,6 +41,6 @@ describe('RapiDocService', () => {
 
   it('should return correct access URL', () => {
     const url = service.getAccessUrl();
-    expect(url).toBe('http://192.168.1.100:8084');
+    expect(url).toBe('https://rapidoc.homelab.local');
   });
 });

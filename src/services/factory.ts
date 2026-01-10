@@ -6,9 +6,9 @@ import { TemplateEngine } from '../templates/engine.js';
 import { CaddyService } from './core/caddy.js';
 import { PortainerService } from './core/portainer.js';
 import { CopypartyService } from './core/copyparty.js';
+import { DuckDBService } from './core/duckdb.js';
 
 // Optional services
-import { CockpitService } from './optional/cockpit.js';
 import { PostgreSQLService } from './optional/postgresql.js';
 import { RedisService } from './optional/redis.js';
 import { MongoDBService } from './optional/mongodb.js';
@@ -19,6 +19,8 @@ import { RabbitMQService } from './optional/rabbitmq.js';
 import { OllamaService } from './optional/ollama.js';
 import { N8nService } from './optional/n8n.js';
 import { KestraService } from './optional/kestra.js';
+import { KeystoneJSService } from './optional/keystonejs.js';
+import { CockpitService } from './optional/cockpit.js';
 import { AutheliaService } from './optional/authelia.js';
 import { LocalStackService } from './optional/localstack.js';
 import { OneDevService } from './optional/onedev.js';
@@ -33,11 +35,16 @@ import { NexusService } from './optional/nexus.js';
 import { VaultService } from './optional/vault.js';
 import { PsiTransferService } from './optional/psitransfer.js';
 import { ExcalidrawService } from './optional/excalidraw.js';
+import { DrawIOService } from './optional/drawio.js';
 import { KrokiService } from './optional/kroki.js';
 import { OutlineService } from './optional/outline.js';
 import { GristService } from './optional/grist.js';
 import { NocoDBService } from './optional/nocodb.js';
+import { JasperReportsService } from './optional/jasperreports.js';
+import { DocuSealService } from './optional/docuseal.js';
+import { LibreTranslateService } from './optional/libretranslate.js';
 import { MailserverService } from './optional/mailserver.js';
+import { FrpService } from './optional/frp.js';
 
 /**
  * Service factory for creating service instances based on configuration
@@ -75,12 +82,10 @@ export class ServiceFactory {
       case ServiceType.COPYPARTY:
         service = new CopypartyService(config, this.templateEngine);
         break;
-      case ServiceType.COPYPARTY:
-        service = new CopypartyService(config, this.templateEngine);
+      case ServiceType.DUCKDB:
+        service = new DuckDBService(config, this.templateEngine);
         break;
-      case ServiceType.COCKPIT:
-        service = new CockpitService(config, this.templateEngine);
-        break;
+
       case ServiceType.POSTGRESQL:
         service = new PostgreSQLService(config, this.templateEngine);
         break;
@@ -105,41 +110,18 @@ export class ServiceFactory {
       case ServiceType.OLLAMA:
         service = new OllamaService(config, this.templateEngine);
         break;
-      case ServiceType.N8N:
-        service = new N8nService(config, this.templateEngine);
-        break;
-      case ServiceType.POSTGRESQL:
-        service = new PostgreSQLService(config, this.templateEngine);
-        break;
-      case ServiceType.REDIS:
-        service = new RedisService(config, this.templateEngine);
-        break;
-      case ServiceType.MONGODB:
-        service = new MongoDBService(config, this.templateEngine);
-        break;
-      case ServiceType.MARIADB:
-        service = new MariaDBService(config, this.templateEngine);
-        break;
-      case ServiceType.MINIO:
-        service = new MinioService(config, this.templateEngine);
-        break;
-      case ServiceType.OLLAMA:
-        service = new OllamaService(config, this.templateEngine);
-        break;
-      case ServiceType.KAFKA:
-        service = new KafkaService(config, this.templateEngine);
-        break;
-      case ServiceType.RABBITMQ:
-        service = new RabbitMQService(config, this.templateEngine);
-        break;
-      case ServiceType.COCKPIT:
-        service = new CockpitService(config, this.templateEngine);
-        break;
+
       case ServiceType.N8N:
         service = new N8nService(config, this.templateEngine);
         break;
       case ServiceType.KESTRA:
         service = new KestraService(config, this.templateEngine);
+        break;
+      case ServiceType.KEYSTONEJS:
+        service = new KeystoneJSService(config, this.templateEngine);
+        break;
+      case ServiceType.COCKPIT:
+        service = new CockpitService(config, this.templateEngine);
         break;
       case ServiceType.AUTHELIA:
         service = new AutheliaService(config, this.templateEngine);
@@ -183,6 +165,9 @@ export class ServiceFactory {
       case ServiceType.EXCALIDRAW:
         service = new ExcalidrawService(config, this.templateEngine);
         break;
+      case ServiceType.DRAWIO:
+        service = new DrawIOService(config, this.templateEngine);
+        break;
       case ServiceType.KROKI:
         service = new KrokiService(config, this.templateEngine);
         break;
@@ -195,8 +180,20 @@ export class ServiceFactory {
       case ServiceType.NOCODB:
         service = new NocoDBService(config, this.templateEngine);
         break;
+      case ServiceType.JASPERREPORTS:
+        service = new JasperReportsService(config, this.templateEngine);
+        break;
+      case ServiceType.DOCUSEAL:
+        service = new DocuSealService(config, this.templateEngine);
+        break;
+      case ServiceType.LIBRETRANSLATE:
+        service = new LibreTranslateService(config, this.templateEngine);
+        break;
       case ServiceType.MAILSERVER:
         service = new MailserverService(config, this.templateEngine);
+        break;
+      case ServiceType.FRP:
+        service = new FrpService(config, this.templateEngine);
         break;
       default:
         throw new ServiceInstallationError(
@@ -317,7 +314,8 @@ export class ServiceFactory {
     return [
       ServiceType.CADDY,
       ServiceType.PORTAINER,
-      ServiceType.COPYPARTY
+      ServiceType.COPYPARTY,
+      ServiceType.DUCKDB
     ];
   }
 
@@ -327,7 +325,6 @@ export class ServiceFactory {
    */
   getOptionalServices(): ServiceType[] {
     return [
-      ServiceType.COCKPIT,
       ServiceType.POSTGRESQL,
       ServiceType.REDIS,
       ServiceType.MONGODB,
@@ -338,6 +335,8 @@ export class ServiceFactory {
       ServiceType.OLLAMA,
       ServiceType.N8N,
       ServiceType.KESTRA,
+      ServiceType.KEYSTONEJS,
+      ServiceType.COCKPIT,
       ServiceType.AUTHELIA,
       ServiceType.LOCALSTACK,
       ServiceType.ONEDEV,
@@ -352,11 +351,16 @@ export class ServiceFactory {
       ServiceType.VAULT,
       ServiceType.PSITRANSFER,
       ServiceType.EXCALIDRAW,
+      ServiceType.DRAWIO,
       ServiceType.KROKI,
       ServiceType.OUTLINE,
       ServiceType.GRIST,
       ServiceType.NOCODB,
+      ServiceType.JASPERREPORTS,
+      ServiceType.DOCUSEAL,
+      ServiceType.LIBRETRANSLATE,
       ServiceType.MAILSERVER,
+      ServiceType.FRP,
     ];
   }
 
@@ -414,7 +418,6 @@ export class ServiceFactory {
       'Caddy': ServiceType.CADDY,
       'Portainer': ServiceType.PORTAINER,
       'Copyparty': ServiceType.COPYPARTY,
-      'Cockpit': ServiceType.COCKPIT,
       'PostgreSQL': ServiceType.POSTGRESQL,
       'Redis': ServiceType.REDIS,
       'MongoDB': ServiceType.MONGODB,
@@ -425,6 +428,7 @@ export class ServiceFactory {
       'Ollama': ServiceType.OLLAMA,
       'n8n': ServiceType.N8N,
       'Kestra': ServiceType.KESTRA,
+      'KeystoneJS': ServiceType.KEYSTONEJS,
       'Authelia': ServiceType.AUTHELIA,
       'LocalStack': ServiceType.LOCALSTACK,
       'OneDev': ServiceType.ONEDEV,
@@ -439,11 +443,16 @@ export class ServiceFactory {
       'Vault': ServiceType.VAULT,
       'PsiTransfer': ServiceType.PSITRANSFER,
       'Excalidraw': ServiceType.EXCALIDRAW,
+      'Draw.io': ServiceType.DRAWIO,
       'Kroki': ServiceType.KROKI,
       'Outline': ServiceType.OUTLINE,
       'Grist': ServiceType.GRIST,
       'NocoDB': ServiceType.NOCODB,
+      'JasperReports Server': ServiceType.JASPERREPORTS,
+      'DocuSeal': ServiceType.DOCUSEAL,
+      'LibreTranslate': ServiceType.LIBRETRANSLATE,
       'Docker Mailserver': ServiceType.MAILSERVER,
+      'FRP Client': ServiceType.FRP,
     };
 
     return serviceNameMap[serviceName];

@@ -32,7 +32,7 @@ describe('VaultService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct Vault URL', () => {
-      const expectedUrl = 'http://192.168.1.100:8200';
+      const expectedUrl = 'https://vault.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

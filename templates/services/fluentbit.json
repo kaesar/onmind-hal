@@ -7,10 +7,10 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/fluentbit/config",
-      "cat > /opt/homelab/fluentbit/config/fluent-bit.conf << 'EOF'\n[SERVICE]\n    Flush        5\n    Daemon       Off\n    Log_Level    info\n    HTTP_Server  On\n    HTTP_Listen  0.0.0.0\n    HTTP_Port    2020\n\n[INPUT]\n    Name              forward\n    Listen            0.0.0.0\n    Port              24224\n\n[INPUT]\n    Name              tail\n    Path              /var/log/*.log\n    Tag               host.*\n\n[OUTPUT]\n    Name              stdout\n    Match             *\n    Format            json_lines\n\n[OUTPUT]\n    Name              loki\n    Match             *\n    Host              loki\n    Port              3100\n    Labels            job=fluentbit\n    Auto_Kubernetes_Labels off\nEOF"
+      "mkdir -p ~/wsdata/fluentbit/config",
+      "cat > ~/wsdata/fluentbit/config/fluent-bit.conf << 'EOF'\n[SERVICE]\n    Flush        5\n    Daemon       Off\n    Log_Level    info\n    HTTP_Server  On\n    HTTP_Listen  0.0.0.0\n    HTTP_Port    2020\n\n[INPUT]\n    Name              forward\n    Listen            0.0.0.0\n    Port              24224\n\n[INPUT]\n    Name              tail\n    Path              /var/log/*.log\n    Tag               host.*\n\n[OUTPUT]\n    Name              stdout\n    Match             *\n    Format            json_lines\n\n[OUTPUT]\n    Name              loki\n    Match             *\n    Host              loki\n    Port              3100\n    Labels            job=fluentbit\n    Auto_Kubernetes_Labels off\nEOF"
     ],
-    "run": "docker run -d --name fluentbit --network {{NETWORK_NAME}} -p 2020:2020 -p 24224:24224 -v /opt/homelab/fluentbit/config:/fluent-bit/etc -v /var/log:/var/log:ro -v /var/lib/docker/containers:/var/lib/docker/containers:ro --restart unless-stopped fluent/fluent-bit:latest"
+    "run": "docker run -d --name fluentbit --network {{NETWORK_NAME}} -p 2020:2020 -p 24224:24224 -v ~/wsdata/fluentbit/config:/fluent-bit/etc -v /var/log:/var/log:ro -v /var/lib/docker/containers:/var/lib/docker/containers:ro --restart unless-stopped fluent/fluent-bit:latest"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

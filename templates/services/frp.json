@@ -1,0 +1,16 @@
+{
+  "name": "FRP Client",
+  "description": "Fast Reverse Proxy client for secure tunneling",
+  "commands": {
+    "install": [
+      "docker pull snowdreamtech/frpc:latest"
+    ],
+    "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
+      "mkdir -p ~/wsconf"
+    ],
+    "run": "docker run -d --name frp --network {{NETWORK_NAME}} --restart=always -v ~/wsconf/frpc.ini:/etc/frp/frpc.ini snowdreamtech/frpc:latest"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}

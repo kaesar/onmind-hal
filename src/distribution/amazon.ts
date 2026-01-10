@@ -133,6 +133,40 @@ export class AmazonLinuxStrategy extends BaseDistributionStrategy {
    */
   async configureFirewall(): Promise<void> {
     try {
+      // Check if firewalld is already configured
+      const firewallStatus = await $`sudo firewall-cmd --state`.text().catch(() => 'not running');
+      
+      if (firewallStatus.includes('running')) {
+        console.log('⚠️  Firewalld is already active, checking rules...');
+        
+        // Check if required services are already allowed
+        const currentServices = await $`sudo firewall-cmd --list-services`.text().catch(() => '');
+        const hasSSH = currentServices.includes('ssh');
+        const hasHTTP = currentServices.includes('http');
+        const hasHTTPS = currentServices.includes('https');
+        
+        if (hasSSH && hasHTTP && hasHTTPS) {
+          console.log('✅ Required firewall rules already exist, skipping configuration...');
+          return;
+        }
+        
+        console.log('🔧 Adding missing firewall rules...');
+        
+        // Add missing rules without resetting
+        if (!hasSSH) await $`sudo firewall-cmd --permanent --add-service=ssh`.quiet();
+        if (!hasHTTP) await $`sudo firewall-cmd --permanent --add-service=http`.quiet();
+        if (!hasHTTPS) await $`sudo firewall-cmd --permanent --add-service=https`.quiet();
+        
+        // Reload firewall to apply changes
+        await $`sudo firewall-cmd --reload`;
+        
+        console.log('✅ Firewall rules updated');
+        await $`sudo firewall-cmd --list-services`;
+        return;
+      }
+      
+      console.log('🔥 Configuring firewalld...');
+      
       const packageManager = await this.getPreferredPackageManager();
 
       // Install firewalld if not already installed

@@ -32,7 +32,7 @@ describe('OneDevService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct OneDev URL', () => {
-      const expectedUrl = 'http://192.168.1.100:6610';
+      const expectedUrl = 'https://onedev.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

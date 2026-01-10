@@ -22,6 +22,6 @@ export class LocalStackService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:4566`;
+    return `https://localstack.${this.config.domain}`;
   }
 }

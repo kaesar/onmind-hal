@@ -108,11 +108,32 @@ export abstract class BaseService implements Service {
   }
 
   /**
+   * Check if container already exists
+   */
+  protected async isContainerRunning(): Promise<boolean> {
+    try {
+      const result = await $`docker ps -a --format {{.Names}}`.quiet();
+      const output = result.stdout.toString().trim();
+      if (!output) return false;
+      const containers = output.split('\n');
+      return containers.includes(this.type);
+    } catch {
+      return false;
+    }
+  }
+
+  /**
    * Install the service (pull Docker image and setup)
    */
   async install(): Promise<void> {
     if (!this.serviceTemplate) {
       await this.loadServiceTemplate();
+    }
+
+    // Check if container already exists
+    if (await this.isContainerRunning()) {
+      console.log(`⏭️  ${this.name} container already exists, skipping installation...`);
+      return;
     }
 
     try {
@@ -143,6 +164,12 @@ export abstract class BaseService implements Service {
   async configure(): Promise<void> {
     if (!this.serviceTemplate) {
       await this.loadServiceTemplate();
+    }
+
+    // Check if container already exists and is running
+    if (await this.isContainerRunning()) {
+      console.log(`⏭️  ${this.name} already configured and running, skipping...`);
+      return;
     }
 
     try {

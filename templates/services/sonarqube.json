@@ -7,11 +7,11 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/sonarqube/data",
-      "mkdir -p /opt/homelab/sonarqube/extensions",
-      "mkdir -p /opt/homelab/sonarqube/logs"
+      "mkdir -p ~/wsdata/sonarqube/data",
+      "mkdir -p ~/wsdata/sonarqube/extensions",
+      "mkdir -p ~/wsdata/sonarqube/logs"
     ],
-    "run": "docker run -d --name sonarqube --network {{NETWORK_NAME}} -p 9000:9000 -v /opt/homelab/sonarqube/data:/opt/sonarqube/data -v /opt/homelab/sonarqube/extensions:/opt/sonarqube/extensions -v /opt/homelab/sonarqube/logs:/opt/sonarqube/logs -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true sonarqube:community"
+    "run": "docker run -d --name sonarqube --network {{NETWORK_NAME}} -p 9002:9000 -v ~/wsdata/sonarqube/data:/opt/sonarqube/data -v ~/wsdata/sonarqube/extensions:/opt/sonarqube/extensions -v ~/wsdata/sonarqube/logs:/opt/sonarqube/logs -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true sonarqube:community"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

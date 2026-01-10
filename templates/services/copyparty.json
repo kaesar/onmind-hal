@@ -9,12 +9,12 @@
       "mkdir -p ~/wsconf",
       "mkdir -p ~/wsdata/copyparty"
     ],
-    "run": "docker run -d --name copyparty --network {{networkName}} -p 3923:3923 -v ~/wsdata/copyparty:/mnt -v ~/wsconf:/cfg copyparty/ac:latest --cfg-vol /cfg --listen 0.0.0.0 3923"
+    "run": "docker run -d --name copyparty --network {{networkName}} -p 3923:3923 -v ~/wsdata/copyparty:/w -v ~/wsconf:/cfg copyparty/ac:latest"
   },
   "variables": ["networkName", "domain"],
   "ports": ["3923:3923"],
   "volumes": [
-    "~/wsdata/copyparty:/mnt",
+    "~/wsdata/copyparty:/w",
     "~/wsconf:/cfg"
   ],
   "accessUrl": "https://files.{{domain}}",

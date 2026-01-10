@@ -125,6 +125,36 @@ export class ArchStrategy extends BaseDistributionStrategy {
    */
   async configureFirewall(): Promise<void> {
     try {
+      // Check if UFW is already configured
+      const ufwStatus = await $`sudo ufw status`.text().catch(() => '');
+      
+      if (ufwStatus.includes('Status: active')) {
+        console.log('⚠️  UFW firewall is already active, checking rules...');
+        
+        // Check if required ports are already allowed
+        const hasSSH = ufwStatus.includes('22/tcp') || ufwStatus.includes('22 ');
+        const hasHTTP = ufwStatus.includes('80/tcp') || ufwStatus.includes('80 ');
+        const hasHTTPS = ufwStatus.includes('443/tcp') || ufwStatus.includes('443 ');
+        
+        if (hasSSH && hasHTTP && hasHTTPS) {
+          console.log('✅ Required firewall rules already exist, skipping configuration...');
+          return;
+        }
+        
+        console.log('🔧 Adding missing firewall rules...');
+        
+        // Add missing rules without resetting
+        if (!hasSSH) await $`sudo ufw allow 22/tcp`.quiet();
+        if (!hasHTTP) await $`sudo ufw allow 80/tcp`.quiet();
+        if (!hasHTTPS) await $`sudo ufw allow 443/tcp`.quiet();
+        
+        console.log('✅ Firewall rules updated');
+        await $`sudo ufw status`;
+        return;
+      }
+      
+      console.log('🔥 Configuring UFW firewall...');
+      
       // Update package database and install UFW
       await $`sudo pacman -Sy --noconfirm`.quiet();
       await $`sudo pacman -S --noconfirm ufw`.quiet();

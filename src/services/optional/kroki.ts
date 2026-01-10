@@ -15,19 +15,7 @@ export class KrokiService extends BaseService {
     );
   }
 
-  async install(): Promise<void> {
-    try {
-      await this.executeTemplate('services/kroki');
-      this.logger.info('✅ Kroki installed successfully');
-    } catch (error) {
-      throw new ServiceInstallationError(
-        ServiceType.KROKI,
-        `Installation failed: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
-
   getAccessUrl(): string {
-    return `http://${this.config.ip}:8086`;
+    return `https://kroki.${this.config.domain}`;
   }
 }

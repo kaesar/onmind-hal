@@ -22,6 +22,6 @@ export class PsiTransferService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:3000`;
+    return `https://psitransfer.${this.config.domain}`;
   }
 }

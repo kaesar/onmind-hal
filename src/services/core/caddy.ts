@@ -31,8 +31,12 @@ export class CaddyService extends BaseService {
       // Create config directory
       await mkdir(configDir, { recursive: true });
 
+      // Detect OS and load appropriate template
+      const isMacOS = process.platform === 'darwin';
+      const templateName = isMacOS ? 'config/caddyfile-self-signed' : 'config/caddyfile';
+      
       // Load Caddyfile template
-      const caddyTemplate = await this.templateEngine.load('config/caddyfile');
+      const caddyTemplate = await this.templateEngine.load(templateName);
       const context = this.getTemplateContext();
       
       // Add service-specific context for Caddyfile
@@ -44,11 +48,15 @@ export class CaddyService extends BaseService {
       // Render Caddyfile
       const caddyfileContent = this.templateEngine.render(caddyTemplate, caddyContext);
       
+      // Parse the JSON string and convert \n to actual newlines
+      const parsedContent = JSON.parse(caddyfileContent);
+      const finalContent = parsedContent.replace(/\\n/g, '\n');
+      
       // Write Caddyfile
       const caddyfilePath = join(configDir, 'Caddyfile');
-      await writeFile(caddyfilePath, caddyfileContent);
+      await writeFile(caddyfilePath, finalContent);
       
-      console.log(`Generated Caddyfile at ${caddyfilePath}`);
+      console.log(`Generated Caddyfile at ${caddyfilePath}${isMacOS ? ' (macOS with self-signed certs)' : ''}`);
     } catch (error) {
       throw new Error(`Failed to generate Caddyfile: ${error}`);
     }

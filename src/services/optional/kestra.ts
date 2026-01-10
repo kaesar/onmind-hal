@@ -22,6 +22,6 @@ export class KestraService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:8080`;
+    return `https://kestra.${this.config.domain}`;
   }
 }

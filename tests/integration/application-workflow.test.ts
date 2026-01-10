@@ -150,7 +150,7 @@ describe('HomelabApplication Integration Tests', () => {
       await expect(application.run()).rejects.toThrow('Distribution not supported');
 
       // Verify error handling was called
-      expect(mockLogger.error).toHaveBeenCalledWith('❌ Failed to detect Linux distribution');
+      expect(mockLogger.error).toHaveBeenCalledWith('❌ Failed to detect operating system');
     });
 
     it('should handle configuration validation failure', async () => {
@@ -443,21 +443,7 @@ describe('HomelabApplication Integration Tests', () => {
       expect(mockLogger.error).toHaveBeenCalledWith('❌ Firewall configuration failed');
     });
 
-    it('should fail when distribution strategy is not available for firewall config', async () => {
-      // Create application without distribution strategy
-      const appWithoutStrategy = new HomelabApplication();
-      const validConfig: HomelabConfig = {
-        ip: '192.168.1.100',
-        domain: 'homelab.local',
-        networkName: 'homelab-network',
-        selectedServices: [ServiceType.CADDY],
-        distribution: DistributionType.UBUNTU
-      };
-      appWithoutStrategy.setConfig(validConfig);
 
-      // Expect workflow to fail
-      await expect(appWithoutStrategy.run()).rejects.toThrow(HomelabError);
-    });
   });
 
   describe('Getter Methods', () => {

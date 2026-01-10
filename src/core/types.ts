@@ -6,7 +6,15 @@
 export enum DistributionType {
   UBUNTU = 'ubuntu',
   ARCH = 'arch',
-  AMAZON_LINUX = 'amazon'
+  AMAZON_LINUX = 'amazon',
+  MACOS = 'macos'
+}
+
+// Container runtime types for macOS
+export enum ContainerRuntime {
+  DOCKER = 'docker',
+  COLIMA = 'colima',
+  PODMAN = 'podman'
 }
 
 // Service types
@@ -14,7 +22,7 @@ export enum ServiceType {
   CADDY = 'caddy',
   PORTAINER = 'portainer',
   COPYPARTY = 'copyparty',
-  COCKPIT = 'cockpit',
+  DUCKDB = 'duckdb',
   POSTGRESQL = 'postgresql', // (alternative to Oracle DB)
   REDIS = 'redis',
   MONGODB = 'mongodb',
@@ -25,6 +33,8 @@ export enum ServiceType {
   OLLAMA = 'ollama',
   N8N = 'n8n',
   KESTRA = 'kestra',
+  KEYSTONEJS = 'keystonejs',
+  COCKPIT = 'cockpit',
   AUTHELIA = 'authelia',
   LOCALSTACK = 'localstack',
   ONEDEV = 'onedev',
@@ -39,11 +49,16 @@ export enum ServiceType {
   VAULT = 'vault',
   PSITRANSFER = 'psitransfer',
   EXCALIDRAW = 'excalidraw',
+  DRAWIO = 'drawio',
   KROKI = 'kroki',
   OUTLINE = 'outline',
   GRIST = 'grist',
   NOCODB = 'nocodb',
+  JASPERREPORTS = 'jasperreports',
+  DOCUSEAL = 'docuseal',
+  LIBRETRANSLATE = 'libretranslate',
   MAILSERVER = 'mailserver',
+  FRP = 'frp',
 }
 
 // Configuration interface
@@ -54,6 +69,7 @@ export interface HomelabConfig {
   databasePassword?: string;
   selectedServices: ServiceType[];
   distribution: DistributionType;
+  containerRuntime?: ContainerRuntime; // For macOS
 }
 
 // Service selection interface

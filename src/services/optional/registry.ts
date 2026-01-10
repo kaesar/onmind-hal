@@ -22,6 +22,6 @@ export class RegistryService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:5000`;
+    return `https://registry.${this.config.domain}`;
   }
 }

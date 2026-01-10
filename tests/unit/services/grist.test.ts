@@ -32,7 +32,7 @@ describe('GristService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct Grist URL', () => {
-      const expectedUrl = 'http://192.168.1.100:8484';
+      const expectedUrl = 'https://grist.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

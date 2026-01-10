@@ -22,6 +22,6 @@ export class ExcalidrawService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:8082`;
+    return `https://excalidraw.${this.config.domain}`;
   }
 }

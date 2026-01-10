@@ -9,7 +9,7 @@
       "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/psitransfer/data"
     ],
-    "run": "docker run -d --name psitransfer --network {{NETWORK_NAME}} -p 3000:3000 -v ~/wsdata/psitransfer/data:/data -e PSITRANSFER_UPLOAD_DIR=/data psitrax/psitransfer:latest"
+    "run": "docker run -d --name psitransfer --network {{NETWORK_NAME}} -p 3005:3000 -v ~/wsdata/psitransfer/data:/data -e PSITRANSFER_UPLOAD_DIR=/data psitrax/psitransfer:latest"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

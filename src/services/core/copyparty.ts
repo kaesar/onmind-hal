@@ -40,9 +40,13 @@ export class CopypartyService extends BaseService {
       // Render configuration
       const configContent = this.templateEngine.render(copypartyTemplate, context);
       
+      // Parse the JSON string and convert \n to actual newlines
+      const parsedContent = JSON.parse(configContent);
+      const finalContent = parsedContent.replace(/\\n/g, '\n');
+      
       // Write configuration file
       const configPath = join(configDir, 'copyparty.conf');
-      await writeFile(configPath, configContent);
+      await writeFile(configPath, finalContent);
       
       console.log(`Generated Copyparty configuration at ${configPath}`);
     } catch (error) {

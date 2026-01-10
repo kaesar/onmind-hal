@@ -7,9 +7,9 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/nocodb/data"
+      "mkdir -p ~/wsdata/nocodb/data"
     ],
-    "run": "docker run -d --name nocodb --network {{NETWORK_NAME}} -p 8083:8080 -v /opt/homelab/nocodb/data:/usr/app/data --restart unless-stopped nocodb/nocodb:latest"
+    "run": "docker run -d --name nocodb --network {{NETWORK_NAME}} -p 8083:8080 -v ~/wsdata/nocodb/data:/usr/app/data --restart unless-stopped nocodb/nocodb:latest"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

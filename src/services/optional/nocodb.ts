@@ -15,19 +15,7 @@ export class NocoDBService extends BaseService {
     );
   }
 
-  async install(): Promise<void> {
-    try {
-      await this.executeTemplate('services/nocodb');
-      this.logger.info('✅ NocoDB installed successfully');
-    } catch (error) {
-      throw new ServiceInstallationError(
-        ServiceType.NOCODB,
-        `Installation failed: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
-
   getAccessUrl(): string {
-    return `http://${this.config.ip}:8083`;
+    return `https://nocodb.${this.config.domain}`;
   }
 }

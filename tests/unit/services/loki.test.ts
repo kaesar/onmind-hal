@@ -12,7 +12,7 @@ describe('LokiService', () => {
   beforeEach(() => {
     config = {
       ip: '192.168.1.100',
-      domain: 'homelab.lan',
+      domain: 'homelab.local',
       networkName: 'homelab-network',
       selectedServices: [ServiceType.LOKI],
       distribution: DistributionType.UBUNTU
@@ -41,6 +41,6 @@ describe('LokiService', () => {
 
   it('should return correct access URL', () => {
     const url = service.getAccessUrl();
-    expect(url).toBe('http://192.168.1.100:3100');
+    expect(url).toBe('https://loki.homelab.local');
   });
 });

@@ -7,10 +7,9 @@
     ],
     "setup": [
       "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p /opt/homelab/nexus/data",
-      "chown -R 200:200 /opt/homelab/nexus/data"
+      "mkdir -p ~/wsdata/nexus/data"
     ],
-    "run": "docker run -d --name nexus --network {{NETWORK_NAME}} -p 8085:8081 -v /opt/homelab/nexus/data:/nexus-data -e INSTALL4J_ADD_VM_PARAMS='-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m' --restart unless-stopped sonatype/nexus3:latest"
+    "run": "docker run -d --name nexus --network {{NETWORK_NAME}} -p 8085:8081 -v ~/wsdata/nexus/data:/nexus-data -e INSTALL4J_ADD_VM_PARAMS='-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m' --restart unless-stopped sonatype/nexus3:latest"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

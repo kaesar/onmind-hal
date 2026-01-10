@@ -3,7 +3,7 @@
  * Orchestrates distribution detection, user input, and service installation
  */
 
-import { HomelabConfig, DistributionStrategy, Service } from './types.js';
+import { HomelabConfig, DistributionStrategy, Service, DistributionType } from './types.js';
 import { HomelabError, ServiceInstallationError } from '../utils/errors.js';
 import { CLIInterface } from '../cli/interface.js';
 import { ServiceFactory } from '../services/factory.js';
@@ -12,6 +12,7 @@ import { DistributionDetector, BaseDistributionStrategy } from '../distribution/
 import { UbuntuStrategy } from '../distribution/ubuntu.js';
 import { ArchStrategy } from '../distribution/arch.js';
 import { AmazonLinuxStrategy } from '../distribution/amazon.js';
+import { MacOSStrategy } from '../distribution/macos.js';
 import { Logger } from '../utils/logger.js';
 import { $ } from 'bun';
 
@@ -78,20 +79,25 @@ export class HomelabApplication {
    */
   private async detectDistribution(): Promise<void> {
     try {
-      this.logger.info('🔍 Detecting Linux distribution...');
+      this.logger.info('🔍 Detecting operating system...');
       
       this.distributionStrategy = await this.distributionDetector.detectDistribution();
       const distributionType = this.distributionDetector.getDistributionType(this.distributionStrategy);
       
-      this.logger.info(`✅ Detected distribution: ${this.distributionStrategy.name}`);
+      this.logger.info(`✅ Detected: ${this.distributionStrategy.name}`);
       
       // Update config with detected distribution if config exists
       if (this.config) {
         this.config.distribution = distributionType;
+        
+        // For macOS, store container runtime
+        if (distributionType === DistributionType.MACOS && this.distributionStrategy instanceof MacOSStrategy) {
+          this.config.containerRuntime = this.distributionStrategy.getContainerRuntime();
+        }
       }
 
     } catch (error) {
-      this.logger.error('❌ Failed to detect Linux distribution');
+      this.logger.error('❌ Failed to detect operating system');
       throw error;
     }
   }
@@ -215,6 +221,9 @@ export class HomelabApplication {
         this.installedServices.push(service);
       }
 
+      // Restart core services to ensure proper configuration
+      await this.restartCoreServices();
+
       this.logger.info('✅ All services installed and configured successfully');
 
     } catch (error) {
@@ -248,6 +257,23 @@ export class HomelabApplication {
         service.name, 
         error instanceof Error ? error.message : String(error)
       );
+    }
+  }
+
+  /**
+   * Restart core services to ensure proper configuration
+   */
+  private async restartCoreServices(): Promise<void> {
+    try {
+      this.logger.info('🔄 Restarting core services...');
+      
+      await $`sh -c "docker restart caddy portainer || true"`;
+      
+      this.logger.info('✅ Core services restarted successfully');
+
+    } catch (error) {
+      this.logger.warn('⚠️  Failed to restart core services, but continuing...');
+      this.logger.debug(`Restart error: ${error}`);
     }
   }
 
@@ -291,6 +317,11 @@ export class HomelabApplication {
     console.log(`🌐 Server IP: ${this.config.ip}`);
     console.log(`🏷️  Domain: ${this.config.domain}`);
     console.log(`🔗 Network: ${this.config.networkName}`);
+    
+    if (this.config.distribution === DistributionType.MACOS) {
+      console.log(`🐳 Container Runtime: ${this.config.containerRuntime || 'docker'}`);
+    }
+    
     console.log('\n📋 Installed Services:');
 
     for (const service of this.installedServices) {
@@ -299,10 +330,63 @@ export class HomelabApplication {
     }
 
     console.log('\n📚 Next Steps:');
-    console.log('   1. Ensure your DNS is configured to point to your server IP');
-    console.log('   2. Firewall has been configured to allow ports 22 (SSH), 80 (HTTP), and 443 (HTTPS)');
-    console.log('   3. Access your services using the URLs above');
-    console.log('   4. Check service logs if you encounter any issues');
+    
+    if (this.config.distribution === DistributionType.MACOS) {
+      console.log('   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:');
+      console.log('\n   Run: sudo nano /etc/hosts');
+      console.log('\n   Then copy and paste these lines:\n');
+      
+      // For macOS, use 127.0.0.1 in /etc/hosts since Docker exposes ports on localhost
+      const hostsIP = '127.0.0.1';
+      console.log(`   ${hostsIP} ${this.config.domain}`);
+      
+      // Only add /etc/hosts entries for services that have web interfaces (configured in Caddy)
+      const webServices = ['copyparty', 'portainer', 'duckdb', 'n8n', 'kestra', 'keystonejs', 
+                          'minio', 'ollama', 'cockpit', 'authelia', 'rabbitmq', 'grafana', 
+                          'loki', 'trivy', 'sonarqube', 'nexus', 'vault', 'rapidoc', 
+                          'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 
+                          'grist', 'nocodb', 'jasperreports', 'onedev', 'registry', 
+                          'localstack', 'docuseal', 'libretranslate'];
+      
+      // Map service types to their subdomain names
+      const subdomainMap: Record<string, string> = {
+        'copyparty': 'files',
+        'portainer': 'portainer',
+        'jasperreports': 'jasper',
+        'libretranslate': 'translate'
+      };
+      
+      for (const service of this.installedServices) {
+        // Only add entries for web services (skip mailserver, frp, databases without web UI)
+        if (webServices.includes(service.type)) {
+          const subdomain = subdomainMap[service.type] || service.type;
+          console.log(`   ${hostsIP} ${subdomain}.${this.config.domain}`);
+        }
+      }
+      
+      console.log('\n   After saving, your services will be accessible at the URLs above.');
+      
+      // Show special instructions for non-web services
+      const nonWebServices = this.installedServices.filter(s => !webServices.includes(s.type));
+      if (nonWebServices.length > 0) {
+        console.log('\n   📧 Non-web services (no /etc/hosts entry needed):');
+        for (const service of nonWebServices) {
+          if (service.type === 'mailserver') {
+            console.log('   • Mailserver: Configure email client with localhost:587 (SMTP), localhost:993 (IMAPS)');
+          } else if (service.type === 'frp') {
+            console.log('   • FRP: Tunnel client - check ~/wsconf/frpc.ini for configuration');
+          } else {
+            console.log(`   • ${service.name}: Database service - connect via localhost with mapped ports`);
+          }
+        }
+      }
+    } else {
+      console.log('   1. Ensure your DNS is configured to point to your server IP');
+      console.log('   2. Firewall has been configured to allow ports 22 (SSH), 80 (HTTP), and 443 (HTTPS)');
+      console.log('   3. Access your services using the URLs above');
+      console.log('   4. Check service logs if you encounter any issues');
+    }
+    
     console.log('═'.repeat(60));
   }
 
@@ -339,6 +423,7 @@ export class HomelabApplication {
    * Register all available distribution strategies
    */
   private registerDistributionStrategies(): void {
+    this.distributionDetector.registerStrategy(new MacOSStrategy());
     this.distributionDetector.registerStrategy(new UbuntuStrategy());
     this.distributionDetector.registerStrategy(new ArchStrategy());
     this.distributionDetector.registerStrategy(new AmazonLinuxStrategy());

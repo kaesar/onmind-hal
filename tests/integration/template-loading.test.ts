@@ -39,8 +39,8 @@ describe('Template Loading Integration', () => {
   });
 
   describe('Service Templates', () => {
-    const coreServices = ['caddy', 'portainer', 'copyparty'];
-    const optionalServices = ['cockpit', 'postgresql', 'redis', 'mongodb', 'mariadb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'authelia', 'localstack', 'onedev', 'sonarqube', 'trivy', 'rapidoc', 'grafana', 'loki', 'fluentbit', 'registry', 'nexus', 'vault', 'psitransfer', 'excalidraw', 'kroki', 'outline', 'grist', 'nocodb', 'mailserver'];
+    const coreServices = ['caddy', 'portainer', 'copyparty', 'duckdb'];
+    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'cockpit', 'authelia', 'localstack', 'onedev', 'sonarqube', 'trivy', 'rapidoc', 'grafana', 'loki', 'fluentbit', 'registry', 'nexus', 'vault', 'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'jasperreports', 'docuseal', 'libretranslate', 'mailserver', 'frp'];
     const allServices = [...coreServices, ...optionalServices];
 
     allServices.forEach(service => {
@@ -71,7 +71,7 @@ describe('Template Loading Integration', () => {
     it('should load all service templates', async () => {
       const templates = await loader.loadAllTemplates('services');
       
-      expect(templates.size).toBe(33);
+      expect(templates.size).toBe(40);
       allServices.forEach(service => {
         expect(templates.has(service)).toBe(true);
       });
@@ -79,7 +79,7 @@ describe('Template Loading Integration', () => {
   });
 
   describe('Configuration Templates', () => {
-    const configs = ['caddyfile', 'dnsmasq', 'copyparty'];
+    const configs = ['caddyfile', 'dnsmasq', 'copyparty', 'caddyfile-self-signed'];
 
     configs.forEach(config => {
       it(`should load and validate ${config} configuration template`, async () => {
@@ -99,7 +99,7 @@ describe('Template Loading Integration', () => {
     it('should load all configuration templates', async () => {
       const templates = await loader.loadAllTemplates('config');
       
-      expect(templates.size).toBe(3);
+      expect(templates.size).toBe(4);
       configs.forEach(config => {
         expect(templates.has(config)).toBe(true);
       });

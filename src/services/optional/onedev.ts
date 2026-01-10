@@ -22,6 +22,6 @@ export class OneDevService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:6610`;
+    return `https://onedev.${this.config.domain}`;
   }
 }

@@ -15,18 +15,6 @@ export class MailserverService extends BaseService {
     );
   }
 
-  async install(): Promise<void> {
-    try {
-      await this.executeTemplate('services/mailserver');
-      this.logger.info('✅ Docker Mailserver installed successfully');
-    } catch (error) {
-      throw new ServiceInstallationError(
-        ServiceType.MAILSERVER,
-        `Installation failed: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
-
   getAccessUrl(): string {
     return `smtp://${this.config.ip}:25`;
   }

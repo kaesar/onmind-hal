@@ -32,7 +32,7 @@ describe('KestraService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct Kestra URL', () => {
-      const expectedUrl = 'http://192.168.1.100:8080';
+      const expectedUrl = 'https://kestra.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

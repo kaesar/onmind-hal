@@ -15,19 +15,7 @@ export class GrafanaService extends BaseService {
     );
   }
 
-  async install(): Promise<void> {
-    try {
-      await this.executeTemplate('services/grafana');
-      this.logger.info('✅ Grafana installed successfully');
-    } catch (error) {
-      throw new ServiceInstallationError(
-        ServiceType.GRAFANA,
-        `Installation failed: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
-
   getAccessUrl(): string {
-    return `http://${this.config.ip}:3001`;
+    return `https://grafana.${this.config.domain}`;
   }
 }

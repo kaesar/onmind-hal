@@ -41,6 +41,6 @@ describe('NexusService', () => {
 
   it('should return correct access URL', () => {
     const url = service.getAccessUrl();
-    expect(url).toBe('http://192.168.1.100:8085');
+    expect(url).toBe('https://nexus.homelab.lan');
   });
 });

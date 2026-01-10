@@ -32,7 +32,7 @@ describe('RabbitMQService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct RabbitMQ management URL', () => {
-      const expectedUrl = 'http://192.168.1.100:15672';
+      const expectedUrl = 'https://rabbitmq.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

@@ -32,7 +32,7 @@ describe('LocalStackService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct LocalStack URL', () => {
-      const expectedUrl = 'http://192.168.1.100:4566';
+      const expectedUrl = 'https://localstack.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

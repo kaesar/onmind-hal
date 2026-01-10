@@ -32,7 +32,7 @@ describe('TrivyService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct Trivy URL', () => {
-      const expectedUrl = 'http://192.168.1.100:8080';
+      const expectedUrl = 'https://trivy.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

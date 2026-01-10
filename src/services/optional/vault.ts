@@ -22,6 +22,6 @@ export class VaultService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:8200`;
+    return `https://vault.${this.config.domain}`;
   }
 }

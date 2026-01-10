@@ -109,6 +109,8 @@ export class DistributionDetector {
       case 'amazon':
       case 'amazon linux':
         return DistributionType.AMAZON_LINUX;
+      case 'macos':
+        return DistributionType.MACOS;
       default:
         throw new DistributionNotSupportedError(strategy.name);
     }

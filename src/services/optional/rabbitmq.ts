@@ -22,6 +22,6 @@ export class RabbitMQService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:15672`;
+    return `https://rabbitmq.${this.config.domain}`;
   }
 }

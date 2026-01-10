@@ -32,7 +32,7 @@ describe('PsiTransferService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct PsiTransfer URL', () => {
-      const expectedUrl = 'http://192.168.1.100:3000';
+      const expectedUrl = 'https://psitransfer.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

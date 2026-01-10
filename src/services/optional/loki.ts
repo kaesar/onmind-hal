@@ -15,19 +15,7 @@ export class LokiService extends BaseService {
     );
   }
 
-  async install(): Promise<void> {
-    try {
-      await this.executeTemplate('services/loki');
-      this.logger.info('✅ Loki installed successfully');
-    } catch (error) {
-      throw new ServiceInstallationError(
-        ServiceType.LOKI,
-        `Installation failed: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
-
   getAccessUrl(): string {
-    return `http://${this.config.ip}:3100`;
+    return `https://loki.${this.config.domain}`;
   }
 }

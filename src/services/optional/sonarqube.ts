@@ -22,6 +22,6 @@ export class SonarQubeService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:9000`;
+    return `https://sonarqube.${this.config.domain}`;
   }
 }

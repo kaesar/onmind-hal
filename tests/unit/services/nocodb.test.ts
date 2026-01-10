@@ -12,7 +12,7 @@ describe('NocoDBService', () => {
   beforeEach(() => {
     config = {
       ip: '192.168.1.100',
-      domain: 'homelab.lan',
+      domain: 'homelab.local',
       networkName: 'homelab-network',
       selectedServices: [ServiceType.NOCODB],
       distribution: DistributionType.UBUNTU
@@ -41,6 +41,6 @@ describe('NocoDBService', () => {
 
   it('should return correct access URL', () => {
     const url = service.getAccessUrl();
-    expect(url).toBe('http://192.168.1.100:8083');
+    expect(url).toBe('https://nocodb.homelab.local');
   });
 });

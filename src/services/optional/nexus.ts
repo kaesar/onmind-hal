@@ -15,19 +15,7 @@ export class NexusService extends BaseService {
     );
   }
 
-  async install(): Promise<void> {
-    try {
-      await this.executeTemplate('services/nexus');
-      this.logger.info('✅ Nexus Repository installed successfully');
-    } catch (error) {
-      throw new ServiceInstallationError(
-        ServiceType.NEXUS,
-        `Installation failed: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
-
   getAccessUrl(): string {
-    return `http://${this.config.ip}:8085`;
+    return `https://nexus.${this.config.domain}`;
   }
 }

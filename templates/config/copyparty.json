@@ -2,7 +2,7 @@
   "name": "copyparty-config",
   "description": "Copyparty file sharing configuration",
   "filename": "copyparty.conf",
-  "content": "# Copyparty configuration for HomeLab\n\n# Basic settings\n[global]\nport = 3923\nhost = 0.0.0.0\n\n# File upload settings\nmax_upload_size = 1073741824  # 1GB\nallow_upload = true\nallow_delete = true\n\n# Security settings\nenable_cors = false\nallow_dotfiles = false\n\n# Logging\nlog_level = info\nlog_file = /var/log/copyparty.log\n\n# Volume configuration\n[volumes]\n# Public upload folder\n/mnt/public:rw,upload\n\n# Private folder (read-only for guests)\n/mnt/private:r",
+  "content": "# Copyparty configuration for HomeLab\n\n[/]\n  /w\n  accs:\n    rw: *",
   "variables": [],
   "permissions": "644",
   "path": "~/wsconf/copyparty.conf"

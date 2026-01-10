@@ -148,75 +148,7 @@ describe('UbuntuStrategy', () => {
 
 
 
-  describe('installDocker', () => {
-    it.skip('should execute Docker installation commands', async () => {
-      const mockShellCommands: string[] = [];
-      const originalShell = global.$ as any;
-      
-      global.$ = ((strings: TemplateStringsArray, ...values: any[]) => {
-        const command = strings.reduce((acc, str, i) => {
-          return acc + str + (values[i] || '');
-        }, '');
-        mockShellCommands.push(command);
-        
-        if (command.includes('whoami')) {
-          return { text: () => Promise.resolve('testuser\n') };
-        }
-        if (command.includes('dpkg --print-architecture')) {
-          return { text: () => Promise.resolve('amd64\n') };
-        }
-        if (command.includes('lsb_release -cs')) {
-          return { text: () => Promise.resolve('jammy\n') };
-        }
-        
-        return Promise.resolve();
-      }) as any;
-
-      await strategy.installDocker();
-
-      expect(mockShellCommands.some(cmd => cmd.includes('apt update'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('apt install -y ca-certificates'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('docker-ce'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('systemctl start docker'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('systemctl enable docker'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('usermod -aG docker'))).toBe(true);
-
-      global.$ = originalShell;
-    });
-
-    it.skip('should throw error when Docker installation fails', async () => {
-      const originalShell = global.$ as any;
-      global.$ = (() => {
-        throw new Error('Installation failed');
-      }) as any;
-
-      await expect(strategy.installDocker()).rejects.toThrow('Failed to install Docker on Ubuntu');
-
-      global.$ = originalShell;
-    });
-  });
-
   describe('installPackages', () => {
-    it.skip('should install packages using apt', async () => {
-      const mockShellCommands: string[] = [];
-      const originalShell = global.$ as any;
-
-      global.$ = ((strings: TemplateStringsArray, ...values: any[]) => {
-        const command = strings.reduce((acc, str, i) => {
-          return acc + str + (values[i] || '');
-        }, '');
-        mockShellCommands.push(command);
-        return Promise.resolve();
-      }) as any;
-
-      await strategy.installPackages(['curl', 'wget', 'git']);
-
-      expect(mockShellCommands.some(cmd => cmd.includes('apt update'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('apt install -y curl wget git'))).toBe(true);
-
-      global.$ = originalShell;
-    });
-
     it('should do nothing when no packages are provided', async () => {
       const mockShellCommands: string[] = [];
       const originalShell = global.$ as any;
@@ -232,65 +164,6 @@ describe('UbuntuStrategy', () => {
       await strategy.installPackages([]);
 
       expect(mockShellCommands).toHaveLength(0);
-
-      global.$ = originalShell;
-    });
-
-    it.skip('should throw error when package installation fails', async () => {
-      const originalShell = global.$ as any;
-      global.$ = (() => {
-        throw new Error('Package installation failed');
-      }) as any;
-
-      await expect(strategy.installPackages(['nonexistent-package'])).rejects.toThrow('Failed to install packages on Ubuntu');
-
-      global.$ = originalShell;
-    });
-  });
-
-  describe('configureFirewall', () => {
-    it.skip('should configure UFW firewall with required ports', async () => {
-      const mockShellCommands: string[] = [];
-      const originalShell = global.$ as any;
-
-      global.$ = ((strings: TemplateStringsArray, ...values: any[]) => {
-        const command = strings.reduce((acc, str, i) => {
-          return acc + str + (values[i] || '');
-        }, '');
-        mockShellCommands.push(command);
-        return Promise.resolve();
-      }) as any;
-
-      await strategy.configureFirewall();
-
-      // Check that UFW is installed
-      expect(mockShellCommands.some(cmd => cmd.includes('apt update'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('apt install -y ufw'))).toBe(true);
-
-      // Check that UFW is reset and configured
-      expect(mockShellCommands.some(cmd => cmd.includes('ufw --force reset'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('ufw default deny incoming'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('ufw default allow outgoing'))).toBe(true);
-
-      // Check that required ports are allowed
-      expect(mockShellCommands.some(cmd => cmd.includes('ufw allow 22/tcp'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('ufw allow 80/tcp'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('ufw allow 443/tcp'))).toBe(true);
-
-      // Check that UFW is enabled
-      expect(mockShellCommands.some(cmd => cmd.includes('ufw --force enable'))).toBe(true);
-      expect(mockShellCommands.some(cmd => cmd.includes('ufw status verbose'))).toBe(true);
-
-      global.$ = originalShell;
-    });
-
-    it.skip('should throw error when firewall configuration fails', async () => {
-      const originalShell = global.$ as any;
-      global.$ = (() => {
-        throw new Error('UFW installation failed');
-      }) as any;
-
-      await expect(strategy.configureFirewall()).rejects.toThrow('Failed to configure UFW firewall on Ubuntu');
 
       global.$ = originalShell;
     });

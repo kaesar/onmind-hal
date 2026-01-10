@@ -32,7 +32,14 @@ describe('MongoDBService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct MongoDB connection URL', () => {
-      const expectedUrl = 'mongodb://admin:homelab123@192.168.1.100:27017/admin';
+      const expectedUrl = 'mongodb://admin:PASSWORD_NOT_SET@192.168.1.100:27017/admin';
+      expect(service.getAccessUrl()).toBe(expectedUrl);
+    });
+
+    it('should return correct MongoDB connection URL with password', () => {
+      mockConfig.databasePassword = 'secure-password';
+      service = new MongoDBService(mockConfig, mockTemplateEngine);
+      const expectedUrl = 'mongodb://admin:secure-password@192.168.1.100:27017/admin';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

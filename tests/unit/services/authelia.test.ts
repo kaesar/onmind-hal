@@ -32,7 +32,7 @@ describe('AutheliaService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct Authelia URL', () => {
-      const expectedUrl = 'http://192.168.1.100:9091';
+      const expectedUrl = 'https://authelia.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

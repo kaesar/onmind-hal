@@ -32,7 +32,7 @@ describe('OutlineService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct Outline URL', () => {
-      const expectedUrl = 'http://192.168.1.100:3030';
+      const expectedUrl = 'https://outline.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

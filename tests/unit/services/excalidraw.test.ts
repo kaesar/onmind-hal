@@ -32,7 +32,7 @@ describe('ExcalidrawService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct Excalidraw URL', () => {
-      const expectedUrl = 'http://192.168.1.100:8082';
+      const expectedUrl = 'https://excalidraw.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

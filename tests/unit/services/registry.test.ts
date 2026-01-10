@@ -32,7 +32,7 @@ describe('RegistryService', () => {
 
   describe('getAccessUrl', () => {
     it('should return correct Registry URL', () => {
-      const expectedUrl = 'http://192.168.1.100:5000';
+      const expectedUrl = 'https://registry.homelab.local';
       expect(service.getAccessUrl()).toBe(expectedUrl);
     });
   });

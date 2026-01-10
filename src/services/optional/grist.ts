@@ -22,6 +22,6 @@ export class GristService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `http://${this.config.ip}:8484`;
+    return `https://grist.${this.config.domain}`;
   }
 }

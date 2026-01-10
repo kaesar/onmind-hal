@@ -15,19 +15,7 @@ export class RapiDocService extends BaseService {
     );
   }
 
-  async install(): Promise<void> {
-    try {
-      await this.executeTemplate('services/rapidoc');
-      this.logger.info('✅ RapiDoc installed successfully');
-    } catch (error) {
-      throw new ServiceInstallationError(
-        ServiceType.RAPIDOC,
-        `Installation failed: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
-
   getAccessUrl(): string {
-    return `http://${this.config.ip}:8084`;
+    return `https://rapidoc.${this.config.domain}`;
   }
 }

@@ -60,10 +60,10 @@ export class CLIInterface {
     if (this.config.selectedServices) {
       console.log('\n📦 Services to install:');
       const coreServices = this.config.selectedServices.filter(s => 
-        ['caddy', 'portainer', 'copyparty'].includes(s)
+        ['caddy', 'portainer', 'copyparty', 'duckdb'].includes(s)
       );
       const optionalServices = this.config.selectedServices.filter(s =>
-        !['caddy', 'portainer', 'copyparty'].includes(s)
+        !['caddy', 'portainer', 'copyparty', 'duckdb'].includes(s)
       );
 
       console.log('   Core services:');
@@ -93,6 +93,7 @@ export class CLIInterface {
       caddy: 'Caddy (Reverse Proxy)',
       portainer: 'Portainer (Docker Management)',
       copyparty: 'Copyparty (File Sharing)',
+      duckdb: 'DuckDB (Analytics Database)',
       cockpit: 'Cockpit CMS (FrankenPHP)',
       n8n: 'n8n (Workflow Automation)',
       postgresql: 'PostgreSQL (Database)',

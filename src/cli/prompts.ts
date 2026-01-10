@@ -111,11 +111,6 @@ export async function promptForNetworkName(): Promise<string> {
 export async function promptForOptionalServices(): Promise<ServiceType[]> {
   const optionalServices = [
     {
-      name: 'Cockpit CMS - Headless CMS with FrankenPHP',
-      value: ServiceType.COCKPIT,
-      short: 'Cockpit'
-    },
-    {
       name: 'PostgreSQL - SQL database server (alternative to Oracle DB)',
       value: ServiceType.POSTGRESQL,
       short: 'PostgreSQL'
@@ -164,6 +159,16 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Kestra - Orchestration and scheduling platform',
       value: ServiceType.KESTRA,
       short: 'Kestra'
+    },
+    {
+      name: 'KeystoneJS - Modern headless CMS and GraphQL API (requires PostgreSQL)',
+      value: ServiceType.KEYSTONEJS,
+      short: 'KeystoneJS'
+    },
+    {
+      name: 'Cockpit CMS - Headless CMS even with GraphQL (this also is for PHP)',
+      value: ServiceType.COCKPIT,
+      short: 'Cockpit'
     },
     {
       name: 'Authelia - Authentication and authorization server (requires Redis)',
@@ -236,6 +241,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Excalidraw'
     },
     {
+      name: 'Draw.io - Web-based diagramming application',
+      value: ServiceType.DRAWIO,
+      short: 'Draw.io'
+    },
+    {
       name: 'Kroki - API for generating diagrams',
       value: ServiceType.KROKI,
       short: 'Kroki'
@@ -256,9 +266,29 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'NocoDB'
     },
     {
+      name: 'JasperReports - Business intelligence and reporting platform (requires PostgreSQL)',
+      value: ServiceType.JASPERREPORTS,
+      short: 'JasperReports'
+    },
+    {
+      name: 'DocuSeal - Document signing platform',
+      value: ServiceType.DOCUSEAL,
+      short: 'DocuSeal'
+    },
+    {
+      name: 'LibreTranslate - Free and open source machine translation API',
+      value: ServiceType.LIBRETRANSLATE,
+      short: 'LibreTranslate'
+    },
+    {
       name: 'Docker Mailserver - Full-featured mail server',
       value: ServiceType.MAILSERVER,
       short: 'Mailserver'
+    },
+    {
+      name: 'FRP Client - Fast Reverse Proxy for secure tunneling (requires VPS with frps)',
+      value: ServiceType.FRP,
+      short: 'FRP'
     }
   ];
 
@@ -322,7 +352,7 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
   }
 
   // Core services are always included
-  const coreServices = [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY];
+  const coreServices = [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY, ServiceType.DUCKDB];
   const selectedServices = [...coreServices, ...optionalServices];
 
   return {
