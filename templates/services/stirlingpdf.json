@@ -1,0 +1,16 @@
+{
+  "name": "Stirling-PDF",
+  "description": "Powerful locally hosted web-based PDF manipulation tool",
+  "commands": {
+    "install": [
+      "docker pull frooodle/s-pdf:latest"
+    ],
+    "setup": [
+      "docker network create {{networkName}} || true",
+      "mkdir -p ~/wsdata/stirlingpdf/data"
+    ],
+    "run": "docker run -d --name stirlingpdf --network {{networkName}} -p 8089:8080 -v ~/wsdata/stirlingpdf/data:/usr/share/tessdata frooodle/s-pdf:latest"
+  },
+  "variables": ["networkName"],
+  "dependencies": []
+}

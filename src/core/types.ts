@@ -55,7 +55,7 @@ export enum ServiceType {
   GRIST = 'grist',
   NOCODB = 'nocodb',
   JASPERREPORTS = 'jasperreports',
-  DOCUSEAL = 'docuseal',
+  STIRLINGPDF = 'stirlingpdf',
   LIBRETRANSLATE = 'libretranslate',
   MAILSERVER = 'mailserver',
   FRP = 'frp',

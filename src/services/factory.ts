@@ -41,7 +41,7 @@ import { OutlineService } from './optional/outline.js';
 import { GristService } from './optional/grist.js';
 import { NocoDBService } from './optional/nocodb.js';
 import { JasperReportsService } from './optional/jasperreports.js';
-import { DocuSealService } from './optional/docuseal.js';
+import { StirlingPDFService } from './optional/stirlingpdf.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
 import { MailserverService } from './optional/mailserver.js';
 import { FrpService } from './optional/frp.js';
@@ -183,8 +183,8 @@ export class ServiceFactory {
       case ServiceType.JASPERREPORTS:
         service = new JasperReportsService(config, this.templateEngine);
         break;
-      case ServiceType.DOCUSEAL:
-        service = new DocuSealService(config, this.templateEngine);
+      case ServiceType.STIRLINGPDF:
+        service = new StirlingPDFService(config, this.templateEngine);
         break;
       case ServiceType.LIBRETRANSLATE:
         service = new LibreTranslateService(config, this.templateEngine);
@@ -357,7 +357,7 @@ export class ServiceFactory {
       ServiceType.GRIST,
       ServiceType.NOCODB,
       ServiceType.JASPERREPORTS,
-      ServiceType.DOCUSEAL,
+      ServiceType.STIRLINGPDF,
       ServiceType.LIBRETRANSLATE,
       ServiceType.MAILSERVER,
       ServiceType.FRP,
@@ -449,7 +449,7 @@ export class ServiceFactory {
       'Grist': ServiceType.GRIST,
       'NocoDB': ServiceType.NOCODB,
       'JasperReports Server': ServiceType.JASPERREPORTS,
-      'DocuSeal': ServiceType.DOCUSEAL,
+      'Stirling-PDF': ServiceType.STIRLINGPDF,
       'LibreTranslate': ServiceType.LIBRETRANSLATE,
       'Docker Mailserver': ServiceType.MAILSERVER,
       'FRP Client': ServiceType.FRP,

@@ -604,6 +604,50 @@ sudo tailscale up
 
 ## Troubleshooting Ubuntu
 
+### Complete Environment Cleanup
+
+**When HAL installation fails or you need a fresh start:**
+
+```bash
+# 1. Stop all containers
+docker stop $(docker ps -aq)
+
+# 2. Remove all containers
+docker rm $(docker ps -aq)
+
+# 3. Remove all images
+docker rmi $(docker images -q)
+
+# 4. Remove all volumes
+docker volume rm $(docker volume ls -q)
+
+# 5. Remove all networks (except defaults)
+docker network rm $(docker network ls -q)
+
+# 6. Clean Docker system completely
+docker system prune -a --volumes -f
+
+# 7. Remove HAL application data
+sudo rm -rf ~/wsdata/* ~/wsconf/*
+
+# 8. Verify cleanup
+docker ps -a
+docker images
+docker volume ls
+docker network ls
+```
+
+**One-line complete cleanup:**
+```bash
+docker stop $(docker ps -aq) 2>/dev/null; docker rm $(docker ps -aq) 2>/dev/null; docker system prune -a --volumes -f; sudo rm -rf ~/wsdata/* ~/wsconf/*
+```
+
+**After cleanup, reinstall:**
+```bash
+cd hal
+bun run start
+```
+
 ### Firewall Issues (UFW)
 
 **UFW already configured:**

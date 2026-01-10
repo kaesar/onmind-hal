@@ -40,7 +40,7 @@ describe('Template Loading Integration', () => {
 
   describe('Service Templates', () => {
     const coreServices = ['caddy', 'portainer', 'copyparty', 'duckdb'];
-    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'cockpit', 'authelia', 'localstack', 'onedev', 'sonarqube', 'trivy', 'rapidoc', 'grafana', 'loki', 'fluentbit', 'registry', 'nexus', 'vault', 'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'jasperreports', 'docuseal', 'libretranslate', 'mailserver', 'frp'];
+    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'cockpit', 'authelia', 'localstack', 'onedev', 'sonarqube', 'trivy', 'rapidoc', 'grafana', 'loki', 'fluentbit', 'registry', 'nexus', 'vault', 'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'jasperreports', 'stirlingpdf', 'libretranslate', 'mailserver', 'frp'];
     const allServices = [...coreServices, ...optionalServices];
 
     allServices.forEach(service => {

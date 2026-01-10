@@ -271,9 +271,9 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'JasperReports'
     },
     {
-      name: 'DocuSeal - Document signing platform',
-      value: ServiceType.DOCUSEAL,
-      short: 'DocuSeal'
+      name: 'Stirling-PDF - Powerful locally hosted PDF manipulation tool',
+      value: ServiceType.STIRLINGPDF,
+      short: 'Stirling-PDF'
     },
     {
       name: 'LibreTranslate - Free and open source machine translation API',

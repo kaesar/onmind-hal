@@ -125,7 +125,7 @@ describe('ServiceFactory', () => {
       ServiceType.GRIST,
       ServiceType.NOCODB,
       ServiceType.JASPERREPORTS,
-      ServiceType.DOCUSEAL,
+      ServiceType.STIRLINGPDF,
       ServiceType.LIBRETRANSLATE,
       ServiceType.MAILSERVER,
       ServiceType.FRP,

@@ -31,9 +31,8 @@ export class CaddyService extends BaseService {
       // Create config directory
       await mkdir(configDir, { recursive: true });
 
-      // Detect OS and load appropriate template
-      const isMacOS = process.platform === 'darwin';
-      const templateName = isMacOS ? 'config/caddyfile-self-signed' : 'config/caddyfile';
+      // Detect template based on OS and domain
+      const templateName = this.selectCaddyTemplate();
       
       // Load Caddyfile template
       const caddyTemplate = await this.templateEngine.load(templateName);
@@ -48,17 +47,80 @@ export class CaddyService extends BaseService {
       // Render Caddyfile
       const caddyfileContent = this.templateEngine.render(caddyTemplate, caddyContext);
       
-      // Parse the JSON string and convert \n to actual newlines
+      // Parse the JSON string and convert \\n to actual newlines
       const parsedContent = JSON.parse(caddyfileContent);
-      const finalContent = parsedContent.replace(/\\n/g, '\n');
+      const finalContent = parsedContent.replace(/\\\\n/g, '\n');
       
       // Write Caddyfile
       const caddyfilePath = join(configDir, 'Caddyfile');
       await writeFile(caddyfilePath, finalContent);
       
-      console.log(`Generated Caddyfile at ${caddyfilePath}${isMacOS ? ' (macOS with self-signed certs)' : ''}`);
+      console.log(`Generated Caddyfile at ${caddyfilePath} (${this.getCertificateType()})`);
     } catch (error) {
       throw new Error(`Failed to generate Caddyfile: ${error}`);
+    }
+  }
+
+  /**
+   * Select appropriate Caddyfile template based on OS and domain
+   */
+  private selectCaddyTemplate(): string {
+    const isMacOS = process.platform === 'darwin';
+    const isLocalDomain = this.isLocalDomain(this.config.domain);
+    
+    // Use self-signed certificates for macOS or local domains
+    if (isMacOS || isLocalDomain) {
+      return 'config/caddyfile-self-signed';
+    } else {
+      return 'config/caddyfile';
+    }
+  }
+
+  /**
+   * Check if domain is local (.lan, .local, localhost, or private IP ranges)
+   */
+  private isLocalDomain(domain: string): boolean {
+    const localTlds = ['.lan', '.local', 'localhost'];
+    
+    // Check for explicit local TLDs
+    if (localTlds.some(tld => domain.endsWith(tld))) {
+      return true;
+    }
+    
+    // Check if IP is in private ranges
+    const ip = this.config.ip;
+    if (this.isPrivateIP(ip)) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  /**
+   * Check if IP is in private ranges (RFC 1918)
+   */
+  private isPrivateIP(ip: string): boolean {
+    const privateRanges = [
+      /^10\./,                    // 10.0.0.0/8
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./,  // 172.16.0.0/12
+      /^192\.168\./,              // 192.168.0.0/16
+      /^127\./,                   // 127.0.0.0/8 (localhost)
+    ];
+    
+    return privateRanges.some(range => range.test(ip));
+  }
+
+  /**
+   * Get certificate type description
+   */
+  private getCertificateType(): string {
+    const isMacOS = process.platform === 'darwin';
+    const isLocalDomain = this.isLocalDomain(this.config.domain);
+    
+    if (isMacOS || isLocalDomain) {
+      return 'self-signed certificates';
+    } else {
+      return 'Let\'s Encrypt certificates';
     }
   }
 
