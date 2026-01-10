@@ -51,12 +51,14 @@ describe('CaddyService', () => {
     expect(proxyConfig).toContainEqual({
       name: ServiceType.PORTAINER,
       subdomain: 'portainer',
-      port: 9000
+      port: 9000,
+      container: 'portainer'
     });
     expect(proxyConfig).toContainEqual({
       name: ServiceType.N8N,
       subdomain: 'n8n',
-      port: 5678
+      port: 5678,
+      container: 'n8n'
     });
   });
 

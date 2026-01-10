@@ -15,6 +15,6 @@ export class StirlingPDFService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `https://stirlingpdf.${this.config.domain}`;
+    return `https://pdf.${this.config.domain}`;
   }
 }

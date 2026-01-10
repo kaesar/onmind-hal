@@ -2,6 +2,7 @@ import { ServiceType, HomelabConfig } from '../../core/types.js';
 import { TemplateEngine } from '../../templates/engine.js';
 import { BaseService } from '../base.js';
 import { writeFile, mkdir } from 'fs/promises';
+import { NetworkUtils } from '../../utils/network.js';
 import { join } from 'path';
 
 /**
@@ -31,29 +32,12 @@ export class CaddyService extends BaseService {
       // Create config directory
       await mkdir(configDir, { recursive: true });
 
-      // Detect template based on OS and domain
-      const templateName = this.selectCaddyTemplate();
-      
-      // Load Caddyfile template
-      const caddyTemplate = await this.templateEngine.load(templateName);
-      const context = this.getTemplateContext();
-      
-      // Add service-specific context for Caddyfile
-      const caddyContext = {
-        ...context,
-        services: this.getServiceProxyConfig()
-      };
-
-      // Render Caddyfile
-      const caddyfileContent = this.templateEngine.render(caddyTemplate, caddyContext);
-      
-      // Parse the JSON string and convert \\n to actual newlines
-      const parsedContent = JSON.parse(caddyfileContent);
-      const finalContent = parsedContent.replace(/\\\\n/g, '\n');
+      // Generate dynamic Caddyfile content
+      const caddyfileContent = this.generateDynamicCaddyfile();
       
       // Write Caddyfile
       const caddyfilePath = join(configDir, 'Caddyfile');
-      await writeFile(caddyfilePath, finalContent);
+      await writeFile(caddyfilePath, caddyfileContent);
       
       console.log(`Generated Caddyfile at ${caddyfilePath} (${this.getCertificateType()})`);
     } catch (error) {
@@ -62,60 +46,55 @@ export class CaddyService extends BaseService {
   }
 
   /**
-   * Select appropriate Caddyfile template based on OS and domain
+   * Generate dynamic Caddyfile content based on selected services
    */
-  private selectCaddyTemplate(): string {
+  private generateDynamicCaddyfile(): string {
     const isMacOS = process.platform === 'darwin';
-    const isLocalDomain = this.isLocalDomain(this.config.domain);
+    const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
+    const useSelfSigned = isMacOS || isLocalDomain;
     
-    // Use self-signed certificates for macOS or local domains
-    if (isMacOS || isLocalDomain) {
-      return 'config/caddyfile-self-signed';
+    const services = this.getServiceProxyConfig();
+    
+    let content = '# Caddyfile for HomeLab services\n\n';
+    
+    // Global options
+    content += '{\n';
+    if (useSelfSigned) {
+      content += '    # Use self-signed certificates for local development\n';
+      content += '    local_certs\n';
     } else {
-      return 'config/caddyfile';
+      content += '    # Email for Let\'s Encrypt\n';
+      content += `    email admin@${this.config.domain}\n`;
     }
+    content += '}\n\n';
+    
+    // Main domain redirect to portainer
+    content += `# Main domain redirect\n`;
+    content += `${this.config.domain} {\n`;
+    content += `    redir https://portainer.${this.config.domain}\n`;
+    content += '}\n\n';
+    
+    // Generate proxy configurations for selected services
+    if (services.length > 0) {
+      content += '# Installed Services\n';
+      for (const service of services) {
+        content += `${service.subdomain}.${this.config.domain} {\n`;
+        content += `    reverse_proxy ${service.container}:${service.port}\n`;
+        content += '}\n\n';
+      }
+    }
+    
+    return content;
   }
 
-  /**
-   * Check if domain is local (.lan, .local, localhost, or private IP ranges)
-   */
-  private isLocalDomain(domain: string): boolean {
-    const localTlds = ['.lan', '.local', 'localhost'];
-    
-    // Check for explicit local TLDs
-    if (localTlds.some(tld => domain.endsWith(tld))) {
-      return true;
-    }
-    
-    // Check if IP is in private ranges
-    const ip = this.config.ip;
-    if (this.isPrivateIP(ip)) {
-      return true;
-    }
-    
-    return false;
-  }
 
-  /**
-   * Check if IP is in private ranges (RFC 1918)
-   */
-  private isPrivateIP(ip: string): boolean {
-    const privateRanges = [
-      /^10\./,                    // 10.0.0.0/8
-      /^172\.(1[6-9]|2[0-9]|3[0-1])\./,  // 172.16.0.0/12
-      /^192\.168\./,              // 192.168.0.0/16
-      /^127\./,                   // 127.0.0.0/8 (localhost)
-    ];
-    
-    return privateRanges.some(range => range.test(ip));
-  }
 
   /**
    * Get certificate type description
    */
   private getCertificateType(): string {
     const isMacOS = process.platform === 'darwin';
-    const isLocalDomain = this.isLocalDomain(this.config.domain);
+    const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
     
     if (isMacOS || isLocalDomain) {
       return 'self-signed certificates';
@@ -127,17 +106,52 @@ export class CaddyService extends BaseService {
   /**
    * Get proxy configuration for selected services
    */
-  private getServiceProxyConfig(): Array<{name: string, subdomain: string, port: number}> {
+  private getServiceProxyConfig(): Array<{name: string, subdomain: string, port: number, container: string}> {
     const serviceProxyMap = {
-      [ServiceType.PORTAINER]: { subdomain: 'portainer', port: 9000 },
-      [ServiceType.COPYPARTY]: { subdomain: 'files', port: 3923 },
-      [ServiceType.N8N]: { subdomain: 'n8n', port: 5678 },
-      [ServiceType.POSTGRESQL]: null, // No web interface
-      [ServiceType.REDIS]: null, // No web interface
-      [ServiceType.MONGODB]: null, // No web interface
-      [ServiceType.MARIADB]: null, // No web interface
-      [ServiceType.MINIO]: null, // No web interface
-      [ServiceType.OLLAMA]: null, // No web interface
+      // Core services
+      [ServiceType.PORTAINER]: { subdomain: 'portainer', port: 9000, container: 'portainer' },
+      [ServiceType.COPYPARTY]: { subdomain: 'files', port: 3923, container: 'copyparty' },
+      [ServiceType.DUCKDB]: { subdomain: 'duckdb', port: 80, container: 'duckdb' },
+      
+      // Optional services with web interfaces
+      [ServiceType.N8N]: { subdomain: 'n8n', port: 5678, container: 'n8n' },
+      [ServiceType.KESTRA]: { subdomain: 'kestra', port: 8080, container: 'kestra' },
+      [ServiceType.KEYSTONEJS]: { subdomain: 'keystonejs', port: 3000, container: 'keystonejs' },
+      [ServiceType.MINIO]: { subdomain: 'minio', port: 9001, container: 'minio' },
+      [ServiceType.OLLAMA]: { subdomain: 'ollama', port: 11434, container: 'ollama' },
+      [ServiceType.COCKPIT]: { subdomain: 'cockpit', port: 80, container: 'cockpit' },
+      [ServiceType.AUTHELIA]: { subdomain: 'authelia', port: 9091, container: 'authelia' },
+      [ServiceType.RABBITMQ]: { subdomain: 'rabbitmq', port: 15672, container: 'rabbitmq' },
+      [ServiceType.GRAFANA]: { subdomain: 'grafana', port: 3000, container: 'grafana' },
+      [ServiceType.LOKI]: { subdomain: 'loki', port: 3100, container: 'loki' },
+      [ServiceType.TRIVY]: { subdomain: 'trivy', port: 8080, container: 'trivy' },
+      [ServiceType.SONARQUBE]: { subdomain: 'sonarqube', port: 9000, container: 'sonarqube' },
+      [ServiceType.NEXUS]: { subdomain: 'nexus', port: 8081, container: 'nexus' },
+      [ServiceType.VAULT]: { subdomain: 'vault', port: 8200, container: 'vault' },
+      [ServiceType.RAPIDOC]: { subdomain: 'rapidoc', port: 80, container: 'rapidoc' },
+      [ServiceType.PSITRANSFER]: { subdomain: 'psitransfer', port: 3005, container: 'psitransfer' },
+      [ServiceType.EXCALIDRAW]: { subdomain: 'excalidraw', port: 80, container: 'excalidraw' },
+      [ServiceType.DRAWIO]: { subdomain: 'drawio', port: 8088, container: 'drawio' },
+      [ServiceType.KROKI]: { subdomain: 'kroki', port: 8000, container: 'kroki' },
+      [ServiceType.OUTLINE]: { subdomain: 'outline', port: 3000, container: 'outline' },
+      [ServiceType.GRIST]: { subdomain: 'grist', port: 8484, container: 'grist' },
+      [ServiceType.NOCODB]: { subdomain: 'nocodb', port: 8080, container: 'nocodb' },
+      [ServiceType.JASPERREPORTS]: { subdomain: 'jasper', port: 8080, container: 'jasperreports' },
+      [ServiceType.STIRLINGPDF]: { subdomain: 'pdf', port: 8080, container: 'stirlingpdf' },
+      [ServiceType.ONEDEV]: { subdomain: 'onedev', port: 6610, container: 'onedev' },
+      [ServiceType.REGISTRY]: { subdomain: 'registry', port: 5000, container: 'registry' },
+      [ServiceType.LOCALSTACK]: { subdomain: 'localstack', port: 4566, container: 'localstack' },
+      [ServiceType.LIBRETRANSLATE]: { subdomain: 'translate', port: 5000, container: 'libretranslate' },
+      
+      // Services without web interfaces (excluded)
+      [ServiceType.POSTGRESQL]: null,
+      [ServiceType.REDIS]: null,
+      [ServiceType.MONGODB]: null,
+      [ServiceType.MARIADB]: null,
+      [ServiceType.KAFKA]: null,
+      [ServiceType.FLUENTBIT]: null,
+      [ServiceType.MAILSERVER]: null,
+      [ServiceType.FRP]: null
     };
 
     return this.config.selectedServices
@@ -147,12 +161,13 @@ export class CaddyService extends BaseService {
           return {
             name: serviceType,
             subdomain: proxyConfig.subdomain,
-            port: proxyConfig.port
+            port: proxyConfig.port,
+            container: proxyConfig.container
           };
         }
         return null;
       })
-      .filter(config => config !== null) as Array<{name: string, subdomain: string, port: number}>;
+      .filter(config => config !== null) as Array<{name: string, subdomain: string, port: number, container: string}>;
   }
 
   /**

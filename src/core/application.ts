@@ -14,6 +14,7 @@ import { ArchStrategy } from '../distribution/arch.js';
 import { AmazonLinuxStrategy } from '../distribution/amazon.js';
 import { MacOSStrategy } from '../distribution/macos.js';
 import { Logger } from '../utils/logger.js';
+import { NetworkUtils } from '../utils/network.js';
 import { $ } from 'bun';
 
 /**
@@ -322,22 +323,34 @@ export class HomelabApplication {
       console.log(`🐳 Container Runtime: ${this.config.containerRuntime || 'docker'}`);
     }
     
+    // Check if using self-signed certificates (same logic as Caddy service)
+    const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
+    const isMacOS = this.config.distribution === DistributionType.MACOS;
+    const usingSelfSigned = isMacOS || isLocalDomain;
+    
     console.log('\n📋 Installed Services:');
 
     for (const service of this.installedServices) {
-      const accessUrl = service.getAccessUrl();
+      let accessUrl = service.getAccessUrl();
+      
+      // For self-signed certificates, show URLs with note about /etc/hosts configuration
+      if (usingSelfSigned && accessUrl.includes('https://')) {
+        const hostsIP = isMacOS ? '127.0.0.1' : this.config.ip;
+        accessUrl += ` (requires /etc/hosts: ${hostsIP} + subdomain)`;
+      }
+      
       console.log(`   ✓ ${service.name}: ${accessUrl}`);
     }
 
     console.log('\n📚 Next Steps:');
     
-    if (this.config.distribution === DistributionType.MACOS) {
+    if (usingSelfSigned) {
       console.log('   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:');
       console.log('\n   Run: sudo nano /etc/hosts');
       console.log('\n   Then copy and paste these lines:\n');
       
-      // For macOS, use 127.0.0.1 in /etc/hosts since Docker exposes ports on localhost
-      const hostsIP = '127.0.0.1';
+      // Use 127.0.0.1 for macOS, server IP for Linux with self-signed certs
+      const hostsIP = isMacOS ? '127.0.0.1' : this.config.ip;
       console.log(`   ${hostsIP} ${this.config.domain}`);
       
       // Only add /etc/hosts entries for services that have web interfaces (configured in Caddy)
@@ -345,14 +358,15 @@ export class HomelabApplication {
                           'minio', 'ollama', 'cockpit', 'authelia', 'rabbitmq', 'grafana', 
                           'loki', 'trivy', 'sonarqube', 'nexus', 'vault', 'rapidoc', 
                           'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 
-                          'grist', 'nocodb', 'jasperreports', 'onedev', 'registry', 
-                          'localstack', 'docuseal', 'libretranslate'];
+                          'grist', 'nocodb', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 
+                          'localstack', 'libretranslate'];
       
       // Map service types to their subdomain names
       const subdomainMap: Record<string, string> = {
         'copyparty': 'files',
         'portainer': 'portainer',
         'jasperreports': 'jasper',
+        'stirlingpdf': 'pdf',
         'libretranslate': 'translate'
       };
       

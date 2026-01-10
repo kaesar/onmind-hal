@@ -14,12 +14,11 @@
     "setup": [
       "systemctl enable docker",
       "systemctl start docker",
-      "usermod -aG docker $USER",
-      "docker network create {{networkName}}"
+      "usermod -aG docker $USER"
     ],
     "run": "docker --version"
   },
-  "variables": ["networkName"],
+  "variables": [],
   "packageManager": "apt",
   "dependencies": ["curl", "gnupg", "lsb-release"]
 }

@@ -111,7 +111,8 @@ describe('Template Loading Integration', () => {
       const ubuntuTemplate = await loader.loadTemplate('docker/ubuntu');
       const variables = validator.extractRequiredVariables(ubuntuTemplate);
       
-      expect(variables).toContain('networkName');
+      // Docker templates no longer have networkName variable (removed redundancy)
+      expect(variables).toEqual([]);
     });
 
     it('should extract variables from service templates', async () => {
@@ -132,12 +133,13 @@ describe('Template Loading Integration', () => {
   describe('Template Rendering', () => {
     it('should render docker template with variables', async () => {
       const template = await engine.load('docker/ubuntu');
-      const context = { networkName: 'homelab-network' };
+      const context = {}; // No variables needed for docker templates now
       
       const rendered = engine.render(template, context);
       
-      expect(rendered).toContain('homelab-network');
-      expect(rendered).not.toContain('{{networkName}}');
+      // Docker templates should render successfully without variables
+      expect(rendered).toContain('ubuntu-docker');
+      expect(rendered).toContain('systemctl enable docker');
     });
 
     it('should render service template with variables', async () => {
