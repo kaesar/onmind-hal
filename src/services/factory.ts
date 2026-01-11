@@ -6,7 +6,7 @@ import { TemplateEngine } from '../templates/engine.js';
 import { CaddyService } from './core/caddy.js';
 import { PortainerService } from './core/portainer.js';
 import { CopypartyService } from './core/copyparty.js';
-import { DuckDBService } from './core/duckdb.js';
+import { DuckDBService } from './optional/duckdb.js';
 
 // Optional services
 import { PostgreSQLService } from './optional/postgresql.js';
@@ -338,8 +338,7 @@ export class ServiceFactory {
     return [
       ServiceType.CADDY,
       ServiceType.PORTAINER,
-      ServiceType.COPYPARTY,
-      ServiceType.DUCKDB
+      ServiceType.COPYPARTY
     ];
   }
 
@@ -349,6 +348,7 @@ export class ServiceFactory {
    */
   getOptionalServices(): ServiceType[] {
     return [
+      ServiceType.DUCKDB,
       ServiceType.POSTGRESQL,
       ServiceType.REDIS,
       ServiceType.MONGODB,

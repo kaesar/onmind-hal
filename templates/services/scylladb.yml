@@ -1,0 +1,31 @@
+name: ScyllaDB
+description: NoSQL Cassandra-compatible and DynamoDB-compatible database
+commands:
+  install:
+    - docker pull scylladb/scylla:latest
+  setup:
+    - docker volume create scylladb_data
+  run: |-
+    docker run \
+          -d \
+          --name scylladb \
+          --network {{NETWORK_NAME}} \
+          -p 9042:9042 \
+          -p 9160:9160 \
+          -p 7000:7000 \
+          -p 7001:7001 \
+          -v scylladb_data:/var/lib/scylla \
+          --restart unless-stopped \
+          scylladb/scylla:latest
+variables:
+  - NETWORK_NAME
+volumes:
+  - scylladb_data:/var/lib/scylla
+ports:
+  - "9042:9042"
+  - "9160:9160"
+  - "7000:7000"
+  - "7001:7001"
+accessUrl: cql://{{IP}}:9042
+dependencies: []
+isCore: false

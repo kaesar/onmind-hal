@@ -16,8 +16,8 @@ export class TemplateEngine {
   }
 
   /**
-   * Load a template from JSON file
-   * @param templateName Name of the template file (without .json extension)
+   * Load a template from YAML or JSON file
+   * @param templateName Name of the template file (without extension)
    * @returns Promise<Template>
    */
   async load(templateName: string): Promise<Template> {
@@ -27,9 +27,20 @@ export class TemplateEngine {
     }
 
     try {
-      const templatePath = join(this.templateDir, `${templateName}.json`);
-      const fileContent = await readFile(templatePath, 'utf-8');
-      const templateData = JSON.parse(fileContent);
+      // Try YAML first, then JSON
+      let templatePath = join(this.templateDir, `${templateName}.yml`);
+      let fileContent: string;
+      let templateData: any;
+      
+      try {
+        fileContent = await readFile(templatePath, 'utf-8');
+        templateData = Bun.YAML.parse(fileContent);
+      } catch (yamlError) {
+        // Fallback to JSON
+        templatePath = join(this.templateDir, `${templateName}.json`);
+        fileContent = await readFile(templatePath, 'utf-8');
+        templateData = JSON.parse(fileContent);
+      }
 
       // Validate basic template structure
       this.validateTemplateStructure(templateName, templateData);
@@ -46,10 +57,10 @@ export class TemplateEngine {
       return template;
     } catch (error) {
       if (error instanceof SyntaxError) {
-        throw new TemplateError(templateName, `Invalid JSON format: ${error.message}`);
+        throw new TemplateError(templateName, `Invalid format: ${error.message}`);
       }
       if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-        throw new TemplateError(templateName, `Template file not found: ${templateName}.json`);
+        throw new TemplateError(templateName, `Template file not found: ${templateName}.yml or ${templateName}.json`);
       }
       throw new TemplateError(templateName, `Failed to load template: ${error}`);
     }

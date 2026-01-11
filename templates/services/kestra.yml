@@ -1,0 +1,41 @@
+name: Kestra
+description: Orchestration and scheduling platform
+commands:
+  install:
+    - docker pull kestra/kestra:latest
+  setup:
+    - mkdir -p ~/wsdata/kestra/data
+    - |-
+      cat > ~/wsdata/kestra/application.yml << 'EOF'
+      kestra:
+        storage:
+          type: local
+          local:
+            base-path: /app/storage
+        queue:
+          type: memory
+        repository:
+          type: memory
+        server:
+          basic-auth:
+            enabled: false
+        datasources:
+          postgres:
+            url: jdbc:h2:mem:public;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+            driverClassName: org.h2.Driver
+            username: sa
+            password: ""
+      EOF
+  run: |-
+    docker run \
+          -d \
+          --name kestra \
+          --network {{NETWORK_NAME}} \
+          -p 8080:8080 \
+          -v ~/wsdata/kestra/data:/app/storage \
+          -v ~/wsdata/kestra/application.yml:/app/confs/application.yml \
+          -v /var/run/docker.sock:/var/run/docker.sock kestra/kestra:latest server standalone \
+          --config=/app/confs/application.yml
+variables:
+  - NETWORK_NAME
+dependencies: []

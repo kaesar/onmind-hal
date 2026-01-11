@@ -82,7 +82,7 @@ describe('TemplateEngine', () => {
       );
 
       await expect(engine.load('invalid')).rejects.toThrow(TemplateError);
-      await expect(engine.load('invalid')).rejects.toThrow('Invalid JSON format');
+      await expect(engine.load('invalid')).rejects.toThrow('Invalid format');
     });
   });
 

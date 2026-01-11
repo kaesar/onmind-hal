@@ -1,0 +1,20 @@
+name: OneDev
+description: Self-hosted Git server with CI/CD
+commands:
+  install:
+    - docker pull 1dev/server:latest
+  setup:
+    - mkdir -p ~/wsdata/onedev/data
+  run: |-
+    docker run \
+          -d \
+          --name onedev \
+          --network {{NETWORK_NAME}} \
+          -p 6610:6610 \
+          -p 6611:6611 \
+          -v ~/wsdata/onedev/data:/opt/onedev \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          1dev/server:latest
+variables:
+  - NETWORK_NAME
+dependencies: []

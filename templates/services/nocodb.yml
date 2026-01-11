@@ -1,0 +1,19 @@
+name: NocoDB
+description: Open-source Airtable alternative - Smart spreadsheet
+commands:
+  install:
+    - docker pull nocodb/nocodb:latest
+  setup:
+    - mkdir -p ~/wsdata/nocodb/data
+  run: |-
+    docker run \
+          -d \
+          --name nocodb \
+          --network {{NETWORK_NAME}} \
+          -p 8083:8080 \
+          -v ~/wsdata/nocodb/data:/usr/app/data \
+          --restart unless-stopped \
+          nocodb/nocodb:latest
+variables:
+  - NETWORK_NAME
+dependencies: []

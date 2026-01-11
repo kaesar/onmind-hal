@@ -140,7 +140,7 @@ src/
     ├── shell.ts            # Shell command execution
     └── validation.ts       # Input validation and security
 
-templates/                  # JSON configuration templates
+templates/                  # YAML configuration templates
 ├── services/               # Service-specific templates
 └── config/                 # System configuration templates
 
@@ -231,24 +231,33 @@ export class ServiceFactory {
 
 ### 4. Create Service Template
 
-Create `templates/services/mongodb.json`:
+Create `templates/services/mongodb.yml`:
 
-```json
-{
-  "name": "MongoDB Database Server",
-  "description": "NoSQL document database",
-  "commands": {
-    "install": [
-      "docker pull mongo:latest"
-    ],
-    "setup": [
-      "mkdir -p /opt/homelab/mongodb/data"
-    ],
-    "run": "docker run -d --name mongodb --network {{NETWORK_NAME}} -p 27017:27017 -v /opt/homelab/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD={{STORAGE_PASSWORD}} mongo:latest"
-  },
-  "variables": ["NETWORK_NAME", "STORAGE_PASSWORD"],
-  "dependencies": []
-}
+```yaml
+name: MongoDB Database Server
+description: NoSQL document database
+
+commands:
+  install:
+    - docker pull mongo:latest
+  setup:
+    - mkdir -p /opt/homelab/mongodb/data
+  run: |
+    docker run -d \
+      --name mongodb \
+      --network {{NETWORK_NAME}} \
+      -p 27017:27017 \
+      -v /opt/homelab/mongodb/data:/data/db \
+      -e MONGO_INITDB_ROOT_USERNAME=admin \
+      -e MONGO_INITDB_ROOT_PASSWORD={{STORAGE_PASSWORD}} \
+      --restart=always \
+      mongo:latest
+
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+
+dependencies: []
 ```
 
 > **Configuration Variables**: Variables like `{{NETWORK_NAME}}` and `{{STORAGE_PASSWORD}}` are dynamically replaced by the `TemplateEngine` using values from the `HomelabConfig` object, which is populated during the interactive setup.

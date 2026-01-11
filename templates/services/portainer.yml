@@ -1,0 +1,27 @@
+name: portainer-service
+description: Portainer Docker management interface
+commands:
+  install:
+    - docker pull portainer/portainer-ce:latest
+  setup:
+    - docker volume create portainer_data
+  run: |-
+    docker run \
+          -d \
+          --name portainer \
+          --network {{NETWORK_NAME}} \
+          -p 9000:9000 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v portainer_data:/data \
+          portainer/portainer-ce:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+ports:
+  - "9000:9000"
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock
+  - portainer_data:/data
+accessUrl: https://portainer.{{DOMAIN}}
+dependencies: []
+isCore: true

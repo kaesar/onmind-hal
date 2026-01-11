@@ -1,0 +1,16 @@
+name: Excalidraw
+description: Virtual whiteboard for sketching diagrams
+commands:
+  install:
+    - docker pull excalidraw/excalidraw:latest
+  setup: []
+  run: |-
+    docker run \
+          -d \
+          --name excalidraw \
+          --network {{NETWORK_NAME}} \
+          -p 8082:80 \
+          excalidraw/excalidraw:latest
+variables:
+  - NETWORK_NAME
+dependencies: []

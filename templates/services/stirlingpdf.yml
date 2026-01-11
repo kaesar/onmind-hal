@@ -1,0 +1,18 @@
+name: Stirling-PDF
+description: Powerful locally hosted web-based PDF manipulation tool
+commands:
+  install:
+    - docker pull frooodle/s-pdf:latest
+  setup:
+    - mkdir -p ~/wsdata/stirlingpdf/data
+  run: |-
+    docker run \
+          -d \
+          --name stirlingpdf \
+          --network {{NETWORK_NAME}} \
+          -p 8089:8080 \
+          -v ~/wsdata/stirlingpdf/data:/usr/share/tessdata \
+          frooodle/s-pdf:latest
+variables:
+  - NETWORK_NAME
+dependencies: []

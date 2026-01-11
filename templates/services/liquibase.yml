@@ -1,0 +1,19 @@
+name: Liquibase
+description: Database schema change management and version control
+commands:
+  install:
+    - docker pull liquibase/liquibase:latest
+  setup:
+    - docker volume create liquibase_data
+  run: |-
+    docker run \
+          -d \
+          --name liquibase \
+          --network {{NETWORK_NAME}} \
+          -p 8091:8080 \
+          -v liquibase_data:/liquibase/changelog \
+          --restart=always liquibase/liquibase:latest \
+          --defaultsFile=/liquibase/liquibase.properties
+variables:
+  - NETWORK_NAME
+dependencies: []

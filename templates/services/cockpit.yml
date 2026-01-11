@@ -1,0 +1,20 @@
+name: Cockpit CMS
+description: Headless CMS with PHP Apache
+commands:
+  install:
+    - mkdir -p ~/wsdata/cockpit-build
+    - cp templates/dockerfiles/cockpit-php.dockerfile ~/wsdata/cockpit-build/Dockerfile
+    - cd ~/wsdata/cockpit-build && docker build -t cockpit-php:latest .
+  setup:
+    - mkdir -p ~/wsdata/cockpit/storage
+    - chmod -R 777 ~/wsdata/cockpit/storage
+  run: |-
+    docker run \
+          -d \
+          --name cockpit \
+          --network {{NETWORK_NAME}} \
+          -p 8090:80 \
+          -v ~/wsdata/cockpit/storage:/var/www/html/storage cockpit-php:latest
+variables:
+  - NETWORK_NAME
+dependencies: []

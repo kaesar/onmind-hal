@@ -7,7 +7,7 @@ export class DuckDBService extends BaseService {
     super(
       'DuckDB',
       ServiceType.DUCKDB,
-      false,
+      false, // optional service
       [],
       config,
       templateEngine

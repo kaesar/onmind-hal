@@ -1,0 +1,55 @@
+name: Fluent Bit
+description: Lightweight log processor and forwarder (with Loki output)
+commands:
+  install:
+    - docker pull fluent/fluent-bit:latest
+  setup:
+    - mkdir -p ~/wsdata/fluentbit/config
+    - |-
+      cat > ~/wsdata/fluentbit/config/fluent-bit.conf << 'EOF'
+      [SERVICE]
+          Flush        5
+          Daemon       Off
+          Log_Level    info
+          HTTP_Server  On
+          HTTP_Listen  0.0.0.0
+          HTTP_Port    2020
+
+      [INPUT]
+          Name              forward
+          Listen            0.0.0.0
+          Port              24224
+
+      [INPUT]
+          Name              tail
+          Path              /var/log/*.log
+          Tag               host.*
+
+      [OUTPUT]
+          Name              stdout
+          Match             *
+          Format            json_lines
+
+      [OUTPUT]
+          Name              loki
+          Match             *
+          Host              loki
+          Port              3100
+          Labels            job=fluentbit
+          Auto_Kubernetes_Labels off
+      EOF
+  run: |-
+    docker run \
+          -d \
+          --name fluentbit \
+          --network {{NETWORK_NAME}} \
+          -p 2020:2020 \
+          -p 24224:24224 \
+          -v ~/wsdata/fluentbit/config:/fluent-bit/etc \
+          -v /var/log:/var/log:ro \
+          -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
+          --restart unless-stopped \
+          fluent/fluent-bit:latest
+variables:
+  - NETWORK_NAME
+dependencies: []

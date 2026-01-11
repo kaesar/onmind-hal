@@ -69,13 +69,12 @@ describe('ServiceFactory', () => {
     const services = factory.createServices(config);
     
     // Should include all core services + selected optional services
-    expect(services).toHaveLength(6); // 4 core + 2 selected optional
+    expect(services).toHaveLength(5); // 3 core + 2 selected optional
     
     const serviceTypes = services.map(s => s.type);
     expect(serviceTypes).toContain(ServiceType.CADDY);
     expect(serviceTypes).toContain(ServiceType.PORTAINER);
     expect(serviceTypes).toContain(ServiceType.COPYPARTY);
-    expect(serviceTypes).toContain(ServiceType.DUCKDB);
     expect(serviceTypes).toContain(ServiceType.N8N);
     expect(serviceTypes).toContain(ServiceType.POSTGRESQL);
   });
@@ -85,14 +84,14 @@ describe('ServiceFactory', () => {
     expect(coreServices).toEqual([
       ServiceType.CADDY,
       ServiceType.PORTAINER,
-      ServiceType.COPYPARTY,
-      ServiceType.DUCKDB
+      ServiceType.COPYPARTY
     ]);
   });
 
   it('should return correct optional services', () => {
     const optionalServices = factory.getOptionalServices();
     expect(optionalServices).toEqual([
+      ServiceType.DUCKDB,
       ServiceType.POSTGRESQL,
       ServiceType.REDIS,
       ServiceType.MONGODB,

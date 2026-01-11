@@ -111,6 +111,11 @@ export async function promptForNetworkName(): Promise<string> {
 export async function promptForOptionalServices(): Promise<ServiceType[]> {
   const optionalServices = [
     {
+      name: 'DuckDB - In-memory analytical database with web UI',
+      value: ServiceType.DUCKDB,
+      short: 'DuckDB'
+    },
+    {
       name: 'PostgreSQL - SQL database server (alternative to Oracle DB)',
       value: ServiceType.POSTGRESQL,
       short: 'PostgreSQL'
@@ -381,8 +386,8 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
     storagePassword = await promptForStoragePassword();
   }
 
-  // Core services are always included
-  const coreServices = [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY, ServiceType.DUCKDB];
+  // Core services are always included (no longer includes DuckDB)
+  const coreServices = [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY];
   const selectedServices = [...coreServices, ...optionalServices];
 
   return {

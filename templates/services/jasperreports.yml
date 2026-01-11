@@ -1,0 +1,20 @@
+name: JasperReports Server
+description: Business intelligence and reporting platform
+commands:
+  install:
+    - docker pull tomcat:9-jdk11
+  setup:
+    - mkdir -p ~/wsdata/jasperreports/data
+    - echo 'JasperReports requires manual setup. Access Tomcat at port 8081 and deploy JasperReports WAR manually.'
+  run: |-
+    docker run \
+          -d \
+          --name jasperreports \
+          --network {{NETWORK_NAME}} \
+          -p 8081:8080 \
+          -e CATALINA_OPTS='-Xmx2g \
+          -Xms1g' \
+          -v ~/wsdata/jasperreports/data:/usr/local/tomcat/webapps tomcat:9-jdk11
+variables:
+  - NETWORK_NAME
+dependencies: []
