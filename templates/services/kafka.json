@@ -6,7 +6,6 @@
       "docker pull apache/kafka:3.8.1"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/kafka/data"
     ],
     "run": "docker run -d --name kafka --network {{NETWORK_NAME}} -p 9092:9092 -v ~/wsdata/kafka/data:/var/lib/kafka/data -e KAFKA_NODE_ID=1 -e KAFKA_PROCESS_ROLES=broker,controller -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://{{IP}}:9092 -e KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT -e KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9093 -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 -e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 -e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 -e CLUSTER_ID=kafka-homelab-cluster apache/kafka:3.8.1"

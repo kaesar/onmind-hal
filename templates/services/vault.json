@@ -6,7 +6,6 @@
       "docker pull hashicorp/vault:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/vault/data",
       "mkdir -p ~/wsdata/vault/config"
     ],

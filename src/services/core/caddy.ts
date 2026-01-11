@@ -152,6 +152,7 @@ export class CaddyService extends BaseService {
       [ServiceType.REDIS]: null,
       [ServiceType.MONGODB]: null,
       [ServiceType.MARIADB]: null,
+      [ServiceType.SCYLLADB]: null,
       [ServiceType.KAFKA]: null,
       [ServiceType.FLUENTBIT]: null,
       [ServiceType.MAILSERVER]: null,

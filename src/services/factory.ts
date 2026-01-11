@@ -13,6 +13,7 @@ import { PostgreSQLService } from './optional/postgresql.js';
 import { RedisService } from './optional/redis.js';
 import { MongoDBService } from './optional/mongodb.js';
 import { MariaDBService } from './optional/mariadb.js';
+import { ScyllaDBService } from './optional/scylladb.js';
 import { MinioService } from './optional/minio.js';
 import { KafkaService } from './optional/kafka.js';
 import { RabbitMQService } from './optional/rabbitmq.js';
@@ -98,6 +99,9 @@ export class ServiceFactory {
         break;
       case ServiceType.MARIADB:
         service = new MariaDBService(config, this.templateEngine);
+        break;
+      case ServiceType.SCYLLADB:
+        service = new ScyllaDBService(config, this.templateEngine);
         break;
       case ServiceType.MINIO:
         service = new MinioService(config, this.templateEngine);
@@ -333,6 +337,7 @@ export class ServiceFactory {
       ServiceType.REDIS,
       ServiceType.MONGODB,
       ServiceType.MARIADB,
+      ServiceType.SCYLLADB,
       ServiceType.MINIO,
       ServiceType.KAFKA,
       ServiceType.RABBITMQ,
@@ -379,7 +384,7 @@ export class ServiceFactory {
     if (config.selectedServices.includes(ServiceType.POSTGRESQL) || 
         config.selectedServices.includes(ServiceType.MARIADB) || 
         config.selectedServices.includes(ServiceType.MONGODB)) {
-      if (!config.databasePassword || config.databasePassword.trim() === '') {
+      if (!config.storagePassword || config.storagePassword.trim() === '') {
         throw new ServiceInstallationError(
           ServiceType.CADDY, // Use a generic service type for this combined error
           'Database service (PostgreSQL, MariaDB, or MongoDB) is selected but no database password is provided in configuration'
@@ -427,6 +432,7 @@ export class ServiceFactory {
       'Redis': ServiceType.REDIS,
       'MongoDB': ServiceType.MONGODB,
       'MariaDB': ServiceType.MARIADB,
+      'ScyllaDB': ServiceType.SCYLLADB,
       'Minio': ServiceType.MINIO,
       'Kafka': ServiceType.KAFKA,
       'RabbitMQ': ServiceType.RABBITMQ,

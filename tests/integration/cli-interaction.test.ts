@@ -41,7 +41,7 @@ describe('CLI Interface Integration', () => {
         domain: 'homelab.local',
         networkName: 'homelab-network',
         selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY],
-        databasePassword: undefined
+        storagePassword: undefined
       };
 
       cli.setConfig(mockConfig);
@@ -74,7 +74,7 @@ describe('CLI Interface Integration', () => {
           //ServiceType.MINIO,
           //ServiceType.OLLAMA,
         ],
-        databasePassword: 'securepassword123'
+        storagePassword: 'securepassword123'
       };
 
       cli.setConfig(mockConfig);
@@ -82,7 +82,7 @@ describe('CLI Interface Integration', () => {
 
       expect(result.selectedServices).toContain(ServiceType.N8N);
       expect(result.selectedServices).toContain(ServiceType.POSTGRESQL);
-      expect(result.databasePassword).toBe('securepassword123');
+      expect(result.storagePassword).toBe('securepassword123');
     });
   });
 
@@ -174,7 +174,7 @@ describe('CLI Interface Integration', () => {
           ServiceType.COPYPARTY,
           ServiceType.N8N
         ],
-        databasePassword: undefined
+        storagePassword: undefined
       };
 
       cli.setConfig(mockConfig);
@@ -192,13 +192,13 @@ describe('CLI Interface Integration', () => {
         domain: 'homelab.local',
         networkName: 'homelab-network',
         selectedServices: [ServiceType.CADDY, ServiceType.POSTGRESQL],
-        databasePassword: 'secret123'
+        storagePassword: 'secret123'
       };
 
       cli.setConfig(mockConfig);
       await (cli as any).displayConfigurationSummary();
 
-      expect(consoleSpy.log).toHaveBeenCalledWith('   🔐 Database password: [CONFIGURED]');
+      expect(consoleSpy.log).toHaveBeenCalledWith('   🔐 Storage password: [CONFIGURED]');
     });
   });
 

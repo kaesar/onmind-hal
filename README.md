@@ -28,39 +28,40 @@
 2. **Redis**: In-memory data store and cache
 3. **MongoDB**: NoSQL database server
 4. **MariaDB**: Relational database server
-5. **Minio**: S3-compatible object storage
-6. **Kafka**: Distributed streaming platform (with KRaft)
-7. **RabbitMQ**: Message broker for distributed systems
-8. **Ollama**: Server for your LLM
-9. **n8n**: Workflow automation platform
-10. **Kestra**: Orchestration and scheduling platform
-11. **KeystoneJS**: Modern headless CMS and GraphQL API
-12. **Cockpit-CMS**: Headless CMS with PHP Apache
-13. **Authelia**: Authentication and authorization server
-14. **LocalStack**: Local AWS cloud stack for development
-15. **OneDev**: Self-hosted Git server with CI/CD
-16. **SonarQube**: Code quality and security analysis (port 9002)
-17. **Trivy**: Container security scanner (port 8087)
-18. **RapiDoc**: WebComponent for OpenAPI Spec viewer
-19. **Grafana**: Analytics and monitoring platform
-20. **Loki**: Log aggregation system by Grafana Labs
-21. **Fluent-Bit**: Lightweight log processor and forwarder
-22. **Registry**: Private Docker container registry
-23. **Nexus-Repository**: Universal artifact repository manager
-24. **Vault**: Secrets and encryption management (HashiCorp)
-25. **PsiTransfer**: File sharing platform (like WeTransfer)
-26. **Excalidraw**: Virtual whiteboard for sketching diagrams
-27. **Draw.io**: Web-based diagramming application
-28. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
-29. **Outline**: Team knowledge base and wiki
-30. **Grist**: Modern spreadsheet with relational database capabilities
-31. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
-32. **Plane**: Modern project management platform (like Jira)
-33. **JasperReports**: Business intelligence and reporting platform
-34. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
-35. **LibreTranslate**: Free and open source machine translation API
-36. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
-37. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
+5. **ScyllaDB**: NoSQL Cassandra-compatible and DynamoDB-compatible database
+6. **Minio**: S3-compatible object storage
+7. **Kafka**: Distributed streaming platform (with KRaft)
+8. **RabbitMQ**: Message broker for distributed systems
+9. **Ollama**: Server for your LLM
+10. **n8n**: Workflow automation platform
+11. **Kestra**: Orchestration and scheduling platform
+12. **KeystoneJS**: Modern headless CMS and GraphQL API
+13. **Cockpit-CMS**: Headless CMS with PHP Apache
+14. **Authelia**: Authentication and authorization server
+15. **LocalStack**: Local AWS cloud stack for development
+16. **OneDev**: Self-hosted Git server with CI/CD
+17. **SonarQube**: Code quality and security analysis (port 9002)
+18. **Trivy**: Container security scanner (port 8087)
+19. **RapiDoc**: WebComponent for OpenAPI Spec viewer
+20. **Grafana**: Analytics and monitoring platform
+21. **Loki**: Log aggregation system by Grafana Labs
+22. **Fluent-Bit**: Lightweight log processor and forwarder
+23. **Registry**: Private Docker container registry
+24. **Nexus-Repository**: Universal artifact repository manager
+25. **Vault**: Secrets and encryption management (HashiCorp)
+26. **PsiTransfer**: File sharing platform (like WeTransfer)
+27. **Excalidraw**: Virtual whiteboard for sketching diagrams
+28. **Draw.io**: Web-based diagramming application
+29. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
+30. **Outline**: Team knowledge base and wiki
+31. **Grist**: Modern spreadsheet with relational database capabilities
+32. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
+33. **Plane**: Modern project management platform (like Jira) ⚠️ *May not work on ARM64 architecture*
+34. **JasperReports**: Business intelligence and reporting platform
+35. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
+36. **LibreTranslate**: Free and open source machine translation API
+37. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
+38. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
 
 > *Perhaps, I will consider includes in a future*: Vaultwarden (Bitwarden), Zulip, Jitsi, DocuSeal
 

@@ -37,7 +37,7 @@ describe('MongoDBService', () => {
     });
 
     it('should return correct MongoDB connection URL with password', () => {
-      mockConfig.databasePassword = 'secure-password';
+      mockConfig.storagePassword = 'secure-password';
       service = new MongoDBService(mockConfig, mockTemplateEngine);
       const expectedUrl = 'mongodb://admin:secure-password@192.168.1.100:27017/admin';
       expect(service.getAccessUrl()).toBe(expectedUrl);

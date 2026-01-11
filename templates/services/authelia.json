@@ -6,7 +6,6 @@
       "docker pull authelia/authelia:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/authelia/config",
       "mkdir -p ~/wsdata/authelia/data"
     ],

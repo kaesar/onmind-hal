@@ -22,7 +22,7 @@ curl -fsSL https://bun.com/install | bash
 #### macOS
 - macOS 11.0+ (Big Sur or later)
 - One of the following container runtimes:
-  - **Colima** (Recommended): `brew install colima && colima start`
+  - **Colima** (Recommended): `brew install colima && colima start --cpu 4 --memory 8 --disk 60`
   - **Podman**: `brew install podman && podman machine init && podman machine start`
   - **Docker Desktop**: [Download](https://www.docker.com/products/docker-desktop)
 - Homebrew package manager
@@ -106,6 +106,7 @@ curl -fsSL https://bun.com/install | bash
 > - Use the container runtime of your choice (Colima recommended for corporate environments)
 > - HAL will detect and use your installed runtime automatically
 > - **Important**: Colima needs at least 60GB disk space and 8GB RAM when installing all services. If you get "no space left" errors, recreate Colima with more resources: `colima delete && colima start --cpu 4 --memory 8 --disk 60`
+> - **Architecture Warning**: Some services (like Plane) may not work properly on ARM64 architecture due to Docker image compatibility. Consider using an x86_64 system for full compatibility.
 
 ## Project Structure
 
@@ -241,17 +242,16 @@ Create `templates/services/mongodb.json`:
       "docker pull mongo:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p /opt/homelab/mongodb/data"
     ],
-    "run": "docker run -d --name mongodb --network {{NETWORK_NAME}} -p 27017:27017 -v /opt/homelab/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD={{MONGODB_PASSWORD}} mongo:latest"
+    "run": "docker run -d --name mongodb --network {{NETWORK_NAME}} -p 27017:27017 -v /opt/homelab/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD={{STORAGE_PASSWORD}} mongo:latest"
   },
-  "variables": ["NETWORK_NAME", "MONGODB_PASSWORD"],
+  "variables": ["NETWORK_NAME", "STORAGE_PASSWORD"],
   "dependencies": []
 }
 ```
 
-> **Configuration Variables**: Variables like `{{NETWORK_NAME}}` and `{{MONGODB_PASSWORD}}` are dynamically replaced by the `TemplateEngine` using values from the `HomelabConfig` object, which is populated during the interactive setup.
+> **Configuration Variables**: Variables like `{{NETWORK_NAME}}` and `{{STORAGE_PASSWORD}}` are dynamically replaced by the `TemplateEngine` using values from the `HomelabConfig` object, which is populated during the interactive setup.
 
 ### 5. Update CLI Prompts (Optional)
 
@@ -651,29 +651,26 @@ docker restart caddy
 
 **When HAL installation fails or you need a fresh start:**
 
+1. Stop all containers
+2. Remove all containers
+3. Remove all images
+4. Remove all volumes
+5. Remove all networks (except defaults)
+6. Clean Docker system completely
+7. Remove HAL application data
+8. Verify cleanup (if you want it)
+
+This means, execute the next commands:
+
 ```bash
-# 1. Stop all containers
 docker stop $(docker ps -aq)
-
-# 2. Remove all containers
 docker rm $(docker ps -aq)
-
-# 3. Remove all images
 docker rmi $(docker images -q)
-
-# 4. Remove all volumes
 docker volume rm $(docker volume ls -q)
-
-# 5. Remove all networks (except defaults)
 docker network rm $(docker network ls -q)
-
-# 6. Clean Docker system completely
 docker system prune -a --volumes -f
-
-# 7. Remove HAL application data
 sudo rm -rf ~/wsdata/* ~/wsconf/*
 
-# 8. Verify cleanup
 docker ps -a
 docker images
 docker volume ls

@@ -10,12 +10,17 @@
       "docker pull postgres:15-alpine"
     ],
     "setup": [
-      "mkdir -p ~/wsdata/plane/pgdata",
-      "mkdir -p ~/wsdata/plane/redisdata",
-      "mkdir -p ~/wsdata/plane/uploads"
+      "docker volume create plane-db_data",
+      "docker volume create plane-redis_data",
+      "docker volume create plane_uploads"
     ],
-    "run": "docker run -d --name plane-db --network {{NETWORK_NAME}} -e POSTGRES_USER=plane -e POSTGRES_PASSWORD={{DATABASE_PASSWORD}} -e POSTGRES_DB=plane -v ~/wsdata/plane/pgdata:/var/lib/postgresql/data --restart unless-stopped postgres:15-alpine && docker run -d --name plane-redis --network {{NETWORK_NAME}} -v ~/wsdata/plane/redisdata:/data --restart unless-stopped redis:7.2-alpine && docker run -d --name plane-worker --network {{NETWORK_NAME}} -e DATABASE_URL=postgresql://plane:{{DATABASE_PASSWORD}}@plane-db/plane -e REDIS_URL=redis://plane-redis:6379/ -e WEB_URL=https://plane.{{DOMAIN}} --restart unless-stopped makeplane/plane-worker:latest && docker run -d --name plane-backend --network {{NETWORK_NAME}} -e DATABASE_URL=postgresql://plane:{{DATABASE_PASSWORD}}@plane-db/plane -e REDIS_URL=redis://plane-redis:6379/ -e WEB_URL=https://plane.{{DOMAIN}} -e CORS_ALLOWED_ORIGINS=https://plane.{{DOMAIN}} --restart unless-stopped makeplane/plane-backend:latest && docker run -d --name plane-frontend --network {{NETWORK_NAME}} -p 8084:3000 -e NEXT_PUBLIC_API_BASE_URL=https://plane.{{DOMAIN}} --restart unless-stopped makeplane/plane-frontend:latest"
+    "run": "docker run -d --name plane-db --network {{NETWORK_NAME}} -e POSTGRES_USER=plane -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} -e POSTGRES_DB=plane -v plane-db_data:/var/lib/postgresql/data --restart unless-stopped postgres:15-alpine && docker run -d --name plane-redis --network {{NETWORK_NAME}} -v plane-redis_data:/data --restart unless-stopped redis:7.2-alpine && docker run -d --name plane-worker --network {{NETWORK_NAME}} -e DATABASE_URL=postgresql://plane:{{STORAGE_PASSWORD}}@plane-db/plane -e REDIS_URL=redis://plane-redis:6379/ -e WEB_URL=https://plane.{{DOMAIN}} --restart unless-stopped makeplane/plane-worker:latest && docker run -d --name plane-backend --network {{NETWORK_NAME}} -e DATABASE_URL=postgresql://plane:{{STORAGE_PASSWORD}}@plane-db/plane -e REDIS_URL=redis://plane-redis:6379/ -e WEB_URL=https://plane.{{DOMAIN}} -e CORS_ALLOWED_ORIGINS=https://plane.{{DOMAIN}} --restart unless-stopped makeplane/plane-backend:latest && docker run -d --name plane-frontend --network {{NETWORK_NAME}} -p 8084:3000 -e NEXT_PUBLIC_API_BASE_URL=https://plane.{{DOMAIN}} --restart unless-stopped makeplane/plane-frontend:latest"
   },
-  "variables": ["NETWORK_NAME", "DATABASE_PASSWORD", "DOMAIN"],
+  "variables": ["NETWORK_NAME", "STORAGE_PASSWORD", "DOMAIN"],
+  "volumes": [
+    "plane-db_data:/var/lib/postgresql/data",
+    "plane-redis_data:/data",
+    "plane_uploads:/opt/plane/uploads"
+  ],
   "dependencies": []
 }

@@ -6,7 +6,6 @@
       "docker pull registry:2"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/registry/data",
       "mkdir -p ~/wsdata/registry/auth"
     ],

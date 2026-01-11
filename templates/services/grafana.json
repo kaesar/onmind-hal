@@ -6,11 +6,16 @@
       "docker pull grafana/grafana:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
-      "mkdir -p ~/wsdata/grafana/data"
+      "docker volume create grafana_data"
     ],
-    "run": "docker run -d --name grafana --network {{NETWORK_NAME}} -p 3001:3000 -v ~/wsdata/grafana/data:/var/lib/grafana -e GF_SECURITY_ADMIN_PASSWORD=admin --restart unless-stopped grafana/grafana:latest"
+    "run": "docker run -d --name grafana --network {{NETWORK_NAME}} -p 3001:3000 -v grafana_data:/var/lib/grafana -e GF_SECURITY_ADMIN_PASSWORD=admin --restart unless-stopped grafana/grafana:latest"
   },
   "variables": ["NETWORK_NAME"],
+  "volumes": [
+    "grafana_data:/var/lib/grafana"
+  ],
+  "environment": {
+    "GF_SECURITY_ADMIN_PASSWORD": "admin"
+  },
   "dependencies": []
 }

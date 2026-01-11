@@ -24,7 +24,7 @@ export class PostgreSQLService extends BaseService {
    */
   async install(): Promise<void> {
     // Validate that postgres password is set
-    if (!this.config.databasePassword || this.config.databasePassword.trim() === '') {
+    if (!this.config.storagePassword || this.config.storagePassword.trim() === '') {
       throw new ServiceInstallationError(
         ServiceType.POSTGRESQL,
         'PostgreSQL password is required but not provided in configuration'
@@ -47,10 +47,10 @@ export class PostgreSQLService extends BaseService {
    * Get PostgreSQL connection URL
    */
   getAccessUrl(): string {
-    if (!this.config.databasePassword) {
+    if (!this.config.storagePassword) {
       return 'postgresql://homelab:PASSWORD_NOT_SET@' + this.config.ip + ':5432/homelab';
     }
-    return `postgresql://homelab:${this.config.databasePassword}@${this.config.ip}:5432/homelab`;
+    return `postgresql://homelab:${this.config.storagePassword}@${this.config.ip}:5432/homelab`;
   }
 
   /**
@@ -59,7 +59,7 @@ export class PostgreSQLService extends BaseService {
   protected getTemplateContext(): Record<string, any> {
     const context = super.getTemplateContext();
     
-    if (!this.config.databasePassword) {
+    if (!this.config.storagePassword) {
       throw new ServiceInstallationError(
         ServiceType.POSTGRESQL,
         'PostgreSQL password is required for template rendering'

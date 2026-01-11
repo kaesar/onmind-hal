@@ -8,7 +8,7 @@ import {
   validateIP as validateIPUtil,
   validateDomain as validateDomainUtil,
   validateNetworkName as validateNetworkNameUtil,
-  validateDatabasePassword,
+  validateStoragePassword,
   sanitizeUserInput
 } from '../utils/validation.js';
 import { ValidationError } from '../utils/errors.js';
@@ -61,7 +61,7 @@ export function validatePassword(input: string): boolean | string {
     if (input.trim().length < 8) {
       return 'Password must be at least 8 characters long';
     }
-    validateDatabasePassword(sanitizeUserInput(input));
+    validateStoragePassword(sanitizeUserInput(input));
     return true;
   } catch (error) {
     return error instanceof ValidationError ? error.message : 'Password must be at least 8 characters long';
@@ -129,6 +129,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'MariaDB - SQL database server',
       value: ServiceType.MARIADB,
       short: 'MariaDB'
+    },
+    {
+      name: 'ScyllaDB - NoSQL Cassandra-compatible database',
+      value: ServiceType.SCYLLADB,
+      short: 'ScyllaDB'
     },
     {
       name: 'Minio - S3-compatible object storage',
@@ -313,7 +318,7 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
   return services;
 }
 
-export async function promptForDatabasePassword(): Promise<string> {
+export async function promptForStoragePassword(): Promise<string> {
   const { password } = await inquirer.prompt([
     {
       type: 'password',
@@ -349,11 +354,11 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
   
   const optionalServices = await promptForOptionalServices();
   
-  let databasePassword: string | undefined;
+  let storagePassword: string | undefined;
   if (optionalServices.includes(ServiceType.POSTGRESQL) || 
       optionalServices.includes(ServiceType.MARIADB) || 
       optionalServices.includes(ServiceType.MONGODB)) {
-    databasePassword = await promptForDatabasePassword();
+    storagePassword = await promptForStoragePassword();
   }
 
   // Core services are always included
@@ -364,7 +369,7 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
     ip,
     domain,
     networkName,
-    databasePassword,
+    storagePassword,
     selectedServices
   };
 }

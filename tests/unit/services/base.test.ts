@@ -47,7 +47,7 @@ describe('BaseService', () => {
     expect(context.IP).toBe('192.168.1.100');
     expect(context.DOMAIN).toBe('homelab.local');
     expect(context.NETWORK_NAME).toBe('homelab-network');
-    expect(context.DATABASE_PASSWORD).toBe('');
+    expect(context.STORAGE_PASSWORD).toBe('');
   });
 
   it('should interpolate command variables correctly', () => {

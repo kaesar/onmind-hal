@@ -6,7 +6,6 @@
       "docker pull nocodb/nocodb:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/nocodb/data"
     ],
     "run": "docker run -d --name nocodb --network {{NETWORK_NAME}} -p 8083:8080 -v ~/wsdata/nocodb/data:/usr/app/data --restart unless-stopped nocodb/nocodb:latest"

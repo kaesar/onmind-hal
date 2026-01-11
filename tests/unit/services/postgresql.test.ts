@@ -19,7 +19,7 @@ describe('PostgreSQLService', () => {
       ip: '192.168.1.100',
       domain: 'homelab.local',
       networkName: 'homelab-network',
-      databasePassword: 'secure-password-123',
+      storagePassword: 'secure-password-123',
       selectedServices: [ServiceType.POSTGRESQL],
       distribution: DistributionType.UBUNTU
     };
@@ -41,7 +41,7 @@ describe('PostgreSQLService', () => {
   });
 
   it('should return safe URL when password is not set', () => {
-    config.databasePassword = undefined;
+    config.storagePassword = undefined;
     postgresService = new PostgreSQLService(config, templateEngine);
     
     const url = postgresService.getAccessUrl();
@@ -49,21 +49,21 @@ describe('PostgreSQLService', () => {
   });
 
   it('should throw error during install if password is missing', async () => {
-    config.databasePassword = '';
+    config.storagePassword = '';
     postgresService = new PostgreSQLService(config, templateEngine);
     
     await expect(postgresService.install()).rejects.toThrow(ServiceInstallationError);
   });
 
   it('should throw error during install if password is undefined', async () => {
-    config.databasePassword = undefined;
+    config.storagePassword = undefined;
     postgresService = new PostgreSQLService(config, templateEngine);
     
     await expect(postgresService.install()).rejects.toThrow(ServiceInstallationError);
   });
 
   it('should throw error when getting template context without password', () => {
-    config.databasePassword = undefined;
+    config.storagePassword = undefined;
     postgresService = new PostgreSQLService(config, templateEngine);
     
     expect(() => {

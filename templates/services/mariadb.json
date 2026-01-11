@@ -9,9 +9,9 @@
       "mkdir -p ~/wsdata/mariadb/data",
       "docker volume create mariadb_data"
     ],
-    "run": "docker run -d --name mariadb --network {{NETWORK_NAME}} -p 3306:3306 -e MARIADB_ROOT_PASSWORD={{DATABASE_PASSWORD}} -e MARIADB_DATABASE=homelab -e MARIADB_USER=root -e MARIADB_PASSWORD={{DATABASE_PASSWORD}} -v mariadb_data:/var/lib/mysql mariadb:latest"
+    "run": "docker run -d --name mariadb --network {{NETWORK_NAME}} -p 3306:3306 -e MARIADB_ROOT_PASSWORD={{STORAGE_PASSWORD}} -e MARIADB_DATABASE=homelab -e MARIADB_USER=root -e MARIADB_PASSWORD={{STORAGE_PASSWORD}} -v mariadb_data:/var/lib/mysql mariadb:latest"
   },
-  "variables": ["NETWORK_NAME", "DATABASE_PASSWORD"],
+  "variables": ["NETWORK_NAME", "STORAGE_PASSWORD"],
   "ports": ["3306:3306"],
   "volumes": [
     "mariadb_data:/var/lib/mysql"
@@ -19,9 +19,9 @@
   "environment": {
     "MARIADB_DATABASE": "homelab",
     "MARIADB_USER": "root",
-    "MARIADB_PASSWORD": "{{DATABASE_PASSWORD}}"
+    "MARIADB_PASSWORD": "{{STORAGE_PASSWORD}}"
   },
-  "accessUrl": "mysql://root:{{DATABASE_PASSWORD}}@{{IP}}:3306/homelab",
+  "accessUrl": "mysql://root:{{STORAGE_PASSWORD}}@{{IP}}:3306/homelab",
   "dependencies": [],
   "isCore": false
 }

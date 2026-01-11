@@ -6,7 +6,6 @@
       "docker pull sonarqube:community"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/sonarqube/data",
       "mkdir -p ~/wsdata/sonarqube/extensions",
       "mkdir -p ~/wsdata/sonarqube/logs"

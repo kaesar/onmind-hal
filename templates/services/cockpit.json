@@ -8,7 +8,6 @@
       "cd ~/wsdata/cockpit-build && docker build -t cockpit-php:latest ."
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/cockpit/storage",
       "chmod -R 777 ~/wsdata/cockpit/storage"
     ],

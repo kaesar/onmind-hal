@@ -6,7 +6,6 @@
       "docker pull dunglas/frankenphp:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/duckdb/data",
       "docker build -f templates/dockerfiles/duckdb.dockerfile -t duckdb-frankenphp ."
     ],

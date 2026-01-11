@@ -6,7 +6,6 @@
       "docker pull kestra/kestra:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/kestra/data",
       "cat > ~/wsdata/kestra/application.yml << 'EOF'\nkestra:\n  storage:\n    type: local\n    local:\n      base-path: /app/storage\n  queue:\n    type: memory\n  repository:\n    type: memory\n  server:\n    basic-auth:\n      enabled: false\n  datasources:\n    postgres:\n      url: jdbc:h2:mem:public;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE\n      driverClassName: org.h2.Driver\n      username: sa\n      password: \"\"\nEOF"
     ],

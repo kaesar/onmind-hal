@@ -24,7 +24,7 @@ describe('ServiceFactory', () => {
       networkName: 'homelab-network',
       selectedServices: [ServiceType.N8N, ServiceType.POSTGRESQL],
       distribution: DistributionType.UBUNTU,
-      databasePassword: 'secure-password'
+      storagePassword: 'secure-password'
     };
   });
 
@@ -97,6 +97,7 @@ describe('ServiceFactory', () => {
       ServiceType.REDIS,
       ServiceType.MONGODB,
       ServiceType.MARIADB,
+      ServiceType.SCYLLADB,
       ServiceType.MINIO,
       ServiceType.KAFKA,
       ServiceType.RABBITMQ,
@@ -140,7 +141,7 @@ describe('ServiceFactory', () => {
   });
 
   it('should throw error when PostgreSQL is selected without password', () => {
-    config.databasePassword = '';
+    config.storagePassword = '';
     
     expect(() => {
       factory.validateConfiguration(config);

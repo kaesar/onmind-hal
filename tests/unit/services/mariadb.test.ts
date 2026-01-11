@@ -19,7 +19,7 @@ describe('MariaDBService', () => {
       ip: '192.168.1.100',
       domain: 'homelab.local',
       networkName: 'homelab-network',
-      databasePassword: 'secure-mariadb-password-123',
+      storagePassword: 'secure-mariadb-password-123',
       selectedServices: [ServiceType.MARIADB],
       distribution: DistributionType.UBUNTU
     };
@@ -41,7 +41,7 @@ describe('MariaDBService', () => {
   });
 
   it('should return safe URL when password is not set', () => {
-    config.databasePassword = undefined;
+    config.storagePassword = undefined;
     mariadbService = new MariaDBService(config, templateEngine);
     
     const url = mariadbService.getAccessUrl();
@@ -49,21 +49,21 @@ describe('MariaDBService', () => {
   });
 
   it('should throw error during install if password is missing', async () => {
-    config.databasePassword = '';
+    config.storagePassword = '';
     mariadbService = new MariaDBService(config, templateEngine);
     
     await expect(mariadbService.install()).rejects.toThrow(ServiceInstallationError);
   });
 
   it('should throw error during install if password is undefined', async () => {
-    config.databasePassword = undefined;
+    config.storagePassword = undefined;
     mariadbService = new MariaDBService(config, templateEngine);
     
     await expect(mariadbService.install()).rejects.toThrow(ServiceInstallationError);
   });
 
   it('should throw error when getting template context without password', () => {
-    config.databasePassword = undefined;
+    config.storagePassword = undefined;
     mariadbService = new MariaDBService(config, templateEngine);
     
     expect(() => {

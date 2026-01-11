@@ -56,7 +56,7 @@ export abstract class BaseService implements Service {
       NETWORK_NAME: this.config.networkName,
       DOMAIN: this.config.domain,
       IP: this.config.ip,
-      DATABASE_PASSWORD: this.config.databasePassword || ''
+      STORAGE_PASSWORD: this.config.storagePassword || ''
     };
   }
 

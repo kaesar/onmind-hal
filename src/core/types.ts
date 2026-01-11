@@ -27,6 +27,7 @@ export enum ServiceType {
   REDIS = 'redis',
   MONGODB = 'mongodb',
   MARIADB = 'mariadb',
+  SCYLLADB = 'scylladb',
   MINIO = 'minio',
   KAFKA = 'kafka',
   RABBITMQ = 'rabbitmq',
@@ -67,7 +68,7 @@ export interface HomelabConfig {
   ip: string;
   domain: string;
   networkName: string;
-  databasePassword?: string;
+  storagePassword?: string;
   selectedServices: ServiceType[];
   distribution: DistributionType;
   containerRuntime?: ContainerRuntime; // For macOS

@@ -6,7 +6,6 @@
       "docker pull tomcat:9-jdk11"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/jasperreports/data",
       "echo 'JasperReports requires manual setup. Access Tomcat at port 8081 and deploy JasperReports WAR manually.'"
     ],

@@ -6,7 +6,6 @@
       "docker pull grafana/loki:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/loki/data"
     ],
     "run": "docker run -d --name loki --network {{NETWORK_NAME}} -p 3100:3100 -v ~/wsdata/loki/data:/loki --restart unless-stopped grafana/loki:latest -config.file=/etc/loki/local-config.yaml"

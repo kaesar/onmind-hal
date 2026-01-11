@@ -6,6 +6,7 @@
       "docker pull caddy:latest"
     ],
     "setup": [
+      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsconf",
       "mkdir -p ~/wsdata/caddy"
     ],

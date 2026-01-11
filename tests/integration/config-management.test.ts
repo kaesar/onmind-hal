@@ -17,7 +17,7 @@ const testConfig: HomelabConfig = {
   networkName: 'homelab-network',
   selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY, ServiceType.N8N, ServiceType.POSTGRESQL, ServiceType.MARIADB],
   distribution: DistributionType.UBUNTU,
-  databasePassword: 'test-password'
+  storagePassword: 'test-password'
 };
 
 // Mock template engine

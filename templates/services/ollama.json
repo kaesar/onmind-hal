@@ -6,7 +6,6 @@
       "docker pull ollama/ollama:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/ollama/data"
     ],
     "run": "docker run -d --name ollama --network {{NETWORK_NAME}} -p 11434:11434 -v ~/wsdata/ollama/data:/root/.ollama ollama/ollama"

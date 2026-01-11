@@ -30,9 +30,9 @@ export class MongoDBService extends BaseService {
    * Get MongoDB connection URL
    */
   getAccessUrl(): string {
-    if (!this.config.databasePassword) {
+    if (!this.config.storagePassword) {
       return `mongodb://admin:PASSWORD_NOT_SET@${this.config.ip}:27017/admin`;
     }
-    return `mongodb://admin:${this.config.databasePassword}@${this.config.ip}:27017/admin`;
+    return `mongodb://admin:${this.config.storagePassword}@${this.config.ip}:27017/admin`;
   }
 }

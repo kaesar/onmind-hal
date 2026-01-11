@@ -78,8 +78,8 @@ export class CLIInterface {
         });
       }
 
-      if (this.config.databasePassword) {
-        console.log('   🔐 Database password: [CONFIGURED]');
+      if (this.config.storagePassword) {
+        console.log('   🔐 Storage password: [CONFIGURED]');
       }
     }
     console.log('═'.repeat(50));
@@ -98,6 +98,7 @@ export class CLIInterface {
       redis: 'Redis (Cache/Queue)',
       mongodb: 'MongoDB (NoSQL Database)',
       mariadb: 'MariaDB (Database)',
+      scylladb: 'ScyllaDB (NoSQL Cassandra-like)',
       minio: 'Minio (Object Storage)',
       kafka: 'Kafka (Streaming Platform)',
       rabbitmq: 'RabbitMQ (Message Broker)',
@@ -167,7 +168,7 @@ export class CLIInterface {
       domain: this.config.domain!,
       networkName: this.config.networkName!,
       selectedServices: this.config.selectedServices!,
-      databasePassword: this.config.databasePassword,
+      storagePassword: this.config.storagePassword,
       distribution: DistributionType.UBUNTU // Will be overridden by detection
     };
   }

@@ -6,7 +6,6 @@
       "docker pull frooodle/s-pdf:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/stirlingpdf/data"
     ],
     "run": "docker run -d --name stirlingpdf --network {{NETWORK_NAME}} -p 8089:8080 -v ~/wsdata/stirlingpdf/data:/usr/share/tessdata frooodle/s-pdf:latest"

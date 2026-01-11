@@ -127,27 +127,27 @@ export function validateNetworkName(networkName: string): void {
 /**
  * Validates database password (PostgreSQL/MariaDB)
  */
-export function validateDatabasePassword(password: string): void {
+export function validateStoragePassword(password: string): void {
   if (!password || typeof password !== 'string') {
-    throw new ValidationError('databasePassword', password, 'Password must be a non-empty string');
+    throw new ValidationError('storagePassword', password, 'Password must be a non-empty string');
   }
 
   if (password.length < 8) {
-    throw new ValidationError('databasePassword', password, 'Password must be at least 8 characters long');
+    throw new ValidationError('storagePassword', password, 'Password must be at least 8 characters long');
   }
 
   if (password.length > 128) {
-    throw new ValidationError('databasePassword', password, 'Password too long (max 128 characters)');
+    throw new ValidationError('storagePassword', password, 'Password too long (max 128 characters)');
   }
 
   if (!PASSWORD_REGEX.test(password)) {
-    throw new ValidationError('databasePassword', password, 'Password contains invalid characters. Use letters, numbers, and common symbols only');
+    throw new ValidationError('storagePassword', password, 'Password contains invalid characters. Use letters, numbers, and common symbols only');
   }
 
   // Check for common weak passwords
   const weakPasswords = ['password', '12345678', 'admin123', 'postgres'];
   if (weakPasswords.includes(password.toLowerCase())) {
-    throw new ValidationError('databasePassword', password, 'Password is too common. Please choose a stronger password');
+    throw new ValidationError('storagePassword', password, 'Password is too common. Please choose a stronger password');
   }
 }
 
@@ -155,7 +155,7 @@ export function validateDatabasePassword(password: string): void {
  * Validates PostgreSQL password (alias for backward compatibility)
  */
 export function validatePostgresPassword(password: string): void {
-  validateDatabasePassword(password);
+  validateStoragePassword(password);
 }
 
 /**
@@ -228,13 +228,13 @@ export function validateHomelabConfig(config: HomelabConfig): void {
   validateServiceSelection(config.selectedServices);
   validateDistribution(config.distribution);
 
-  if (config.databasePassword !== undefined) {
-    validateDatabasePassword(config.databasePassword);
+  if (config.storagePassword !== undefined) {
+    validateStoragePassword(config.storagePassword);
   }
 
   // If PostgreSQL or MariaDB is selected, password is required
-  if ((config.selectedServices.includes(ServiceType.POSTGRESQL) || config.selectedServices.includes(ServiceType.MARIADB)) && !config.databasePassword) {
-    throw new ConfigurationError('databasePassword', config.databasePassword, 'Database password is required when PostgreSQL or MariaDB service are selected');
+  if ((config.selectedServices.includes(ServiceType.POSTGRESQL) || config.selectedServices.includes(ServiceType.MARIADB)) && !config.storagePassword) {
+    throw new ConfigurationError('storagePassword', config.storagePassword, 'Storage password is required when PostgreSQL or MariaDB service are selected');
   }
 }
 

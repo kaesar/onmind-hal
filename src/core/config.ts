@@ -191,7 +191,7 @@ export class ConfigurationManager {
         domain: config.domain,
         ip: config.ip,
         networkName: config.networkName,
-        databasePassword: config.databasePassword
+        storagePassword: config.storagePassword
       });
 
       const configFile: ConfigFile = {

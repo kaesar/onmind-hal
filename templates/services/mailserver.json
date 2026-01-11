@@ -6,7 +6,6 @@
       "docker pull docker.io/mailserver/docker-mailserver:latest"
     ],
     "setup": [
-      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/mailserver/data",
       "mkdir -p ~/wsdata/mailserver/state",
       "mkdir -p ~/wsdata/mailserver/logs",
