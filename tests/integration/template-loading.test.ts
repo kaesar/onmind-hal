@@ -40,7 +40,7 @@ describe('Template Loading Integration', () => {
 
   describe('Service Templates', () => {
     const coreServices = ['caddy', 'portainer', 'copyparty', 'duckdb'];
-    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'scylladb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'cockpit', 'authelia', 'localstack', 'onedev', 'sonarqube', 'trivy', 'rapidoc', 'grafana', 'loki', 'fluentbit', 'uptimekuma', 'registry', 'nexus', 'vault', 'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'plane', 'jasperreports', 'stirlingpdf', 'libretranslate', 'mailserver', 'frp'];
+    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'scylladb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'cockpit', 'authelia', 'localstack', 'k3d', 'onedev', 'semaphore', 'liquibase', 'sonarqube', 'trivy', 'rapidoc', 'grafana', 'loki', 'fluentbit', 'uptimekuma', 'registry', 'nexus', 'vault', 'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'plane', 'jasperreports', 'stirlingpdf', 'libretranslate', 'mailserver', 'frp'];
     const allServices = [...coreServices, ...optionalServices];
 
     allServices.forEach(service => {
@@ -71,7 +71,7 @@ describe('Template Loading Integration', () => {
     it('should load all service templates', async () => {
       const templates = await loader.loadAllTemplates('services');
       
-      expect(templates.size).toBe(43);
+      expect(templates.size).toBe(46);
       allServices.forEach(service => {
         expect(templates.has(service)).toBe(true);
       });

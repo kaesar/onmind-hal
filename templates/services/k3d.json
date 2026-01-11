@@ -1,0 +1,15 @@
+{
+  "name": "k3d Kubernetes",
+  "description": "Lightweight Kubernetes in Docker for local development",
+  "commands": {
+    "install": [
+      "docker pull rancher/k3s:latest"
+    ],
+    "setup": [
+      "docker volume create k3d_data"
+    ],
+    "run": "docker run -d --name k3d --network {{NETWORK_NAME}} -p 6443:6443 -p 6444:6444 -v k3d_data:/var/lib/rancher/k3s --privileged --restart=always rancher/k3s:latest server"
+  },
+  "variables": ["NETWORK_NAME"],
+  "dependencies": []
+}

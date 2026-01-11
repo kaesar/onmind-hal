@@ -151,8 +151,11 @@ export class CaddyService extends BaseService {
       [ServiceType.ONEDEV]: { subdomain: 'onedev', port: 6610, container: 'onedev' },
       [ServiceType.REGISTRY]: { subdomain: 'registry', port: 5000, container: 'registry' },
       [ServiceType.LOCALSTACK]: { subdomain: 'localstack', port: 4566, container: 'localstack' },
+      [ServiceType.K3D]: { subdomain: 'k3d', port: 6444, container: 'k3d' },
+      [ServiceType.SEMAPHORE]: { subdomain: 'semaphore', port: 3002, container: 'semaphore' },
+      [ServiceType.LIQUIBASE]: { subdomain: 'liquibase', port: 8091, container: 'liquibase' },
       [ServiceType.LIBRETRANSLATE]: { subdomain: 'translate', port: 5000, container: 'libretranslate' },
-      [ServiceType.UPTIMEKUMA]: { subdomain: 'uptimekuma', port: 3001, container: 'uptimekuma' },
+      [ServiceType.UPTIMEKUMA]: { subdomain: 'uptimekuma', port: 3003, container: 'uptimekuma' },
       
       // Services without web interfaces (excluded)
       [ServiceType.POSTGRESQL]: null,

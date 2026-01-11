@@ -39,30 +39,33 @@
 13. **Cockpit-CMS**: Headless CMS with PHP Apache
 14. **Authelia**: Authentication and authorization server
 15. **LocalStack**: Local AWS cloud stack for development
-16. **OneDev**: Self-hosted Git server with CI/CD
-17. **SonarQube**: Code quality and security analysis (port 9002)
-18. **Trivy**: Container security scanner (port 8087)
-19. **RapiDoc**: WebComponent for OpenAPI Spec viewer
-20. **Grafana**: Analytics and monitoring platform
-21. **Loki**: Log aggregation system by Grafana Labs
-22. **Fluent-Bit**: Lightweight log processor and forwarder
-23. **Uptime Kuma**: Self-hosted uptime monitoring tool
-24. **Registry**: Private Docker container registry
-25. **Nexus-Repository**: Universal artifact repository manager
-26. **Vault**: Secrets and encryption management (HashiCorp)
-27. **PsiTransfer**: File sharing platform (like WeTransfer)
-28. **Excalidraw**: Virtual whiteboard for sketching diagrams
-29. **Draw.io**: Web-based diagramming application
-30. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
-31. **Outline**: Team knowledge base and wiki
-32. **Grist**: Modern spreadsheet with relational database capabilities
-33. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
-34. **Plane**: Modern project management platform (like Jira) ⚠️ *May not work on ARM64 architecture*
-35. **JasperReports**: Business intelligence and reporting platform
-36. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
-37. **LibreTranslate**: Free and open source machine translation API
-38. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
-39. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
+16. **k3d**: Lightweight Kubernetes in Docker for local development
+17. **OneDev**: Self-hosted Git server with CI/CD
+18. **Semaphore-UI**: Modern UI for Ansible and shell automation
+19. **Liquibase**: Database schema change management and version control
+20. **SonarQube**: Code quality and security analysis (port 9002)
+21. **Trivy**: Container security scanner (port 8087)
+22. **RapiDoc**: WebComponent for OpenAPI Spec viewer
+23. **Grafana**: Analytics and monitoring platform
+24. **Loki**: Log aggregation system by Grafana Labs
+25. **Fluent-Bit**: Lightweight log processor and forwarder
+26. **Uptime-Kuma**: Self-hosted uptime monitoring tool
+27. **Registry**: Private Docker container registry
+28. **Nexus-Repository**: Universal artifact repository manager
+29. **Vault**: Secrets and encryption management (HashiCorp)
+30. **PsiTransfer**: File sharing platform (like WeTransfer)
+31. **Excalidraw**: Virtual whiteboard for sketching diagrams
+32. **Draw.io**: Web-based diagramming application
+33. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
+34. **Outline**: Team knowledge base and wiki
+35. **Grist**: Modern spreadsheet with relational database capabilities
+36. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
+37. **Plane**: Modern project management platform (like Jira) ⚠️ *May not work on ARM64 architecture*
+38. **JasperReports**: Business intelligence and reporting platform
+39. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
+40. **LibreTranslate**: Free and open source machine translation API
+41. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
+42. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
 
 > *Perhaps, I will consider includes in a future*: Vaultwarden (Bitwarden), Zulip, Jitsi, DocuSeal
 

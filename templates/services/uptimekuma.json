@@ -8,7 +8,7 @@
     "setup": [
       "docker volume create uptime_kuma_data"
     ],
-    "run": "docker run -d --name uptimekuma --network {{NETWORK_NAME}} -p 3001:3001 -v uptime_kuma_data:/app/data --restart=always louislam/uptime-kuma:2"
+    "run": "docker run -d --name uptimekuma --network {{NETWORK_NAME}} -p 3003:3001 -v uptime_kuma_data:/app/data --restart=always louislam/uptime-kuma:2"
   },
   "variables": ["NETWORK_NAME"],
   "dependencies": []

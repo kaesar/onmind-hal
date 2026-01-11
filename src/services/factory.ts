@@ -24,7 +24,10 @@ import { KeystoneJSService } from './optional/keystonejs.js';
 import { CockpitService } from './optional/cockpit.js';
 import { AutheliaService } from './optional/authelia.js';
 import { LocalStackService } from './optional/localstack.js';
+import { K3dService } from './optional/k3d.js';
 import { OneDevService } from './optional/onedev.js';
+import { SemaphoreService } from './optional/semaphore.js';
+import { LiquibaseService } from './optional/liquibase.js';
 import { SonarQubeService } from './optional/sonarqube.js';
 import { TrivyService } from './optional/trivy.js';
 import { RapiDocService } from './optional/rapidoc.js';
@@ -135,8 +138,17 @@ export class ServiceFactory {
       case ServiceType.LOCALSTACK:
         service = new LocalStackService(config, this.templateEngine);
         break;
+      case ServiceType.K3D:
+        service = new K3dService(config, this.templateEngine);
+        break;
       case ServiceType.ONEDEV:
         service = new OneDevService(config, this.templateEngine);
+        break;
+      case ServiceType.SEMAPHORE:
+        service = new SemaphoreService(config, this.templateEngine);
+        break;
+      case ServiceType.LIQUIBASE:
+        service = new LiquibaseService(config, this.templateEngine);
         break;
       case ServiceType.SONARQUBE:
         service = new SonarQubeService(config, this.templateEngine);
@@ -352,7 +364,10 @@ export class ServiceFactory {
       ServiceType.COCKPIT,
       ServiceType.AUTHELIA,
       ServiceType.LOCALSTACK,
+      ServiceType.K3D,
       ServiceType.ONEDEV,
+      ServiceType.SEMAPHORE,
+      ServiceType.LIQUIBASE,
       ServiceType.SONARQUBE,
       ServiceType.TRIVY,
       ServiceType.RAPIDOC,
@@ -447,7 +462,10 @@ export class ServiceFactory {
       'KeystoneJS': ServiceType.KEYSTONEJS,
       'Authelia': ServiceType.AUTHELIA,
       'LocalStack': ServiceType.LOCALSTACK,
+      'k3d': ServiceType.K3D,
       'OneDev': ServiceType.ONEDEV,
+      'Semaphore UI': ServiceType.SEMAPHORE,
+      'Liquibase': ServiceType.LIQUIBASE,
       'SonarQube': ServiceType.SONARQUBE,
       'Trivy': ServiceType.TRIVY,
       'RapiDoc': ServiceType.RAPIDOC,

@@ -186,9 +186,24 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'LocalStack'
     },
     {
+      name: 'k3d - Lightweight Kubernetes in Docker',
+      value: ServiceType.K3D,
+      short: 'k3d'
+    },
+    {
       name: 'OneDev - Self-hosted Git server with CI/CD',
       value: ServiceType.ONEDEV,
       short: 'OneDev'
+    },
+    {
+      name: 'Semaphore UI - Modern UI for Ansible and shell automation',
+      value: ServiceType.SEMAPHORE,
+      short: 'Semaphore'
+    },
+    {
+      name: 'Liquibase - Database schema change management',
+      value: ServiceType.LIQUIBASE,
+      short: 'Liquibase'
     },
     {
       name: 'SonarQube CE - Code quality and security analysis',
