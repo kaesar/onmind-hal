@@ -30,36 +30,28 @@ export abstract class BaseDistributionStrategy implements DistributionStrategy {
     // Generate and install CA certificate (like in the article)
     await this.generateAndInstallCA(domain);
     
-    // Create dnsmasq configuration
+    // Create dnsmasq configuration with specific subdomains
     const config = [
       '# HomeLab DNS configuration',
-      '# Listen on all interfaces',
-      `listen-address=${ip}`,
-      'listen-address=127.0.0.1',
-      '',
-      '# Use system DNS as upstream',
-      'resolv-file=/etc/resolv.conf.backup',
-      '',
-      '# Local domain resolution',
       `address=/${domain}/${ip}`,
-      `address=/.${domain}/${ip}`,
-      '',
-      '# Cache settings',
-      'cache-size=1000'
-    ].join('\n');
+      `address=/.${domain}/${ip}`
+    ];
     
-    // Backup original resolv.conf and create dnsmasq config
-    await $`sudo cp /etc/resolv.conf /etc/resolv.conf.backup || true`;
-    await $`echo ${config} | sudo tee /etc/dnsmasq.d/homelab.conf`;
+    // Add specific subdomain entries for each service
+    const subdomainMap: Record<string, string> = {
+      'copyparty': 'files',
+      'jasperreports': 'jasper', 
+      'stirlingpdf': 'pdf',
+      'libretranslate': 'translate'
+    };
     
-    // Configure system to use dnsmasq as primary DNS
-    const resolvConf = [
-      'nameserver 127.0.0.1',
-      `nameserver ${ip}`,
-      'nameserver 8.8.8.8'
-    ].join('\n');
+    for (const service of services) {
+      const subdomain = subdomainMap[service] || service;
+      config.push(`address=/${subdomain}.${domain}/${ip}`);
+    }
     
-    await $`echo ${resolvConf} | sudo tee /etc/resolv.conf`;
+    // Write configuration
+    await $`echo ${config.join('\n')} | sudo tee /etc/dnsmasq.d/homelab.conf`;
     
     // Restart and enable dnsmasq
     await $`sudo systemctl restart dnsmasq`;

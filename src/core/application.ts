@@ -196,7 +196,7 @@ export class HomelabApplication {
     try {
       this.logger.info('🌐 Configuring dnsmasq for local DNS resolution...');
       
-      // Configure dnsmasq with the domain (wildcard handles all subdomains)
+      // Configure dnsmasq with basic setup (services will be added later)
       if (this.distributionStrategy.configureDnsmasq) {
         await this.distributionStrategy.configureDnsmasq(this.config.domain, this.config.ip, []);
         // Mark that dnsmasq was configured successfully
@@ -207,6 +207,44 @@ export class HomelabApplication {
 
     } catch (error) {
       this.logger.warn('⚠️  dnsmasq configuration failed, but continuing with /etc/hosts method...');
+      this.logger.debug(`dnsmasq error: ${error}`);
+      // Mark that dnsmasq configuration failed
+      (this.config as any).dnsmasqConfigured = false;
+    }
+  }
+
+  /**
+   * Configure dnsmasq with installed services after installation
+   */
+  private async configureDnsmasqPostInstall(): Promise<void> {
+    if (!this.config || !this.distributionStrategy) {
+      return;
+    }
+
+    // Only configure dnsmasq for Linux systems with self-signed certificates
+    const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
+    const isMacOS = this.config.distribution === DistributionType.MACOS;
+    const usingSelfSigned = isMacOS || isLocalDomain;
+    
+    if (!usingSelfSigned || isMacOS || this.installedServices.length === 0) {
+      return; // Skip for macOS, public domains, or no services
+    }
+
+    try {
+      this.logger.info('🌐 Updating dnsmasq with installed services...');
+      
+      // Configure dnsmasq with the domain and installed services
+      if (this.distributionStrategy.configureDnsmasq) {
+        const serviceTypes = this.installedServices.map(s => s.type);
+        await this.distributionStrategy.configureDnsmasq(this.config.domain, this.config.ip, serviceTypes);
+        // Mark that dnsmasq was configured successfully
+        (this.config as any).dnsmasqConfigured = true;
+      }
+      
+      this.logger.info('✅ dnsmasq updated with installed services');
+
+    } catch (error) {
+      this.logger.warn('⚠️  dnsmasq update failed, but continuing...');
       this.logger.debug(`dnsmasq error: ${error}`);
       // Mark that dnsmasq configuration failed
       (this.config as any).dnsmasqConfigured = false;
@@ -264,6 +302,9 @@ export class HomelabApplication {
 
       // Restart core services to ensure proper configuration
       await this.restartCoreServices();
+
+      // Configure dnsmasq after services are installed (for dynamic DNS)
+      await this.configureDnsmasqPostInstall();
 
       this.logger.info('✅ All services installed and configured successfully');
 
