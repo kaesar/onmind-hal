@@ -22,30 +22,86 @@ export abstract class BaseDistributionStrategy implements DistributionStrategy {
    * Default implementation for Linux distributions
    */
   async configureDnsmasq(domain: string, ip: string, services: string[]): Promise<void> {
-    // Default implementation - can be overridden by specific distributions
-    console.log('🌐 Configuring dnsmasq for local DNS resolution...');
+    console.log('🌐 Configuring dnsmasq and certificates for local DNS resolution...');
     
-    // Install dnsmasq
-    await this.installPackages(['dnsmasq']);
+    // Install required packages
+    await this.installPackages(['dnsmasq', 'openssl']);
     
-    // Create dnsmasq configuration with wildcard (more efficient than individual entries)
+    // Generate and install CA certificate (like in the article)
+    await this.generateAndInstallCA(domain);
+    
+    // Create dnsmasq configuration
     const config = [
       '# HomeLab DNS configuration',
+      '# Listen on all interfaces',
+      `listen-address=${ip}`,
+      'listen-address=127.0.0.1',
+      '',
+      '# Use system DNS as upstream',
+      'resolv-file=/etc/resolv.conf.backup',
+      '',
+      '# Local domain resolution',
       `address=/${domain}/${ip}`,
-      `address=/.${domain}/${ip}`  // Wildcard for all subdomains
+      `address=/.${domain}/${ip}`,
+      '',
+      '# Cache settings',
+      'cache-size=1000'
     ].join('\n');
     
+    // Backup original resolv.conf and create dnsmasq config
+    await $`sudo cp /etc/resolv.conf /etc/resolv.conf.backup || true`;
     await $`echo ${config} | sudo tee /etc/dnsmasq.d/homelab.conf`;
+    
+    // Configure system to use dnsmasq as primary DNS
+    const resolvConf = [
+      'nameserver 127.0.0.1',
+      `nameserver ${ip}`,
+      'nameserver 8.8.8.8'
+    ].join('\n');
+    
+    await $`echo ${resolvConf} | sudo tee /etc/resolv.conf`;
     
     // Restart and enable dnsmasq
     await $`sudo systemctl restart dnsmasq`;
     await $`sudo systemctl enable dnsmasq`;
     
-    // Configure system to use local DNS
-    await $`echo "nameserver 127.0.0.1" | sudo tee /etc/resolv.conf.d/head || true`;
-    await $`sudo systemctl restart systemd-resolved || true`;
+    console.log('✅ dnsmasq and CA certificates configured successfully');
+  }
+
+  /**
+   * Generate and install CA certificate for local domains
+   * Based on the HomeLab article approach
+   */
+  private async generateAndInstallCA(domain: string): Promise<void> {
+    const caDir = '/usr/local/share/ca-certificates';
+    const caCert = `${caDir}/homelab-ca.crt`;
+    const caKey = '/tmp/homelab-ca.key';
     
-    console.log('✅ dnsmasq configured successfully');
+    // Check if CA already exists
+    try {
+      await $`test -f ${caCert}`.quiet();
+      console.log('📜 CA certificate already exists, skipping generation');
+      return;
+    } catch {
+      // CA doesn't exist, generate it
+    }
+    
+    console.log('📜 Generating CA certificate for local domains...');
+    
+    // Generate CA private key
+    await $`openssl genrsa -out ${caKey} 2048`;
+    
+    // Generate CA certificate
+    const caSubject = `/C=US/ST=Local/L=HomeLab/O=HomeLab/OU=IT/CN=HomeLab CA`;
+    await $`openssl req -new -x509 -days 3650 -key ${caKey} -out ${caCert} -subj "${caSubject}"`;
+    
+    // Install CA certificate in system trust store
+    await $`sudo update-ca-certificates`;
+    
+    // Clean up private key
+    await $`rm -f ${caKey}`;
+    
+    console.log('✅ CA certificate generated and installed in system trust store');
   }
 
   /**

@@ -604,6 +604,49 @@ sudo tailscale up
 
 ## Troubleshooting Ubuntu
 
+### SSL Certificates for Local Domains
+
+**OnMind-HAL automatically configures SSL certificates for local domains (.lan, .local) on Linux:**
+
+1. **CA Certificate Generation**: HAL creates a custom Certificate Authority (CA)
+2. **System Trust Store**: The CA is installed in `/usr/local/share/ca-certificates/`
+3. **Automatic Certificates**: Caddy uses this CA to generate trusted certificates
+4. **DNS Resolution**: dnsmasq resolves local domains to your server IP
+
+**Verify SSL setup:**
+```bash
+# Check if CA certificate is installed
+ls -la /usr/local/share/ca-certificates/homelab-ca.crt
+
+# Test certificate trust
+openssl s_client -connect localhost:443 -servername yourdomain.lan
+
+# Check Caddy certificate generation
+docker logs caddy | grep -i cert
+
+# Test DNS resolution
+nslookup yourdomain.lan 127.0.0.1
+```
+
+**If SSL still fails:**
+```bash
+# Regenerate CA certificate
+sudo rm /usr/local/share/ca-certificates/homelab-ca.crt
+sudo update-ca-certificates --fresh
+
+# Restart HAL installation to regenerate CA
+cd hal && bun run start
+
+# Restart Caddy to regenerate certificates
+docker restart caddy
+```
+
+**Browser certificate warnings:**
+- First access may show security warning
+- Click "Advanced" → "Proceed to site" (Chrome/Edge)
+- Or "Advanced" → "Accept Risk" (Firefox)
+- Certificate will be trusted after first acceptance
+
 ### Complete Environment Cleanup
 
 **When HAL installation fails or you need a fresh start:**

@@ -51,22 +51,23 @@ export class CaddyService extends BaseService {
   private generateDynamicCaddyfile(): string {
     const isMacOS = process.platform === 'darwin';
     const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
-    const useSelfSigned = isMacOS || isLocalDomain;
     
     const services = this.getServiceProxyConfig();
     
     let content = '# Caddyfile for HomeLab services\n\n';
     
-    // Global options
-    content += '{\n';
-    if (useSelfSigned) {
-      content += '    # Use self-signed certificates for local development\n';
-      content += '    local_certs\n';
-    } else {
-      content += '    # Email for Let\'s Encrypt\n';
-      content += `    email admin@${this.config.domain}\n`;
+    // Global options - NO local_certs para Linux con dominios locales
+    if (!isLocalDomain || isMacOS) {
+      content += '{\n';
+      if (isMacOS && isLocalDomain) {
+        content += '    # Use self-signed certificates for local development on macOS\n';
+        content += '    local_certs\n';
+      } else {
+        content += '    # Email for Let\'s Encrypt\n';
+        content += `    email admin@${this.config.domain}\n`;
+      }
+      content += '}\n\n';
     }
-    content += '}\n\n';
     
     // Main domain redirect to portainer
     content += `# Main domain redirect\n`;
@@ -96,7 +97,9 @@ export class CaddyService extends BaseService {
     const isMacOS = process.platform === 'darwin';
     const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
     
-    if (isMacOS || isLocalDomain) {
+    if (isLocalDomain && !isMacOS) {
+      return 'CA-signed certificates (system trust store)';
+    } else if (isMacOS && isLocalDomain) {
       return 'self-signed certificates';
     } else {
       return 'Let\'s Encrypt certificates';
