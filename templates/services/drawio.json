@@ -6,10 +6,10 @@
       "docker pull jgraph/drawio:latest"
     ],
     "setup": [
-      "docker network create {{networkName}} || true"
+      "docker network create {{NETWORK_NAME}} || true"
     ],
-    "run": "docker run -d --name drawio --network {{networkName}} -p 8088:8080 jgraph/drawio:latest"
+    "run": "docker run -d --name drawio --network {{NETWORK_NAME}} -p 8088:8080 jgraph/drawio:latest"
   },
-  "variables": ["networkName"],
+  "variables": ["NETWORK_NAME"],
   "dependencies": []
 }

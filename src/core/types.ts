@@ -54,6 +54,7 @@ export enum ServiceType {
   OUTLINE = 'outline',
   GRIST = 'grist',
   NOCODB = 'nocodb',
+  PLANE = 'plane',
   JASPERREPORTS = 'jasperreports',
   STIRLINGPDF = 'stirlingpdf',
   LIBRETRANSLATE = 'libretranslate',
@@ -96,6 +97,7 @@ export interface DistributionStrategy {
   installDocker(): Promise<void>;
   installPackages(packages: string[]): Promise<void>;
   configureFirewall(): Promise<void>;
+  configureDnsmasq?(domain: string, ip: string, services: string[]): Promise<void>;
   getPackageManager(): string;
 }
 

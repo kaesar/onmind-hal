@@ -136,6 +136,7 @@ export class CaddyService extends BaseService {
       [ServiceType.OUTLINE]: { subdomain: 'outline', port: 3000, container: 'outline' },
       [ServiceType.GRIST]: { subdomain: 'grist', port: 8484, container: 'grist' },
       [ServiceType.NOCODB]: { subdomain: 'nocodb', port: 8080, container: 'nocodb' },
+      [ServiceType.PLANE]: { subdomain: 'plane', port: 3000, container: 'plane-frontend' },
       [ServiceType.JASPERREPORTS]: { subdomain: 'jasper', port: 8080, container: 'jasperreports' },
       [ServiceType.STIRLINGPDF]: { subdomain: 'pdf', port: 8080, container: 'stirlingpdf' },
       [ServiceType.ONEDEV]: { subdomain: 'onedev', port: 6610, container: 'onedev' },

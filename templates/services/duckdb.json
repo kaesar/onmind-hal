@@ -6,12 +6,12 @@
       "docker pull dunglas/frankenphp:latest"
     ],
     "setup": [
-      "docker network create {{networkName}} || true",
+      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/duckdb/data",
       "docker build -f templates/dockerfiles/duckdb.dockerfile -t duckdb-frankenphp ."
     ],
-    "run": "docker run -d --name duckdb --network {{networkName}} -p 4214:80 -v ~/wsdata/duckdb/data:/app/data duckdb-frankenphp"
+    "run": "docker run -d --name duckdb --network {{NETWORK_NAME}} -p 4214:80 -v ~/wsdata/duckdb/data:/app/data duckdb-frankenphp"
   },
-  "variables": ["networkName"],
+  "variables": ["NETWORK_NAME"],
   "dependencies": []
 }

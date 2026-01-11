@@ -40,6 +40,7 @@ import { KrokiService } from './optional/kroki.js';
 import { OutlineService } from './optional/outline.js';
 import { GristService } from './optional/grist.js';
 import { NocoDBService } from './optional/nocodb.js';
+import { PlaneService } from './optional/plane.js';
 import { JasperReportsService } from './optional/jasperreports.js';
 import { StirlingPDFService } from './optional/stirlingpdf.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
@@ -179,6 +180,9 @@ export class ServiceFactory {
         break;
       case ServiceType.NOCODB:
         service = new NocoDBService(config, this.templateEngine);
+        break;
+      case ServiceType.PLANE:
+        service = new PlaneService(config, this.templateEngine);
         break;
       case ServiceType.JASPERREPORTS:
         service = new JasperReportsService(config, this.templateEngine);
@@ -356,6 +360,7 @@ export class ServiceFactory {
       ServiceType.OUTLINE,
       ServiceType.GRIST,
       ServiceType.NOCODB,
+      ServiceType.PLANE,
       ServiceType.JASPERREPORTS,
       ServiceType.STIRLINGPDF,
       ServiceType.LIBRETRANSLATE,
@@ -448,6 +453,7 @@ export class ServiceFactory {
       'Outline': ServiceType.OUTLINE,
       'Grist': ServiceType.GRIST,
       'NocoDB': ServiceType.NOCODB,
+      'Plane': ServiceType.PLANE,
       'JasperReports Server': ServiceType.JASPERREPORTS,
       'Stirling-PDF': ServiceType.STIRLINGPDF,
       'LibreTranslate': ServiceType.LIBRETRANSLATE,

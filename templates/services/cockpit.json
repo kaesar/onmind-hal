@@ -8,12 +8,12 @@
       "cd ~/wsdata/cockpit-build && docker build -t cockpit-php:latest ."
     ],
     "setup": [
-      "docker network create {{networkName}} || true",
+      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/cockpit/storage",
       "chmod -R 777 ~/wsdata/cockpit/storage"
     ],
-    "run": "docker run -d --name cockpit --network {{networkName}} -p 8090:80 -v ~/wsdata/cockpit/storage:/var/www/html/storage cockpit-php:latest"
+    "run": "docker run -d --name cockpit --network {{NETWORK_NAME}} -p 8090:80 -v ~/wsdata/cockpit/storage:/var/www/html/storage cockpit-php:latest"
   },
-  "variables": ["networkName"],
+  "variables": ["NETWORK_NAME"],
   "dependencies": []
 }

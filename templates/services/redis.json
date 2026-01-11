@@ -9,14 +9,14 @@
       "mkdir -p ~/wsdata/redis/data",
       "docker volume create redis_data"
     ],
-    "run": "docker run -d --name redis --network {{networkName}} -p 6379:6379 -v redis_data:/data redis:7-alpine redis-server --appendonly yes"
+    "run": "docker run -d --name redis --network {{NETWORK_NAME}} -p 6379:6379 -v redis_data:/data redis:7-alpine redis-server --appendonly yes"
   },
-  "variables": ["networkName", "ip"],
+  "variables": ["NETWORK_NAME", "IP"],
   "ports": ["6379:6379"],
   "volumes": [
     "redis_data:/data"
   ],
-  "accessUrl": "redis://{{ip}}:6379",
+  "accessUrl": "redis://{{IP}}:6379",
   "dependencies": [],
   "isCore": false
 }

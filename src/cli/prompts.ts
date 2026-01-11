@@ -266,6 +266,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'NocoDB'
     },
     {
+      name: 'Plane - Modern project management platform (like Jira)',
+      value: ServiceType.PLANE,
+      short: 'Plane'
+    },
+    {
       name: 'JasperReports - Business intelligence and reporting platform (requires PostgreSQL)',
       value: ServiceType.JASPERREPORTS,
       short: 'JasperReports'

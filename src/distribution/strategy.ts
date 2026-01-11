@@ -18,6 +18,37 @@ export abstract class BaseDistributionStrategy implements DistributionStrategy {
   abstract getPackageManager(): string;
 
   /**
+   * Configure dnsmasq for local domain resolution
+   * Default implementation for Linux distributions
+   */
+  async configureDnsmasq(domain: string, ip: string, services: string[]): Promise<void> {
+    // Default implementation - can be overridden by specific distributions
+    console.log('🌐 Configuring dnsmasq for local DNS resolution...');
+    
+    // Install dnsmasq
+    await this.installPackages(['dnsmasq']);
+    
+    // Create dnsmasq configuration with wildcard (more efficient than individual entries)
+    const config = [
+      '# HomeLab DNS configuration',
+      `address=/${domain}/${ip}`,
+      `address=/.${domain}/${ip}`  // Wildcard for all subdomains
+    ].join('\n');
+    
+    await $`echo ${config} | sudo tee /etc/dnsmasq.d/homelab.conf`;
+    
+    // Restart and enable dnsmasq
+    await $`sudo systemctl restart dnsmasq`;
+    await $`sudo systemctl enable dnsmasq`;
+    
+    // Configure system to use local DNS
+    await $`echo "nameserver 127.0.0.1" | sudo tee /etc/resolv.conf.d/head || true`;
+    await $`sudo systemctl restart systemd-resolved || true`;
+    
+    console.log('✅ dnsmasq configured successfully');
+  }
+
+  /**
    * Check if a command exists in the system
    */
   protected async commandExists(command: string): Promise<boolean> {

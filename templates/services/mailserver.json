@@ -6,14 +6,14 @@
       "docker pull docker.io/mailserver/docker-mailserver:latest"
     ],
     "setup": [
-      "docker network create {{networkName}} || true",
+      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/mailserver/data",
       "mkdir -p ~/wsdata/mailserver/state",
       "mkdir -p ~/wsdata/mailserver/logs",
       "mkdir -p ~/wsdata/mailserver/config"
     ],
-    "run": "docker run -d --name mailserver --network {{networkName}} -p 25:25 -p 143:143 -p 587:587 -p 993:993 -v ~/wsdata/mailserver/data:/var/mail -v ~/wsdata/mailserver/state:/var/mail-state -v ~/wsdata/mailserver/logs:/var/log/mail -v ~/wsdata/mailserver/config:/tmp/docker-mailserver -e ENABLE_SPAMASSASSIN=1 -e ENABLE_CLAMAV=1 -e ENABLE_FAIL2BAN=1 --hostname mail.{{domain}} --restart unless-stopped docker.io/mailserver/docker-mailserver:latest"
+    "run": "docker run -d --name mailserver --network {{NETWORK_NAME}} -p 25:25 -p 143:143 -p 587:587 -p 993:993 -v ~/wsdata/mailserver/data:/var/mail -v ~/wsdata/mailserver/state:/var/mail-state -v ~/wsdata/mailserver/logs:/var/log/mail -v ~/wsdata/mailserver/config:/tmp/docker-mailserver -e ENABLE_SPAMASSASSIN=1 -e ENABLE_CLAMAV=1 -e ENABLE_FAIL2BAN=1 --hostname mail.{{DOMAIN}} --restart unless-stopped docker.io/mailserver/docker-mailserver:latest"
   },
-  "variables": ["networkName", "domain"],
+  "variables": ["NETWORK_NAME", "DOMAIN"],
   "dependencies": []
 }

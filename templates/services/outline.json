@@ -9,8 +9,8 @@
       "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/outline/data"
     ],
-    "run": "docker run -d --name outline --network {{NETWORK_NAME}} -p 3030:3000 -v ~/wsdata/outline/data:/var/lib/outline/data -e SECRET_KEY={{SECRET_KEY}} -e UTILS_SECRET={{UTILS_SECRET}} -e DATABASE_URL=postgres://homelab:{{DATABASE_PASSWORD}}@postgresql:5432/homelab -e PGSSLMODE=disable -e REDIS_URL=redis://redis:6379 -e URL=https://outline.{{domain}} -e PORT=3000 outlinewiki/outline:latest"
+    "run": "docker run -d --name outline --network {{NETWORK_NAME}} -p 3030:3000 -v ~/wsdata/outline/data:/var/lib/outline/data -e SECRET_KEY={{SECRET_KEY}} -e UTILS_SECRET={{UTILS_SECRET}} -e DATABASE_URL=postgres://root:{{DATABASE_PASSWORD}}@postgresql:5432/homelab -e PGSSLMODE=disable -e REDIS_URL=redis://redis:6379 -e URL=https://outline.{{DOMAIN}} -e PORT=3000 outlinewiki/outline:latest"
   },
-  "variables": ["NETWORK_NAME", "DATABASE_PASSWORD", "domain", "SECRET_KEY", "UTILS_SECRET"],
+  "variables": ["NETWORK_NAME", "DATABASE_PASSWORD", "DOMAIN", "SECRET_KEY", "UTILS_SECRET"],
   "dependencies": ["postgresql", "redis"]
 }

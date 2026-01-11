@@ -9,19 +9,19 @@
       "mkdir -p ~/wsdata/postgresql/data",
       "docker volume create postgres_data"
     ],
-    "run": "docker run -d --name postgresql --network {{networkName}} -p 5432:5432 -e POSTGRES_DB=homelab -e POSTGRES_USER=homelab -e POSTGRES_PASSWORD={{databasePassword}} -v postgres_data:/var/lib/postgresql/data postgres:15-alpine"
+    "run": "docker run -d --name postgresql --network {{NETWORK_NAME}} -p 5432:5432 -e POSTGRES_DB=homelab -e POSTGRES_USER=root -e POSTGRES_PASSWORD={{DATABASE_PASSWORD}} -v postgres_data:/var/lib/postgresql/data postgres:15-alpine"
   },
-  "variables": ["networkName", "databasePassword"],
+  "variables": ["NETWORK_NAME", "DATABASE_PASSWORD"],
   "ports": ["5432:5432"],
   "volumes": [
     "postgres_data:/var/lib/postgresql/data"
   ],
   "environment": {
     "POSTGRES_DB": "homelab",
-    "POSTGRES_USER": "homelab",
-    "POSTGRES_PASSWORD": "{{databasePassword}}"
+    "POSTGRES_USER": "root",
+    "POSTGRES_PASSWORD": "{{DATABASE_PASSWORD}}"
   },
-  "accessUrl": "postgresql://homelab:{{databasePassword}}@{{ip}}:5432/homelab",
+  "accessUrl": "postgresql://root:{{DATABASE_PASSWORD}}@{{IP}}:5432/homelab",
   "dependencies": [],
   "isCore": false
 }

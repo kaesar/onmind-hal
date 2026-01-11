@@ -8,15 +8,15 @@
     "setup": [
       "docker volume create portainer_data"
     ],
-    "run": "docker run -d --name portainer --network {{networkName}} -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest"
+    "run": "docker run -d --name portainer --network {{NETWORK_NAME}} -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest"
   },
-  "variables": ["networkName", "domain"],
+  "variables": ["NETWORK_NAME", "DOMAIN"],
   "ports": ["9000:9000"],
   "volumes": [
     "/var/run/docker.sock:/var/run/docker.sock",
     "portainer_data:/data"
   ],
-  "accessUrl": "https://portainer.{{domain}}",
+  "accessUrl": "https://portainer.{{DOMAIN}}",
   "dependencies": [],
   "isCore": true
 }

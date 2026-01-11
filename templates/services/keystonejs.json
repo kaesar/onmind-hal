@@ -6,7 +6,7 @@
       "docker pull node:18-slim"
     ],
     "setup": [
-      "docker network create {{networkName}} || true",
+      "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/keystonejs",
       "mkdir -p ~/wsdata/keystonejs-build",
       "cp templates/dockerfiles/keystonejs.dockerfile ~/wsdata/keystonejs-build/Dockerfile",
@@ -16,8 +16,8 @@
       "cp templates/dockerfiles/keystonejs-auth.ts ~/wsdata/keystonejs-build/auth.ts",
       "cd ~/wsdata/keystonejs-build && docker build -t keystonejs:latest ."
     ],
-    "run": "docker run -d --name keystonejs --network {{networkName}} -p 3000:3000 -e DATABASE_URL=postgresql://homelab:{{databasePassword}}@postgresql:5432/keystonejs -v ~/wsdata/keystonejs:/app/data keystonejs:latest"
+    "run": "docker run -d --name keystonejs --network {{NETWORK_NAME}} -p 3000:3000 -e DATABASE_URL=postgresql://root:{{DATABASE_PASSWORD}}@postgresql:5432/keystonejs -v ~/wsdata/keystonejs:/app/data keystonejs:latest"
   },
-  "variables": ["networkName", "databasePassword"],
+  "variables": ["NETWORK_NAME", "DATABASE_PASSWORD"],
   "dependencies": ["postgresql"]
 }

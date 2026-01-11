@@ -9,16 +9,16 @@
       "mkdir -p ~/wsconf",
       "mkdir -p ~/wsdata/caddy"
     ],
-    "run": "docker run -d --name caddy --network {{networkName}} -p 80:80 -p 443:443 -v ~/wsconf/Caddyfile:/etc/caddy/Caddyfile -v ~/wsdata/caddy:/data caddy:latest"
+    "run": "docker run -d --name caddy --network {{NETWORK_NAME}} -p 80:80 -p 443:443 -v ~/wsconf/Caddyfile:/etc/caddy/Caddyfile -v ~/wsdata/caddy:/data caddy:latest"
   },
-  "variables": ["networkName"],
+  "variables": ["NETWORK_NAME"],
   "ports": ["80:80", "443:443"],
   "volumes": [
     "~/wsconf/Caddyfile:/etc/caddy/Caddyfile",
     "~/wsdata/caddy:/data"
   ],
   "configFiles": ["Caddyfile"],
-  "accessUrl": "https://{{domain}}",
+  "accessUrl": "https://{{DOMAIN}}",
   "dependencies": [],
   "isCore": true
 }

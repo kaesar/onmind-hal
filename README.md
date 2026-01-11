@@ -55,13 +55,14 @@
 29. **Outline**: Team knowledge base and wiki
 30. **Grist**: Modern spreadsheet with relational database capabilities
 31. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
-32. **JasperReports**: Business intelligence and reporting platform
-33. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
-34. **LibreTranslate**: Free and open source machine translation API
-35. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
-36. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
+32. **Plane**: Modern project management platform (like Jira)
+33. **JasperReports**: Business intelligence and reporting platform
+34. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
+35. **LibreTranslate**: Free and open source machine translation API
+36. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
+37. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
 
-> *Perhaps, I will consider includes in a future*: Vaultwarden (Bitwarden), Plane, Zulip, Jitsi, DocuSeal
+> *Perhaps, I will consider includes in a future*: Vaultwarden (Bitwarden), Zulip, Jitsi, DocuSeal
 
 ## Quick Start
 

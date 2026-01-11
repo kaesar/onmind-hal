@@ -44,23 +44,23 @@ describe('BaseService', () => {
   it('should generate correct template context', () => {
     const context = (service as any).getTemplateContext();
     
-    expect(context.ip).toBe('192.168.1.100');
-    expect(context.domain).toBe('homelab.local');
-    expect(context.networkName).toBe('homelab-network');
-    expect(context.databasePassword).toBe('');
+    expect(context.IP).toBe('192.168.1.100');
+    expect(context.DOMAIN).toBe('homelab.local');
+    expect(context.NETWORK_NAME).toBe('homelab-network');
+    expect(context.DATABASE_PASSWORD).toBe('');
   });
 
   it('should interpolate command variables correctly', () => {
-    const command = 'docker run --network {{networkName}} --name {{domain}}';
-    const context = { networkName: 'test-network', domain: 'test.local' };
+    const command = 'docker run --network {{NETWORK_NAME}} --name {{DOMAIN}}';
+    const context = { NETWORK_NAME: 'test-network', DOMAIN: 'test.local' };
     
     const interpolated = (service as any).interpolateCommand(command, context);
     expect(interpolated).toBe('docker run --network test-network --name test.local');
   });
 
   it('should throw error for missing variables in command', () => {
-    const command = 'docker run --network {{networkName}} --name {{missingVar}}';
-    const context = { networkName: 'test-network' };
+    const command = 'docker run --network {{NETWORK_NAME}} --name {{missingVar}}';
+    const context = { NETWORK_NAME: 'test-network' };
     
     expect(() => {
       (service as any).interpolateCommand(command, context);

@@ -9,9 +9,9 @@
       "docker network create {{NETWORK_NAME}} || true",
       "mkdir -p ~/wsdata/mongodb/data"
     ],
-    "run": "docker run -d --name mongodb --network {{NETWORK_NAME}} -p 27017:27017 -v ~/wsdata/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD={{databasePassword}} mongo:latest"
+    "run": "docker run -d --name mongodb --network {{NETWORK_NAME}} -p 27017:27017 -v ~/wsdata/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD={{DATABASE_PASSWORD}} mongo:latest"
   },
-  "variables": ["NETWORK_NAME", "databasePassword"],
+  "variables": ["NETWORK_NAME", "DATABASE_PASSWORD"],
   "dependencies": [],
-  "accessUrl": "mongodb://admin:{{databasePassword}}@{{IP}}:27017/admin"
+  "accessUrl": "mongodb://admin:{{DATABASE_PASSWORD}}@{{IP}}:27017/admin"
 }

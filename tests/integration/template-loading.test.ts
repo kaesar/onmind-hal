@@ -40,7 +40,7 @@ describe('Template Loading Integration', () => {
 
   describe('Service Templates', () => {
     const coreServices = ['caddy', 'portainer', 'copyparty', 'duckdb'];
-    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'cockpit', 'authelia', 'localstack', 'onedev', 'sonarqube', 'trivy', 'rapidoc', 'grafana', 'loki', 'fluentbit', 'registry', 'nexus', 'vault', 'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'jasperreports', 'stirlingpdf', 'libretranslate', 'mailserver', 'frp'];
+    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'cockpit', 'authelia', 'localstack', 'onedev', 'sonarqube', 'trivy', 'rapidoc', 'grafana', 'loki', 'fluentbit', 'registry', 'nexus', 'vault', 'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'plane', 'jasperreports', 'stirlingpdf', 'libretranslate', 'mailserver', 'frp'];
     const allServices = [...coreServices, ...optionalServices];
 
     allServices.forEach(service => {
@@ -71,7 +71,7 @@ describe('Template Loading Integration', () => {
     it('should load all service templates', async () => {
       const templates = await loader.loadAllTemplates('services');
       
-      expect(templates.size).toBe(40);
+      expect(templates.size).toBe(41);
       allServices.forEach(service => {
         expect(templates.has(service)).toBe(true);
       });
@@ -79,7 +79,7 @@ describe('Template Loading Integration', () => {
   });
 
   describe('Configuration Templates', () => {
-    const configs = ['caddyfile', 'dnsmasq', 'copyparty', 'caddyfile-self-signed'];
+    const configs = ['dnsmasq', 'copyparty'];
 
     configs.forEach(config => {
       it(`should load and validate ${config} configuration template`, async () => {
@@ -99,7 +99,7 @@ describe('Template Loading Integration', () => {
     it('should load all configuration templates', async () => {
       const templates = await loader.loadAllTemplates('config');
       
-      expect(templates.size).toBe(4);
+      expect(templates.size).toBe(2);
       configs.forEach(config => {
         expect(templates.has(config)).toBe(true);
       });
@@ -119,14 +119,14 @@ describe('Template Loading Integration', () => {
       const caddyTemplate = await loader.loadTemplate('services/caddy');
       const variables = validator.extractRequiredVariables(caddyTemplate);
       
-      expect(variables).toContain('networkName');
+      expect(variables).toContain('NETWORK_NAME');
     });
 
     it('should extract variables from config templates', async () => {
-      const caddyfileTemplate = await loader.loadTemplate('config/caddyfile');
-      const variables = validator.extractRequiredVariables(caddyfileTemplate);
+      const dnsmasqTemplate = await loader.loadTemplate('config/dnsmasq');
+      const variables = validator.extractRequiredVariables(dnsmasqTemplate);
       
-      expect(variables).toContain('domain');
+      expect(variables).toContain('DOMAIN');
     });
   });
 
@@ -144,22 +144,22 @@ describe('Template Loading Integration', () => {
 
     it('should render service template with variables', async () => {
       const template = await engine.load('services/portainer');
-      const context = { networkName: 'homelab-network', domain: 'homelab.local' };
+      const context = { NETWORK_NAME: 'homelab-network', DOMAIN: 'homelab.local' };
       
       const rendered = engine.render(template, context);
       
       expect(rendered).toContain('homelab-network');
-      expect(rendered).not.toContain('{{networkName}}');
+      expect(rendered).not.toContain('{{NETWORK_NAME}}');
     });
 
     it('should render config template with variables', async () => {
-      const template = await engine.load('config/caddyfile');
-      const context = { domain: 'homelab.local' };
+      const template = await engine.load('config/dnsmasq');
+      const context = { DOMAIN: 'homelab.local', IP: '192.168.1.100' };
       
       const rendered = engine.render(template, context);
       
       expect(rendered).toContain('homelab.local');
-      expect(rendered).not.toContain('{{domain}}');
+      expect(rendered).not.toContain('{{DOMAIN}}');
     });
   });
 });

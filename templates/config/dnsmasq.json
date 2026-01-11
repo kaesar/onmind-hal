@@ -2,8 +2,8 @@
   "name": "dnsmasq-config",
   "description": "dnsmasq configuration for local DNS resolution",
   "filename": "dnsmasq.conf",
-  "content": "# dnsmasq configuration for HomeLab\n\n# Listen on all interfaces\nlisten-address={{ip}}\nlisten-address=127.0.0.1\n\n# Don't read /etc/hosts\nno-hosts\n\n# Don't read /etc/resolv.conf\nno-resolv\n\n# Use Google DNS as upstream\nserver=8.8.8.8\nserver=8.8.4.4\n\n# Local domain resolution\naddress=/{{domain}}/{{ip}}\naddress=/.{{domain}}/{{ip}}\n\n# Cache settings\ncache-size=1000\n\n# Log queries for debugging\nlog-queries\nlog-facility=/var/log/dnsmasq.log",
-  "variables": ["ip", "domain"],
+  "content": "# dnsmasq configuration for HomeLab\n\n# Listen on all interfaces\nlisten-address={{IP}}\nlisten-address=127.0.0.1\n\n# Don't read /etc/hosts\nno-hosts\n\n# Don't read /etc/resolv.conf\nno-resolv\n\n# Use Google DNS as upstream\nserver=8.8.8.8\nserver=8.8.4.4\n\n# Local domain resolution\naddress=/{{DOMAIN}}/{{IP}}\naddress=/.{{DOMAIN}}/{{IP}}\n\n# Cache settings\ncache-size=1000\n\n# Log queries for debugging\nlog-queries\nlog-facility=/var/log/dnsmasq.log",
+  "variables": ["IP", "DOMAIN"],
   "permissions": "644",
   "path": "/etc/dnsmasq.conf"
 }

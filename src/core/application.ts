@@ -61,10 +61,13 @@ export class HomelabApplication {
       // Step 4: Configure firewall
       await this.configureFirewall();
 
-      // Step 5: Install and configure services
+      // Step 5: Configure dnsmasq for self-signed certificates on Linux
+      await this.configureDnsmasq();
+
+      // Step 6: Install and configure services
       await this.installServices();
 
-      // Step 6: Display completion summary
+      // Step 7: Display completion summary
       this.displayCompletionSummary();
 
       this.logger.info('✅ HomeLab installation completed successfully!');
@@ -170,6 +173,43 @@ export class HomelabApplication {
     } catch (error) {
       this.logger.error('❌ Firewall configuration failed');
       throw new ServiceInstallationError('Firewall', error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  /**
+   * Configure dnsmasq for local domain resolution on Linux with self-signed certificates
+   */
+  private async configureDnsmasq(): Promise<void> {
+    if (!this.config || !this.distributionStrategy) {
+      return;
+    }
+
+    // Only configure dnsmasq for Linux systems with self-signed certificates
+    const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
+    const isMacOS = this.config.distribution === DistributionType.MACOS;
+    const usingSelfSigned = isMacOS || isLocalDomain;
+    
+    if (!usingSelfSigned || isMacOS) {
+      return; // Skip for macOS or public domains
+    }
+
+    try {
+      this.logger.info('🌐 Configuring dnsmasq for local DNS resolution...');
+      
+      // Configure dnsmasq with the domain (wildcard handles all subdomains)
+      if (this.distributionStrategy.configureDnsmasq) {
+        await this.distributionStrategy.configureDnsmasq(this.config.domain, this.config.ip, []);
+        // Mark that dnsmasq was configured successfully
+        (this.config as any).dnsmasqConfigured = true;
+      }
+      
+      this.logger.info('✅ dnsmasq configuration completed');
+
+    } catch (error) {
+      this.logger.warn('⚠️  dnsmasq configuration failed, but continuing with /etc/hosts method...');
+      this.logger.debug(`dnsmasq error: ${error}`);
+      // Mark that dnsmasq configuration failed
+      (this.config as any).dnsmasqConfigured = false;
     }
   }
 
@@ -333,10 +373,17 @@ export class HomelabApplication {
     for (const service of this.installedServices) {
       let accessUrl = service.getAccessUrl();
       
-      // For self-signed certificates, show URLs with note about /etc/hosts configuration
+      // For self-signed certificates, show URLs with appropriate note
       if (usingSelfSigned && accessUrl.includes('https://')) {
-        const hostsIP = isMacOS ? '127.0.0.1' : this.config.ip;
-        accessUrl += ` (requires /etc/hosts: ${hostsIP} + subdomain)`;
+        const dnsmasqConfigured = (this.config as any).dnsmasqConfigured;
+        const needsHostsFile = isMacOS || dnsmasqConfigured === false;
+        
+        if (needsHostsFile) {
+          const hostsIP = isMacOS ? '127.0.0.1' : this.config.ip;
+          accessUrl += ` (requires /etc/hosts: ${hostsIP} + subdomain)`;
+        } else {
+          accessUrl += ` (dnsmasq configured)`;
+        }
       }
       
       console.log(`   ✓ ${service.name}: ${accessUrl}`);
@@ -345,45 +392,55 @@ export class HomelabApplication {
     console.log('\n📚 Next Steps:');
     
     if (usingSelfSigned) {
-      console.log('   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:');
-      console.log('\n   Run: sudo nano /etc/hosts');
-      console.log('\n   Then copy and paste these lines:\n');
+      // Check if dnsmasq was configured successfully on Linux
+      const dnsmasqConfigured = (this.config as any).dnsmasqConfigured;
+      const needsHostsFile = isMacOS || dnsmasqConfigured === false;
       
-      // Use 127.0.0.1 for macOS, server IP for Linux with self-signed certs
-      const hostsIP = isMacOS ? '127.0.0.1' : this.config.ip;
-      console.log(`   ${hostsIP} ${this.config.domain}`);
-      
-      // Only add /etc/hosts entries for services that have web interfaces (configured in Caddy)
+      // Define web services list (used for both /etc/hosts and non-web services filtering)
       const webServices = ['copyparty', 'portainer', 'duckdb', 'n8n', 'kestra', 'keystonejs', 
                           'minio', 'ollama', 'cockpit', 'authelia', 'rabbitmq', 'grafana', 
                           'loki', 'trivy', 'sonarqube', 'nexus', 'vault', 'rapidoc', 
                           'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 
-                          'grist', 'nocodb', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 
+                          'grist', 'nocodb', 'plane', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 
                           'localstack', 'libretranslate'];
       
-      // Map service types to their subdomain names
-      const subdomainMap: Record<string, string> = {
-        'copyparty': 'files',
-        'portainer': 'portainer',
-        'jasperreports': 'jasper',
-        'stirlingpdf': 'pdf',
-        'libretranslate': 'translate'
-      };
-      
-      for (const service of this.installedServices) {
-        // Only add entries for web services (skip mailserver, frp, databases without web UI)
-        if (webServices.includes(service.type)) {
-          const subdomain = subdomainMap[service.type] || service.type;
-          console.log(`   ${hostsIP} ${subdomain}.${this.config.domain}`);
+      if (needsHostsFile) {
+        console.log('   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:');
+        console.log('\n   Run: sudo nano /etc/hosts');
+        console.log('\n   Then copy and paste these lines:\n');
+        
+        // Use 127.0.0.1 for macOS, server IP for Linux with self-signed certs
+        const hostsIP = isMacOS ? '127.0.0.1' : this.config.ip;
+        console.log(`   ${hostsIP} ${this.config.domain}`);
+        
+        // Map service types to their subdomain names
+        const subdomainMap: Record<string, string> = {
+          'copyparty': 'files',
+          'portainer': 'portainer',
+          'jasperreports': 'jasper',
+          'stirlingpdf': 'pdf',
+          'libretranslate': 'translate'
+        };
+        
+        for (const service of this.installedServices) {
+          // Only add entries for web services (skip mailserver, frp, databases without web UI)
+          if (webServices.includes(service.type)) {
+            const subdomain = subdomainMap[service.type] || service.type;
+            console.log(`   ${hostsIP} ${subdomain}.${this.config.domain}`);
+          }
         }
+        
+        console.log('\n   After saving, your services will be accessible at the URLs above.');
+      } else {
+        console.log('   ✅ dnsmasq has been configured for automatic DNS resolution.');
+        console.log('   🌐 Your services should be accessible directly at the URLs above.');
+        console.log('   📱 Other devices on your network can also access these services.');
       }
-      
-      console.log('\n   After saving, your services will be accessible at the URLs above.');
       
       // Show special instructions for non-web services
       const nonWebServices = this.installedServices.filter(s => !webServices.includes(s.type));
       if (nonWebServices.length > 0) {
-        console.log('\n   📧 Non-web services (no /etc/hosts entry needed):');
+        console.log('\n   📧 Non-web services (no DNS configuration needed):');
         for (const service of nonWebServices) {
           if (service.type === 'mailserver') {
             console.log('   • Mailserver: Configure email client with localhost:587 (SMTP), localhost:993 (IMAPS)');
