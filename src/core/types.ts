@@ -61,6 +61,7 @@ export enum ServiceType {
   LIBRETRANSLATE = 'libretranslate',
   MAILSERVER = 'mailserver',
   FRP = 'frp',
+  UPTIMEKUMA = 'uptimekuma',
 }
 
 // Configuration interface

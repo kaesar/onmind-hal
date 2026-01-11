@@ -115,6 +115,7 @@ describe('ServiceFactory', () => {
       ServiceType.GRAFANA,
       ServiceType.LOKI,
       ServiceType.FLUENTBIT,
+      ServiceType.UPTIMEKUMA,
       ServiceType.REGISTRY,
       ServiceType.NEXUS,
       ServiceType.VAULT,

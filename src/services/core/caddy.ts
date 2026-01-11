@@ -72,6 +72,9 @@ export class CaddyService extends BaseService {
     // Main domain redirect to portainer
     content += `# Main domain redirect\n`;
     content += `${this.config.domain} {\n`;
+    if (isLocalDomain && !isMacOS) {
+      content += `    tls internal\n`;
+    }
     content += `    redir https://portainer.${this.config.domain}\n`;
     content += '}\n\n';
     
@@ -80,6 +83,9 @@ export class CaddyService extends BaseService {
       content += '# Installed Services\n';
       for (const service of services) {
         content += `${service.subdomain}.${this.config.domain} {\n`;
+        if (isLocalDomain && !isMacOS) {
+          content += `    tls internal\n`;
+        }
         content += `    reverse_proxy ${service.container}:${service.port}\n`;
         content += '}\n\n';
       }
@@ -146,6 +152,7 @@ export class CaddyService extends BaseService {
       [ServiceType.REGISTRY]: { subdomain: 'registry', port: 5000, container: 'registry' },
       [ServiceType.LOCALSTACK]: { subdomain: 'localstack', port: 4566, container: 'localstack' },
       [ServiceType.LIBRETRANSLATE]: { subdomain: 'translate', port: 5000, container: 'libretranslate' },
+      [ServiceType.UPTIMEKUMA]: { subdomain: 'uptimekuma', port: 3001, container: 'uptimekuma' },
       
       // Services without web interfaces (excluded)
       [ServiceType.POSTGRESQL]: null,

@@ -46,22 +46,23 @@
 20. **Grafana**: Analytics and monitoring platform
 21. **Loki**: Log aggregation system by Grafana Labs
 22. **Fluent-Bit**: Lightweight log processor and forwarder
-23. **Registry**: Private Docker container registry
-24. **Nexus-Repository**: Universal artifact repository manager
-25. **Vault**: Secrets and encryption management (HashiCorp)
-26. **PsiTransfer**: File sharing platform (like WeTransfer)
-27. **Excalidraw**: Virtual whiteboard for sketching diagrams
-28. **Draw.io**: Web-based diagramming application
-29. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
-30. **Outline**: Team knowledge base and wiki
-31. **Grist**: Modern spreadsheet with relational database capabilities
-32. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
-33. **Plane**: Modern project management platform (like Jira) ⚠️ *May not work on ARM64 architecture*
-34. **JasperReports**: Business intelligence and reporting platform
-35. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
-36. **LibreTranslate**: Free and open source machine translation API
-37. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
-38. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
+23. **Uptime Kuma**: Self-hosted uptime monitoring tool
+24. **Registry**: Private Docker container registry
+25. **Nexus-Repository**: Universal artifact repository manager
+26. **Vault**: Secrets and encryption management (HashiCorp)
+27. **PsiTransfer**: File sharing platform (like WeTransfer)
+28. **Excalidraw**: Virtual whiteboard for sketching diagrams
+29. **Draw.io**: Web-based diagramming application
+30. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
+31. **Outline**: Team knowledge base and wiki
+32. **Grist**: Modern spreadsheet with relational database capabilities
+33. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
+34. **Plane**: Modern project management platform (like Jira) ⚠️ *May not work on ARM64 architecture*
+35. **JasperReports**: Business intelligence and reporting platform
+36. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
+37. **LibreTranslate**: Free and open source machine translation API
+38. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
+39. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
 
 > *Perhaps, I will consider includes in a future*: Vaultwarden (Bitwarden), Zulip, Jitsi, DocuSeal
 

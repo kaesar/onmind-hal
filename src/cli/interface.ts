@@ -116,6 +116,7 @@ export class CLIInterface {
       grafana: 'Grafana (Monitoring)',
       loki: 'Loki (Log Aggregation)',
       fluentbit: 'Fluent Bit (Log Collector)',
+      uptimekuma: 'Uptime Kuma (Uptime Monitoring)',
       registry: 'Registry (Docker Registry)',
       nexus: 'Nexus Repository (Artifact Manager)',
       vault: 'Vault (Secrets Management)',

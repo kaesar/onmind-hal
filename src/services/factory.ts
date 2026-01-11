@@ -47,6 +47,7 @@ import { StirlingPDFService } from './optional/stirlingpdf.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
 import { MailserverService } from './optional/mailserver.js';
 import { FrpService } from './optional/frp.js';
+import { UptimeKumaService } from './optional/uptimekuma.js';
 
 /**
  * Service factory for creating service instances based on configuration
@@ -203,6 +204,9 @@ export class ServiceFactory {
       case ServiceType.FRP:
         service = new FrpService(config, this.templateEngine);
         break;
+      case ServiceType.UPTIMEKUMA:
+        service = new UptimeKumaService(config, this.templateEngine);
+        break;
       default:
         throw new ServiceInstallationError(
           ServiceType.CADDY, // Generic error, Caddy is a core service
@@ -355,6 +359,7 @@ export class ServiceFactory {
       ServiceType.GRAFANA,
       ServiceType.LOKI,
       ServiceType.FLUENTBIT,
+      ServiceType.UPTIMEKUMA,
       ServiceType.REGISTRY,
       ServiceType.NEXUS,
       ServiceType.VAULT,
@@ -465,6 +470,7 @@ export class ServiceFactory {
       'LibreTranslate': ServiceType.LIBRETRANSLATE,
       'Docker Mailserver': ServiceType.MAILSERVER,
       'FRP Client': ServiceType.FRP,
+      'Uptime Kuma': ServiceType.UPTIMEKUMA,
     };
 
     return serviceNameMap[serviceName];

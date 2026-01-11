@@ -443,7 +443,7 @@ export class HomelabApplication {
                           'loki', 'trivy', 'sonarqube', 'nexus', 'vault', 'rapidoc', 
                           'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 
                           'grist', 'nocodb', 'plane', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 
-                          'localstack', 'libretranslate'];
+                          'localstack', 'libretranslate', 'uptimekuma'];
       
       if (needsHostsFile) {
         console.log('   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:');

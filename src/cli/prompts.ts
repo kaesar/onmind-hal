@@ -221,6 +221,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Fluent Bit'
     },
     {
+      name: 'Uptime Kuma - Self-hosted uptime monitoring tool',
+      value: ServiceType.UPTIMEKUMA,
+      short: 'Uptime Kuma'
+    },
+    {
       name: 'Registry - Private Docker container registry',
       value: ServiceType.REGISTRY,
       short: 'Registry'
