@@ -41,14 +41,14 @@ describe('TemplateLoader', () => {
       await expect(loader.loadTemplate('nonexistent')).rejects.toThrow('Template file not found');
     });
 
-    it('should throw TemplateError for invalid JSON', async () => {
+    it('should throw TemplateError for invalid format', async () => {
       await writeFile(
         join(testTemplateDir, 'invalid.json'),
         '{ "name": "test", invalid }'
       );
 
       await expect(loader.loadTemplate('invalid')).rejects.toThrow(TemplateError);
-      await expect(loader.loadTemplate('invalid')).rejects.toThrow('Invalid JSON format');
+      await expect(loader.loadTemplate('invalid')).rejects.toThrow('Invalid format');
     });
 
     it('should load template from subdirectory', async () => {
@@ -216,12 +216,12 @@ describe('TemplateLoader', () => {
   describe('getTemplatePath', () => {
     it('should return correct template path', () => {
       const path = loader.getTemplatePath('test-template');
-      expect(path).toBe(join(testTemplateDir, 'test-template.json'));
+      expect(path).toBe(join(testTemplateDir, 'test-template.yml'));
     });
 
     it('should handle template names with subdirectories', () => {
       const path = loader.getTemplatePath('services/caddy');
-      expect(path).toBe(join(testTemplateDir, 'services/caddy.json'));
+      expect(path).toBe(join(testTemplateDir, 'services/caddy.yml'));
     });
   });
 });

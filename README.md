@@ -1,17 +1,17 @@
 # OnMind-HAL (Home Apps Labs)
 
-**Home Apps Labs (OnMind-HAL)** is a comprehensive HomeLab setup or automation tool that deploys and manages a collection of open-source applications using Docker containers. It's designed for Virtual Machines, Cloud Instances, or Virtual Private Servers (VPS). Thinked for professionals or techie individuals, as well, IT, infraestucture, architecture and software development environments.
+**Home Apps Labs (OnMind-HAL)** is a comprehensive HomeLab setup or automation tool that deploys and manages a collection of open-source (or familiar) applications using Docker containers. It's designed for Virtual Machines, Cloud Instances, or Virtual Private Servers (VPS). Thinked for professionals or techie individuals, as well, IT, infraestucture (or DevSecOps), architecture and software development environments.
 
-> This started from my Article about making your HomeLab: [here](https://onmind.net/devops/es/YourHomeLab)
+> This started from my Article about making your HomeLab: [here](https://onmind.net/devops/es/YourHomeLab)  
+> See other repos from my portfolio: [here](https://github.com/kaesar) 
 
 ## Features
 
 - **Automated Installation**: One-command setup for multiple services
-- **Multi-Platform Support**: Ubuntu/Debian (even WSL), Arch Linux, Amazon Linux 2023, macOS
-- **Container Runtime Flexibility**: Docker, Colima, or Podman support on macOS
+- **Multi-Platform Support**: Ubuntu/Debian (even WSL2: Windows Subsystem for Linux), Arch Linux, Amazon Linux 2023, macOS
+- **Container Runtime Flexibility**: Docker, Colima, or Podman support on macOS and Linux
 - **Template-Based Configuration**: YAML templates for easy service customization
-- **Rollback Support**: Some recovery from failed installations
-- **Comprehensive Logging**: Detailed execution tracking and debugging
+- **Comprehensive Logging**: Detailed execution tracking for debugging
 
 ## Services
 

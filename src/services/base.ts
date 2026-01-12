@@ -1,6 +1,7 @@
 import { Service, ServiceType, HomelabConfig } from '../core/types.js';
 import { ServiceInstallationError } from '../utils/errors.js';
 import { TemplateEngine } from '../templates/engine.js';
+import { ContainerRuntimeUtils } from '../utils/container.js';
 import { $ } from 'bun';
 
 /**
@@ -82,7 +83,13 @@ export abstract class BaseService implements Service {
     for (const command of commands) {
       try {
         // Interpolate variables in command
-        const interpolatedCommand = this.interpolateCommand(command, context);
+        let interpolatedCommand = this.interpolateCommand(command, context);
+        
+        // Process container commands for Docker/Podman compatibility
+        if (interpolatedCommand.includes('docker ')) {
+          interpolatedCommand = await ContainerRuntimeUtils.processCommand(interpolatedCommand);
+        }
+        
         console.log(`Executing: ${interpolatedCommand}`);
         
         // Use sh -c to properly handle complex commands with pipes, redirects, etc.
@@ -121,7 +128,9 @@ export abstract class BaseService implements Service {
    */
   protected async isContainerRunning(): Promise<boolean> {
     try {
-      const result = await $`docker ps -a --format {{.Names}}`.quiet();
+      const runtime = await ContainerRuntimeUtils.detectRuntime();
+      const command = `${runtime} ps -a --format {{.Names}}`;
+      const result = await $`sh -c ${command}`.quiet();
       const output = result.stdout.toString().trim();
       if (!output) return false;
       const containers = output.split('\n');

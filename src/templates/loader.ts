@@ -3,7 +3,8 @@ import { join, extname, basename } from 'path';
 import { TemplateError } from '../utils/errors.js';
 
 /**
- * Template loader for reading JSON template files from filesystem
+ * Template loader for reading YAML and JSON template files from filesystem
+ * Prefers YAML format but falls back to JSON for compatibility
  */
 export class TemplateLoader {
   private readonly templateDir: string;
@@ -14,20 +15,28 @@ export class TemplateLoader {
 
   /**
    * Load a single template file by name
-   * @param templateName Name of the template (without .json extension)
-   * @returns Promise<any> Parsed JSON content
+   * @param templateName Name of the template (without extension)
+   * @returns Promise<any> Parsed content
    */
   async loadTemplate(templateName: string): Promise<any> {
     try {
-      const templatePath = join(this.templateDir, `${templateName}.json`);
-      const fileContent = await readFile(templatePath, 'utf-8');
-      return JSON.parse(fileContent);
+      // Try YAML first
+      let templatePath = join(this.templateDir, `${templateName}.yml`);
+      try {
+        const fileContent = await readFile(templatePath, 'utf-8');
+        return Bun.YAML.parse(fileContent);
+      } catch (yamlError) {
+        // Fallback to JSON
+        templatePath = join(this.templateDir, `${templateName}.json`);
+        const fileContent = await readFile(templatePath, 'utf-8');
+        return JSON.parse(fileContent);
+      }
     } catch (error) {
       if (error instanceof SyntaxError) {
-        throw new TemplateError(templateName, `Invalid JSON format: ${error.message}`);
+        throw new TemplateError(templateName, `Invalid format: ${error.message}`);
       }
       if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-        throw new TemplateError(templateName, `Template file not found: ${templateName}.json`);
+        throw new TemplateError(templateName, `Template file not found: ${templateName}.yml or ${templateName}.json`);
       }
       throw new TemplateError(templateName, `Failed to load template: ${error}`);
     }
@@ -46,9 +55,15 @@ export class TemplateLoader {
       const files = await readdir(targetDir);
       
       for (const file of files) {
-        if (extname(file) === '.json') {
-          const templateName = basename(file, '.json');
+        const ext = extname(file);
+        if (ext === '.yml' || ext === '.json') {
+          const templateName = basename(file, ext);
           const fullPath = subdirectory ? `${subdirectory}/${templateName}` : templateName;
+          
+          // Skip if we already loaded this template (YAML takes precedence)
+          if (templates.has(templateName)) {
+            continue;
+          }
           
           try {
             const content = await this.loadTemplate(fullPath);
@@ -76,27 +91,44 @@ export class TemplateLoader {
    */
   async templateExists(templateName: string): Promise<boolean> {
     try {
-      const templatePath = join(this.templateDir, `${templateName}.json`);
-      const stats = await stat(templatePath);
-      return stats.isFile();
+      // Check YAML first
+      let templatePath = join(this.templateDir, `${templateName}.yml`);
+      let stats = await stat(templatePath);
+      if (stats.isFile()) return true;
     } catch {
-      return false;
+      // Try JSON fallback
+      try {
+        const templatePath = join(this.templateDir, `${templateName}.json`);
+        const stats = await stat(templatePath);
+        return stats.isFile();
+      } catch {
+        return false;
+      }
     }
+    return false;
   }
 
   /**
    * List all available template names in a directory
    * @param subdirectory Optional subdirectory within template directory
-   * @returns Promise<string[]> Array of template names (without .json extension)
+   * @returns Promise<string[]> Array of template names (without extension)
    */
   async listTemplates(subdirectory?: string): Promise<string[]> {
     const targetDir = subdirectory ? join(this.templateDir, subdirectory) : this.templateDir;
     
     try {
       const files = await readdir(targetDir);
-      return files
-        .filter(file => extname(file) === '.json')
-        .map(file => basename(file, '.json'));
+      const templateNames = new Set<string>();
+      
+      // Collect unique template names from both .yml and .json files
+      for (const file of files) {
+        const ext = extname(file);
+        if (ext === '.yml' || ext === '.json') {
+          templateNames.add(basename(file, ext));
+        }
+      }
+      
+      return Array.from(templateNames);
     } catch (error) {
       if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
         return []; // Return empty array if directory doesn't exist
@@ -106,11 +138,12 @@ export class TemplateLoader {
   }
 
   /**
-   * Get the full path to a template file
+   * Get the full path to a template file (prefers YAML over JSON)
    * @param templateName Name of the template
    * @returns string Full path to template file
    */
   getTemplatePath(templateName: string): string {
-    return join(this.templateDir, `${templateName}.json`);
+    // Return YAML path by default (preferred format)
+    return join(this.templateDir, `${templateName}.yml`);
   }
 }

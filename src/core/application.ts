@@ -15,6 +15,7 @@ import { AmazonLinuxStrategy } from '../distribution/amazon.js';
 import { MacOSStrategy } from '../distribution/macos.js';
 import { Logger } from '../utils/logger.js';
 import { NetworkUtils } from '../utils/network.js';
+import { ContainerRuntimeUtils } from '../utils/container.js';
 import { $ } from 'bun';
 
 /**
@@ -260,15 +261,17 @@ export class HomelabApplication {
     }
 
     try {
-      this.logger.info(`🌐 Creating Docker network: ${this.config.networkName}...`);
+      this.logger.info(`🌐 Creating container network: ${this.config.networkName}...`);
       
-      await $`sh -c "docker network create ${this.config.networkName} || true"`;
+      const runtime = await ContainerRuntimeUtils.detectRuntime();
+      const command = `${runtime} network create ${this.config.networkName} || true`;
+      await $`sh -c ${command}`;
       
-      this.logger.info('✅ Docker network ready');
+      this.logger.info('✅ Container network ready');
 
     } catch (error) {
-      this.logger.error('❌ Docker network creation failed');
-      throw new ServiceInstallationError('Docker Network', error instanceof Error ? error.message : String(error));
+      this.logger.error('❌ Container network creation failed');
+      throw new ServiceInstallationError('Container Network', error instanceof Error ? error.message : String(error));
     }
   }
 
@@ -349,7 +352,9 @@ export class HomelabApplication {
     try {
       this.logger.info('🔄 Restarting core services...');
       
-      await $`sh -c "docker restart caddy portainer || true"`;
+      const runtime = await ContainerRuntimeUtils.detectRuntime();
+      const command = `${runtime} restart caddy portainer || true`;
+      await $`sh -c ${command}`;
       
       this.logger.info('✅ Core services restarted successfully');
 
@@ -400,6 +405,12 @@ export class HomelabApplication {
     console.log(`🏷️  Domain: ${this.config.domain}`);
     console.log(`🔗 Network: ${this.config.networkName}`);
     
+    // Show container runtime info
+    const runtime = ContainerRuntimeUtils.getCurrentRuntime();
+    if (runtime) {
+      console.log(`🐳 Container Runtime: ${runtime}`);
+    }
+    
     if (this.config.distribution === DistributionType.MACOS) {
       console.log(`🐳 Container Runtime: ${this.config.containerRuntime || 'docker'}`);
     }
@@ -431,6 +442,17 @@ export class HomelabApplication {
     }
 
     console.log('\n📚 Next Steps:');
+    
+    // Show container runtime warnings
+    const containerRuntime = ContainerRuntimeUtils.getCurrentRuntime();
+    if (containerRuntime) {
+      const warnings = ContainerRuntimeUtils.getRuntimeWarnings(containerRuntime);
+      if (warnings.length > 0) {
+        console.log('');
+        warnings.forEach(warning => console.log(warning));
+        console.log('');
+      }
+    }
     
     if (usingSelfSigned) {
       // Check if dnsmasq was configured successfully on Linux
