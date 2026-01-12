@@ -99,8 +99,11 @@ export class ContainerRuntimeUtils {
   static async processCommand(command: string): Promise<string> {
     const runtime = await this.detectRuntime();
     
-    // Replace all docker commands with runtime first (handles compound commands with &&)
-    let processedCommand = command.replace(/\bdocker\b/g, runtime);
+    // Replace docker commands with runtime, but preserve socket paths
+    let processedCommand = command;
+    
+    // Replace 'docker ' (with space) to avoid changing paths like /var/run/docker.sock
+    processedCommand = processedCommand.replace(/\bdocker\s/g, `${runtime} `);
     
     // Then normalize image names in the command
     // Extract image names from pull commands
