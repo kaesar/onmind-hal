@@ -137,6 +137,7 @@ export class CaddyService extends BaseService {
       [ServiceType.SONARQUBE]: { subdomain: 'sonarqube', port: 9000, container: 'sonarqube' },
       [ServiceType.NEXUS]: { subdomain: 'nexus', port: 8081, container: 'nexus' },
       [ServiceType.VAULT]: { subdomain: 'vault', port: 8200, container: 'vault' },
+      [ServiceType.VAULTWARDEN]: { subdomain: 'vaultwarden', port: 8222, container: 'vaultwarden' },
       [ServiceType.RAPIDOC]: { subdomain: 'rapidoc', port: 80, container: 'rapidoc' },
       [ServiceType.PSITRANSFER]: { subdomain: 'psitransfer', port: 3005, container: 'psitransfer' },
       [ServiceType.EXCALIDRAW]: { subdomain: 'excalidraw', port: 80, container: 'excalidraw' },

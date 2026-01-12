@@ -123,6 +123,7 @@ export class CLIInterface {
       registry: 'Registry (Docker Registry)',
       nexus: 'Nexus Repository (Artifact Manager)',
       vault: 'Vault (Secrets Management)',
+      vaultwarden: 'Vaultwarden (Password Manager)',
       psitransfer: 'PsiTransfer (File Sharing)',
       excalidraw: 'Excalidraw (Whiteboard)',
       drawio: 'Draw.io (Diagramming)',

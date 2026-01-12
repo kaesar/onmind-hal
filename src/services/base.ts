@@ -56,8 +56,21 @@ export abstract class BaseService implements Service {
       NETWORK_NAME: this.config.networkName,
       DOMAIN: this.config.domain,
       IP: this.config.ip,
-      STORAGE_PASSWORD: this.config.storagePassword || ''
+      STORAGE_PASSWORD: this.config.storagePassword || '',
+      ADMIN_TOKEN: this.generateAdminToken()
     };
+  }
+
+  /**
+   * Generate a secure admin token for services that need it
+   */
+  private generateAdminToken(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < 32; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
   }
 
   /**

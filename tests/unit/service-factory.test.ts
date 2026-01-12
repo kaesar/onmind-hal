@@ -121,6 +121,7 @@ describe('ServiceFactory', () => {
       ServiceType.REGISTRY,
       ServiceType.NEXUS,
       ServiceType.VAULT,
+      ServiceType.VAULTWARDEN,
       ServiceType.PSITRANSFER,
       ServiceType.EXCALIDRAW,
       ServiceType.DRAWIO,

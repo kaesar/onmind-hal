@@ -51,6 +51,7 @@ export enum ServiceType {
   REGISTRY = 'registry',
   NEXUS = 'nexus',
   VAULT = 'vault',
+  VAULTWARDEN = 'vaultwarden',
   PSITRANSFER = 'psitransfer',
   EXCALIDRAW = 'excalidraw',
   DRAWIO = 'drawio',

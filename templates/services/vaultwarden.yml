@@ -1,0 +1,25 @@
+name: Vaultwarden
+description: Self-hosted Bitwarden-compatible password manager
+
+commands:
+  install:
+    - docker pull vaultwarden/server:latest
+  setup:
+    - docker volume create vaultwarden_data
+  run: |
+    docker run -d \
+      --name vaultwarden \
+      --network {{NETWORK_NAME}} \
+      -p 8222:80 \
+      -v vaultwarden_data:/data \
+      -e WEBSOCKET_ENABLED=true \
+      -e SIGNUPS_ALLOWED=true \
+      -e ADMIN_TOKEN={{ADMIN_TOKEN}} \
+      --restart=always \
+      vaultwarden/server:latest
+
+variables:
+  - NETWORK_NAME
+  - ADMIN_TOKEN
+
+dependencies: []

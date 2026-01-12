@@ -37,6 +37,7 @@ import { FluentBitService } from './optional/fluentbit.js';
 import { RegistryService } from './optional/registry.js';
 import { NexusService } from './optional/nexus.js';
 import { VaultService } from './optional/vault.js';
+import { VaultwardenService } from './optional/vaultwarden.js';
 import { PsiTransferService } from './optional/psitransfer.js';
 import { ExcalidrawService } from './optional/excalidraw.js';
 import { DrawIOService } from './optional/drawio.js';
@@ -176,6 +177,9 @@ export class ServiceFactory {
         break;
       case ServiceType.VAULT:
         service = new VaultService(config, this.templateEngine);
+        break;
+      case ServiceType.VAULTWARDEN:
+        service = new VaultwardenService(config, this.templateEngine);
         break;
       case ServiceType.PSITRANSFER:
         service = new PsiTransferService(config, this.templateEngine);
@@ -378,6 +382,7 @@ export class ServiceFactory {
       ServiceType.REGISTRY,
       ServiceType.NEXUS,
       ServiceType.VAULT,
+      ServiceType.VAULTWARDEN,
       ServiceType.PSITRANSFER,
       ServiceType.EXCALIDRAW,
       ServiceType.DRAWIO,
@@ -475,6 +480,7 @@ export class ServiceFactory {
       'Registry': ServiceType.REGISTRY,
       'Nexus Repository': ServiceType.NEXUS,
       'Vault': ServiceType.VAULT,
+      'Vaultwarden': ServiceType.VAULTWARDEN,
       'PsiTransfer': ServiceType.PSITRANSFER,
       'Excalidraw': ServiceType.EXCALIDRAW,
       'Draw.io': ServiceType.DRAWIO,

@@ -1,6 +1,6 @@
 # OnMind-HAL (Home Apps Labs)
 
-**Home Apps Labs (OnMind-HAL)** is a comprehensive HomeLab setup or automation tool that deploys and manages a collection of open-source applications using Docker containers. It's designed for Virtual Machines, Cloud Instances, or Virtual Private Servers (VPS).
+**Home Apps Labs (OnMind-HAL)** is a comprehensive HomeLab setup or automation tool that deploys and manages a collection of open-source applications using Docker containers. It's designed for Virtual Machines, Cloud Instances, or Virtual Private Servers (VPS). Thinked for professionals or techie individuals, as well, IT, infraestucture, architecture and software development environments.
 
 > This started from my Article about making your HomeLab: [here](https://onmind.net/devops/es/YourHomeLab)
 
@@ -53,21 +53,22 @@
 28. **Registry**: Private Docker container registry
 29. **Nexus-Repository**: Universal artifact repository manager
 30. **Vault**: Secrets and encryption management (HashiCorp)
-31. **PsiTransfer**: File sharing platform (like WeTransfer)
-32. **Excalidraw**: Virtual whiteboard for sketching diagrams
-33. **Draw.io**: Web-based diagramming application
-34. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
-35. **Outline**: Team knowledge base and wiki
-36. **Grist**: Modern spreadsheet with relational database capabilities
-37. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
-38. **Plane**: Modern project management platform (like Jira) ⚠️ *May not work on ARM64 architecture*
-39. **JasperReports**: Business intelligence and reporting platform
-40. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
-41. **LibreTranslate**: Free and open source machine translation API
-42. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
-43. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
+31. **Vaultwarden**: Self-hosted Bitwarden-compatible password manager
+32. **PsiTransfer**: File sharing platform (like WeTransfer)
+33. **Excalidraw**: Virtual whiteboard for sketching diagrams
+34. **Draw.io**: Web-based diagramming application
+35. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
+36. **Outline**: Team knowledge base and wiki
+37. **Grist**: Modern spreadsheet with relational database capabilities
+38. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
+39. **Plane**: Modern project management platform (like Jira) ⚠️ *May not work on ARM64 architecture*
+40. **JasperReports**: Business intelligence and reporting platform
+41. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
+42. **LibreTranslate**: Free and open source machine translation API
+43. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
+44. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
 
-> *Perhaps, I will consider includes in a future*: Vaultwarden (Bitwarden), Zulip, Jitsi, DocuSeal
+> *Perhaps, I will consider includes in a future*: Zulip, Jitsi, DocuSeal
 
 ## Quick Start
 

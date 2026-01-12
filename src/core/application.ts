@@ -440,10 +440,10 @@ export class HomelabApplication {
       // Define web services list (used for both /etc/hosts and non-web services filtering)
       const webServices = ['copyparty', 'portainer', 'duckdb', 'n8n', 'kestra', 'keystonejs', 
                           'minio', 'ollama', 'cockpit', 'authelia', 'rabbitmq', 'grafana', 
-                          'loki', 'trivy', 'sonarqube', 'nexus', 'vault', 'rapidoc', 
+                          'loki', 'trivy', 'sonarqube', 'nexus', 'vault', 'vaultwarden', 'rapidoc', 
                           'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 
                           'grist', 'nocodb', 'plane', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 
-                          'localstack', 'libretranslate', 'uptimekuma'];
+                          'localstack', 'libretranslate', 'uptimekuma', 'k3d', 'semaphore', 'liquibase'];
       
       if (needsHostsFile) {
         console.log('   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:');
@@ -483,13 +483,21 @@ export class HomelabApplication {
       if (nonWebServices.length > 0) {
         console.log('\n   📧 Non-web services (no DNS configuration needed):');
         for (const service of nonWebServices) {
-          if (service.type === 'mailserver') {
-            console.log('   • Mailserver: Configure email client with localhost:587 (SMTP), localhost:993 (IMAPS)');
-          } else if (service.type === 'frp') {
-            console.log('   • FRP: Tunnel client - check ~/wsconf/frpc.ini for configuration');
-          } else {
-            console.log(`   • ${service.name}: Database service - connect via localhost with mapped ports`);
-          }
+          const descriptions: Record<string, string> = {
+            'mailserver': 'Configure email client with localhost:587 (SMTP), localhost:993 (IMAPS)',
+            'frp': 'Tunnel client - check ~/wsconf/frpc.ini for configuration',
+            'kafka': 'Distributed streaming platform - connect via localhost with mapped ports',
+            'rabbitmq': 'Message broker - connect via localhost with mapped ports',
+            'postgresql': 'Relational database - connect via localhost with mapped ports',
+            'redis': 'In-memory data store - connect via localhost with mapped ports',
+            'mongodb': 'NoSQL database - connect via localhost with mapped ports',
+            'mariadb': 'Relational database - connect via localhost with mapped ports',
+            'scylladb': 'NoSQL database - connect via localhost with mapped ports',
+            'fluentbit': 'Log processor - no direct connection needed'
+          };
+          
+          const desc = descriptions[service.type] || 'Database service - connect via localhost with mapped ports';
+          console.log(`   • ${service.name}: ${desc}`);
         }
       }
     } else {

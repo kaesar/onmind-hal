@@ -261,6 +261,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Vault'
     },
     {
+      name: 'Vaultwarden - Self-hosted Bitwarden-compatible password manager',
+      value: ServiceType.VAULTWARDEN,
+      short: 'Vaultwarden'
+    },
+    {
       name: 'PsiTransfer - File sharing platform (like WeTransfer)',
       value: ServiceType.PSITRANSFER,
       short: 'PsiTransfer'
