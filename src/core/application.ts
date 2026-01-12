@@ -377,8 +377,6 @@ export class HomelabApplication {
     // Rollback services in reverse order
     for (const service of this.installedServices.reverse()) {
       try {
-        this.logger.info(`🔄 Rolling back ${service.name}...`);
-        
         // Note: Rollback implementation would depend on service-specific logic
         // For now, we just log the attempt
         this.logger.warn(`⚠️  Manual cleanup may be required for ${service.name}`);
@@ -388,7 +386,7 @@ export class HomelabApplication {
       }
     }
 
-    this.logger.warn('🔄 Rollback attempt completed. Manual cleanup may be required.');
+
   }
 
   /**

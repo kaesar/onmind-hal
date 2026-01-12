@@ -40,7 +40,7 @@ describe('Template Loading Integration', () => {
 
   describe('Service Templates', () => {
     const coreServices = ['caddy', 'portainer', 'copyparty', 'duckdb'];
-    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'scylladb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'cockpit', 'authelia', 'localstack', 'k3d', 'onedev', 'semaphore', 'liquibase', 'sonarqube', 'trivy', 'rapidoc', 'grafana', 'loki', 'fluentbit', 'uptimekuma', 'registry', 'nexus', 'vault', 'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'plane', 'jasperreports', 'stirlingpdf', 'libretranslate', 'mailserver', 'frp'];
+    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'scylladb', 'minio', 'kafka', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'keycloak', 'authelia', 'localstack', 'k3d', 'onedev', 'semaphore', 'liquibase', 'sonarqube', 'trivy', 'rapidoc', 'hoppscotch', 'grafana', 'loki', 'fluentbit', 'uptimekuma', 'registry', 'nexus', 'vault', 'vaultwarden', 'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'plane', 'jasperreports', 'stirlingpdf', 'libretranslate', 'mailserver', 'frp'];
     const allServices = [...coreServices, ...optionalServices];
 
     allServices.forEach(service => {
@@ -72,7 +72,7 @@ describe('Template Loading Integration', () => {
       const templates = await loader.loadAllTemplates('services');
       
       // Should load both .json and .yml templates
-      expect(templates.size).toBeGreaterThanOrEqual(43); // Allow for YAML migration
+      expect(templates.size).toBeGreaterThanOrEqual(45); // Updated count with keycloak, hoppscotch, vaultwarden
       allServices.forEach(service => {
         expect(templates.has(service)).toBe(true);
       });

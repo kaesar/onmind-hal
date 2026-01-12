@@ -20,11 +20,6 @@ commands:
           Listen            0.0.0.0
           Port              24224
 
-      [INPUT]
-          Name              tail
-          Path              /var/log/*.log
-          Tag               host.*
-
       [OUTPUT]
           Name              stdout
           Match             *
@@ -46,8 +41,6 @@ commands:
           -p 2020:2020 \
           -p 24224:24224 \
           -v ~/wsdata/fluentbit/config:/fluent-bit/etc \
-          -v /var/log:/var/log:ro \
-          -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
           --restart unless-stopped \
           fluent/fluent-bit:latest
 variables:

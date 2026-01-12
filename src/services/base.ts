@@ -35,12 +35,13 @@ export abstract class BaseService implements Service {
   }
 
   /**
-   * Load service template from JSON file
+   * Load service template from YAML or JSON file
    */
   protected async loadServiceTemplate(): Promise<void> {
     try {
       const template = await this.templateEngine.load(`services/${this.type}`);
-      this.serviceTemplate = JSON.parse(template.content);
+      // Template content is already parsed by the engine
+      this.serviceTemplate = template.content;
     } catch (error) {
       throw new ServiceInstallationError(
         this.type,
@@ -81,13 +82,23 @@ export abstract class BaseService implements Service {
     const context = this.getTemplateContext();
     
     for (const command of commands) {
+      let interpolatedCommand = command;
       try {
         // Interpolate variables in command
-        let interpolatedCommand = this.interpolateCommand(command, context);
+        interpolatedCommand = this.interpolateCommand(command, context);
         
         // Process container commands for Docker/Podman compatibility
         if (interpolatedCommand.includes('docker ')) {
+          const originalCommand = interpolatedCommand;
           interpolatedCommand = await ContainerRuntimeUtils.processCommand(interpolatedCommand);
+          
+          // Check disk space before pull commands
+          if (interpolatedCommand.includes('pull')) {
+            await this.checkDiskSpace();
+          }
+          
+          // console.log(`Command processing: ${originalCommand}\n→ ${interpolatedCommand}`);
+          console.log(`Command processing: ${interpolatedCommand}`);
         }
         
         console.log(`Executing: ${interpolatedCommand}`);
@@ -99,9 +110,37 @@ export abstract class BaseService implements Service {
           throw new Error(`Command failed with exit code ${result.exitCode}: ${result.stderr}`);
         }
       } catch (error) {
+        // Check for container runtime issues (both Docker and Podman)
+        const isContainerCommand = interpolatedCommand.includes('pull') || 
+                                  interpolatedCommand.includes('volume create') ||
+                                  interpolatedCommand.includes('network create');
+        const isKnownError = error instanceof Error && 
+          (error.message.includes('unauthorized') || 
+           error.message.includes('exit code 125') ||
+           error.message.includes('exit code 1') ||
+           error.message.includes('already exists'));
+        
+        if (isContainerCommand && isKnownError) {
+          const runtime = interpolatedCommand.includes('podman') ? 'Podman' : 'Docker';
+          const commandType = interpolatedCommand.includes('pull') ? 'image pull' :
+                            interpolatedCommand.includes('volume') ? 'volume creation' :
+                            interpolatedCommand.includes('network') ? 'network creation' : 'command';
+          
+          console.log(`⚠️  ${commandType} failed with ${runtime}`);
+          console.log(`⏭️  Skipping ${this.name} installation due to ${runtime.toLowerCase()} issues`);
+          console.log(`💡 This might be temporary or the resource might already exist`);
+          return; // Skip this service and continue with others
+        }
+        
+        // For docker run failures, provide diagnostic information
+        if (interpolatedCommand.includes('run') && error instanceof Error && 
+            error.message.includes('exit code 125')) {
+          await this.diagnoseDockRunFailure(interpolatedCommand);
+        }
+        
         throw new ServiceInstallationError(
           this.type,
-          `Command execution failed: ${command} - ${error}`
+          `Command execution failed: ${interpolatedCommand} - ${error}`
         );
       }
     }
@@ -239,5 +278,92 @@ export abstract class BaseService implements Service {
   async checkDependencies(): Promise<boolean> {
     // For now, just return true - dependency checking can be enhanced later
     return true;
+  }
+
+  /**
+   * Check available disk space before pulling large images
+   */
+  private async checkDiskSpace(): Promise<void> {
+    try {
+      const result = await $`df -h /var/lib`.quiet();
+      const output = result.stdout.toString();
+      const lines = output.trim().split('\n');
+      
+      if (lines.length > 1) {
+        const dataLine = lines[1];
+        const columns = dataLine.split(/\s+/);
+        const availableSpace = columns[3]; // Available space column
+        
+        // Parse available space (e.g., "1.2G", "500M")
+        const spaceMatch = availableSpace.match(/(\d+(?:\.\d+)?)([KMGT]?)/);
+        if (spaceMatch) {
+          const [, amount, unit] = spaceMatch;
+          const numAmount = parseFloat(amount);
+          
+          // Convert to GB for comparison
+          let spaceInGB = numAmount;
+          switch (unit) {
+            case 'K': spaceInGB = numAmount / 1024 / 1024; break;
+            case 'M': spaceInGB = numAmount / 1024; break;
+            case 'T': spaceInGB = numAmount * 1024; break;
+            // G or no unit assumed to be GB
+          }
+          
+          if (spaceInGB < 2) {
+            console.log(`⚠️  Low disk space: ${availableSpace} available`);
+            console.log(`💡 Consider running: docker system prune -a`);
+            
+            if (spaceInGB < 0.5) {
+              console.log(`⚠️  Very low disk space - image pull may fail`);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      // Silently continue if disk space check fails
+    }
+  }
+
+  /**
+   * Diagnose docker run failure by checking common issues
+   */
+  private async diagnoseDockRunFailure(command: string): Promise<void> {
+    console.log(`🔍 Diagnosing docker run failure for ${this.name}...`);
+    
+    try {
+      // Extract image name from command
+      const imageMatch = command.match(/([^\s]+)\s*$/)?.[1];
+      if (imageMatch) {
+        // Check if image exists
+        const runtime = command.includes('podman') ? 'podman' : 'docker';
+        const checkImageResult = await $`sh -c "${runtime} images -q ${imageMatch}"`.quiet();
+        
+        if (!checkImageResult.stdout.toString().trim()) {
+          console.log(`⚠️  Image ${imageMatch} not found locally`);
+          console.log(`💡 Try running: ${runtime} pull ${imageMatch}`);
+        }
+        
+        // Check if container name already exists
+        const nameMatch = command.match(/--name\s+([^\s]+)/);
+        if (nameMatch) {
+          const containerName = nameMatch[1];
+          const checkContainerResult = await $`sh -c "${runtime} ps -a --format {{.Names}}"`.quiet();
+          const containers = checkContainerResult.stdout.toString().split('\n');
+          
+          if (containers.includes(containerName)) {
+            console.log(`⚠️  Container '${containerName}' already exists`);
+            console.log(`💡 Try running: ${runtime} rm ${containerName}`);
+          }
+        }
+        
+        // Check for port conflicts
+        const portMatches = command.match(/-p\s+(\d+):/g);
+        if (portMatches) {
+          console.log(`💡 Check if ports are available: ${portMatches.join(', ')}`);
+        }
+      }
+    } catch (diagError) {
+      console.log(`⚠️  Could not diagnose issue: ${diagError}`);
+    }
   }
 }

@@ -1,0 +1,23 @@
+name: Keycloak
+description: Open-source identity and access management solution
+commands:
+  install:
+    - docker pull keycloak/keycloak:latest
+  setup:
+    - docker volume create keycloak_data
+  run: |-
+    docker run \
+          -d \
+          --name keycloak \
+          --network {{NETWORK_NAME}} \
+          -p 8092:8080 \
+          -e KEYCLOAK_ADMIN=admin \
+          -e KEYCLOAK_ADMIN_PASSWORD={{STORAGE_PASSWORD}} \
+          -e KC_DB=dev-file \
+          -v keycloak_data:/opt/keycloak/data \
+          --restart unless-stopped \
+          keycloak/keycloak:latest start-dev
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+dependencies: []

@@ -5,6 +5,7 @@
 import { BaseDistributionStrategy } from './strategy.js';
 import { ContainerRuntime } from '../core/types.js';
 import { Logger } from '../utils/logger.js';
+import { ContainerRuntimeUtils } from '../utils/container.js';
 import { $ } from 'bun';
 
 export class MacOSStrategy extends BaseDistributionStrategy {
@@ -27,25 +28,28 @@ export class MacOSStrategy extends BaseDistributionStrategy {
   }
 
   async installDocker(): Promise<void> {
-    // Detect which container runtime is available
-    this.detectedRuntime = await this.detectContainerRuntime();
-
-    if (this.detectedRuntime) {
-      this.logger.info(`✅ Detected container runtime: ${this.detectedRuntime}`);
-      
-      // Verify runtime is running
-      await this.verifyRuntimeRunning(this.detectedRuntime);
+    try {
+      // Use the improved container runtime detection
+      const runtime = await ContainerRuntimeUtils.detectRuntime();
+      this.detectedRuntime = this.mapToLegacyRuntime(runtime);
+      this.logger.info(`✅ Container runtime ${runtime} is ready`);
       return;
+    } catch (error) {
+      // No working runtime found, provide helpful suggestions
+      this.logger.error(`❌ ${error}`);
+      this.logger.info('');
+      
+      const suggestions = ContainerRuntimeUtils.getStartupSuggestions();
+      suggestions.forEach(suggestion => this.logger.info(suggestion));
+      
+      this.logger.info('');
+      this.logger.info('📝 macOS-specific installation options:');
+      this.logger.info('   • Colima (Recommended): `brew install colima && colima start`');
+      this.logger.info('   • Podman: `brew install podman && podman machine init && podman machine start`');
+      this.logger.info('   • Docker Desktop: https://www.docker.com/products/docker-desktop');
+      
+      throw error;
     }
-
-    // No runtime detected, provide installation instructions
-    this.logger.warn('⚠️  No container runtime detected on macOS');
-    this.logger.info('\n📦 Please install one of the following:');
-    this.logger.info('   1. Colima (Recommended): brew install colima && colima start');
-    this.logger.info('   2. Podman: brew install podman && podman machine init && podman machine start');
-    this.logger.info('   3. Docker Desktop: https://www.docker.com/products/docker-desktop\n');
-    
-    throw new Error('No container runtime available. Please install Colima, Podman, or Docker Desktop.');
   }
 
   async installPackages(packages: string[]): Promise<void> {
@@ -75,54 +79,22 @@ export class MacOSStrategy extends BaseDistributionStrategy {
   }
 
   /**
-   * Detect which container runtime is available
+   * Map new container runtime types to legacy types for compatibility
    */
-  private async detectContainerRuntime(): Promise<ContainerRuntime | undefined> {
-    // Check Colima first (recommended)
-    if (await this.commandExists('colima')) {
-      return ContainerRuntime.COLIMA;
-    }
-
-    // Check Podman
-    if (await this.commandExists('podman')) {
-      return ContainerRuntime.PODMAN;
-    }
-
-    // Check Docker (could be Docker Desktop or Colima's docker)
-    if (await this.commandExists('docker')) {
-      // Try to determine if it's Colima or Docker Desktop
-      try {
-        const contextOutput = await $`docker context ls`.text();
-        if (contextOutput.includes('colima')) {
+  private mapToLegacyRuntime(runtime: 'docker' | 'podman'): ContainerRuntime {
+    switch (runtime) {
+      case 'docker':
+        // Check if it's actually Colima
+        try {
+          $`colima status`.quiet();
           return ContainerRuntime.COLIMA;
+        } catch {
+          return ContainerRuntime.DOCKER;
         }
-      } catch {
-        // Ignore error
-      }
-      return ContainerRuntime.DOCKER;
-    }
-
-    return undefined;
-  }
-
-  /**
-   * Verify that the detected runtime is actually running
-   */
-  private async verifyRuntimeRunning(runtime: ContainerRuntime): Promise<void> {
-    try {
-      switch (runtime) {
-        case ContainerRuntime.COLIMA:
-          await $`colima status`.quiet();
-          break;
-        case ContainerRuntime.PODMAN:
-          await $`podman machine list`.quiet();
-          break;
-        case ContainerRuntime.DOCKER:
-          await $`docker ps`.quiet();
-          break;
-      }
-    } catch (error) {
-      throw new Error(`${runtime} is installed but not running. Please start it first.`);
+      case 'podman':
+        return ContainerRuntime.PODMAN;
+      default:
+        return ContainerRuntime.DOCKER;
     }
   }
 

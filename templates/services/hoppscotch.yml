@@ -1,0 +1,16 @@
+name: Hoppscotch
+description: Open-source API development ecosystem (Postman alternative)
+commands:
+  install:
+    - docker pull hoppscotch/hoppscotch:latest
+  setup: []
+  run: |-
+    docker run \
+          -d \
+          --name hoppscotch \
+          --network {{NETWORK_NAME}} \
+          -p 3080:3000 \
+          hoppscotch/hoppscotch:latest
+variables:
+  - NETWORK_NAME
+dependencies: []

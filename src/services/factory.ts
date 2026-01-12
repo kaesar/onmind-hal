@@ -21,7 +21,7 @@ import { OllamaService } from './optional/ollama.js';
 import { N8nService } from './optional/n8n.js';
 import { KestraService } from './optional/kestra.js';
 import { KeystoneJSService } from './optional/keystonejs.js';
-import { CockpitService } from './optional/cockpit.js';
+import { KeycloakService } from './optional/keycloak.js';
 import { AutheliaService } from './optional/authelia.js';
 import { LocalStackService } from './optional/localstack.js';
 import { K3dService } from './optional/k3d.js';
@@ -31,6 +31,7 @@ import { LiquibaseService } from './optional/liquibase.js';
 import { SonarQubeService } from './optional/sonarqube.js';
 import { TrivyService } from './optional/trivy.js';
 import { RapiDocService } from './optional/rapidoc.js';
+import { HoppscotchService } from './optional/hoppscotch.js';
 import { GrafanaService } from './optional/grafana.js';
 import { LokiService } from './optional/loki.js';
 import { FluentBitService } from './optional/fluentbit.js';
@@ -130,8 +131,8 @@ export class ServiceFactory {
       case ServiceType.KEYSTONEJS:
         service = new KeystoneJSService(config, this.templateEngine);
         break;
-      case ServiceType.COCKPIT:
-        service = new CockpitService(config, this.templateEngine);
+      case ServiceType.KEYCLOAK:
+        service = new KeycloakService(config, this.templateEngine);
         break;
       case ServiceType.AUTHELIA:
         service = new AutheliaService(config, this.templateEngine);
@@ -159,6 +160,9 @@ export class ServiceFactory {
         break;
       case ServiceType.RAPIDOC:
         service = new RapiDocService(config, this.templateEngine);
+        break;
+      case ServiceType.HOPPSCOTCH:
+        service = new HoppscotchService(config, this.templateEngine);
         break;
       case ServiceType.GRAFANA:
         service = new GrafanaService(config, this.templateEngine);
@@ -365,7 +369,7 @@ export class ServiceFactory {
       ServiceType.N8N,
       ServiceType.KESTRA,
       ServiceType.KEYSTONEJS,
-      ServiceType.COCKPIT,
+      ServiceType.KEYCLOAK,
       ServiceType.AUTHELIA,
       ServiceType.LOCALSTACK,
       ServiceType.K3D,
@@ -375,6 +379,7 @@ export class ServiceFactory {
       ServiceType.SONARQUBE,
       ServiceType.TRIVY,
       ServiceType.RAPIDOC,
+      ServiceType.HOPPSCOTCH,
       ServiceType.GRAFANA,
       ServiceType.LOKI,
       ServiceType.FLUENTBIT,
@@ -474,6 +479,7 @@ export class ServiceFactory {
       'SonarQube': ServiceType.SONARQUBE,
       'Trivy': ServiceType.TRIVY,
       'RapiDoc': ServiceType.RAPIDOC,
+      'Hoppscotch': ServiceType.HOPPSCOTCH,
       'Grafana': ServiceType.GRAFANA,
       'Loki': ServiceType.LOKI,
       'Fluent Bit': ServiceType.FLUENTBIT,

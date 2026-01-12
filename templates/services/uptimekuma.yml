@@ -2,7 +2,7 @@ name: Uptime Kuma Monitoring
 description: Self-hosted uptime monitoring tool
 commands:
   install:
-    - docker pull louislam/uptime-kuma:2
+    - docker pull louislam/uptime-kuma:latest
   setup:
     - docker volume create uptime_kuma_data
   run: |-
@@ -13,7 +13,7 @@ commands:
           -p 3003:3001 \
           -v uptime_kuma_data:/app/data \
           --restart=always \
-          louislam/uptime-kuma:2
+          louislam/uptime-kuma:latest
 variables:
   - NETWORK_NAME
 dependencies: []

@@ -1,17 +1,18 @@
 # OnMind-HAL (Home Apps Labs)
 
-**Home Apps Labs (OnMind-HAL)** is a comprehensive HomeLab setup or automation tool that deploys and manages a collection of open-source (or familiar) applications using Docker containers. It's designed for Virtual Machines, Cloud Instances, or Virtual Private Servers (VPS). Thinked for professionals or techie individuals, as well, IT, infraestucture (or DevSecOps), architecture and software development environments.
+**Home Apps Labs (OnMind-HAL)** is a comprehensive HomeLab setup or automation tool that deploys and manages a collection of open-source (or similiar) applications using Docker containers (chosen based on my expertise). It's designed for Virtual Machines, Cloud Instances, or Virtual Private Servers (VPS). Thinked for professionals or techie individuals, as well, IT area, infraestucture (or DevSecOps), architecture and software development environments.
 
 > This started from my Article about making your HomeLab: [here](https://onmind.net/devops/es/YourHomeLab)  
 > See other repos from my portfolio: [here](https://github.com/kaesar) 
 
 ## Features
 
-- **Automated Installation**: One-command setup for multiple services
+- **Automated Installation**: One-command setup for multiple services (even try `ufw` and `dnsmasq`)
 - **Multi-Platform Support**: Ubuntu/Debian (even WSL2: Windows Subsystem for Linux), Arch Linux, Amazon Linux 2023, macOS
 - **Container Runtime Flexibility**: Docker, Colima, or Podman support on macOS and Linux
 - **Template-Based Configuration**: YAML templates for easy service customization
 - **Comprehensive Logging**: Detailed execution tracking for debugging
+- **Podman as Alternative**: Docker-first but `podman` could be replace `docker` commands if you don't use Docker (experimental).
 
 ## Services
 
@@ -36,7 +37,7 @@
 11. **n8n**: Workflow automation platform
 12. **Kestra**: Orchestration and scheduling platform
 13. **KeystoneJS**: Modern headless CMS and GraphQL API
-14. **Cockpit-CMS**: Headless CMS with PHP Apache
+14. **Keycloak**: Open-source identity and access management solution
 15. **Authelia**: Authentication and authorization server
 16. **LocalStack**: Local AWS cloud stack for development
 17. **k3d**: Lightweight Kubernetes in Docker for local development
@@ -46,29 +47,30 @@
 21. **SonarQube**: Code quality and security analysis (port 9002)
 22. **Trivy**: Container security scanner (port 8087)
 23. **RapiDoc**: WebComponent for OpenAPI Spec viewer
-24. **Grafana**: Analytics and monitoring platform
-25. **Loki**: Log aggregation system by Grafana Labs
-26. **Fluent-Bit**: Lightweight log processor and forwarder
-27. **Uptime-Kuma**: Self-hosted uptime monitoring tool
-28. **Registry**: Private Docker container registry
-29. **Nexus-Repository**: Universal artifact repository manager
-30. **Vault**: Secrets and encryption management (HashiCorp)
-31. **Vaultwarden**: Self-hosted Bitwarden-compatible password manager
-32. **PsiTransfer**: File sharing platform (like WeTransfer)
-33. **Excalidraw**: Virtual whiteboard for sketching diagrams
-34. **Draw.io**: Web-based diagramming application
-35. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
-36. **Outline**: Team knowledge base and wiki
-37. **Grist**: Modern spreadsheet with relational database capabilities
-38. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
-39. **Plane**: Modern project management platform (like Jira) ⚠️ *May not work on ARM64 architecture*
-40. **JasperReports**: Business intelligence and reporting platform
-41. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
-42. **LibreTranslate**: Free and open source machine translation API
-43. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
-44. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
+24. **Hoppscotch**: Open-source API development ecosystem (Postman alternative)
+25. **Grafana**: Analytics and monitoring platform
+26. **Loki**: Log aggregation system by Grafana Labs
+27. **Fluent-Bit**: Lightweight log processor and forwarder
+28. **Uptime-Kuma**: Self-hosted uptime monitoring tool
+29. **Registry**: Private Docker container registry
+30. **Nexus-Repository**: Universal artifact repository manager
+31. **Vault**: Secrets and encryption management (HashiCorp)
+32. **Vaultwarden**: Self-hosted Bitwarden-compatible password manager
+33. **PsiTransfer**: File sharing platform (like WeTransfer)
+34. **Excalidraw**: Virtual whiteboard for sketching diagrams
+35. **Draw.io**: Web-based diagramming application
+36. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
+37. **Outline**: Team knowledge base and wiki
+38. **Grist**: Modern spreadsheet with relational database capabilities
+39. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
+40. **Plane**: Modern project management platform (like Jira) - ⚠️ *May not work on ARM64 architecture*
+41. **JasperReports**: Business intelligence and reporting platform
+42. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
+43. **LibreTranslate**: Free and open source machine translation API
+44. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
+45. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
 
-> *Perhaps, I will consider includes in a future*: Zulip, Jitsi, DocuSeal
+> *Perhaps, I will consider includes in a future*: Zulip, Jitsi, DocuSeal, Cockpit-CMS
 
 ## Quick Start
 
@@ -119,4 +121,5 @@ curl -fsSL https://bun.com/install | bash
 
 For detailed installation instructions, development guides, and advanced configuration:
 
-> **[Technical Documentation](HELP.md)**
+> **[Technical Documentation](HELP.md)**  
+> If you have inconvinients with an image consider could be connectivity by the moment. Besides, `podman` is more experimental.

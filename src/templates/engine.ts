@@ -47,7 +47,7 @@ export class TemplateEngine {
 
       const template: Template = {
         name: templateName,
-        content: JSON.stringify(templateData.content || templateData),
+        content: templateData.content || templateData,
         variables: templateData.variables || {},
         render: (context: Record<string, any>) => this.render(template, context)
       };
@@ -83,14 +83,16 @@ export class TemplateEngine {
    */
   render(template: Template, context: Record<string, any>): string {
     try {
-      let rendered = template.content;
+      let contentStr = typeof template.content === 'string' 
+        ? template.content 
+        : JSON.stringify(template.content);
 
       // Extract variables from template content
       const variablePattern = /\{\{(\w+)\}\}/g;
       const requiredVariables = new Set<string>();
       let match;
 
-      while ((match = variablePattern.exec(template.content)) !== null) {
+      while ((match = variablePattern.exec(contentStr)) !== null) {
         requiredVariables.add(match[1]);
       }
 
@@ -102,7 +104,7 @@ export class TemplateEngine {
       }
 
       // Perform variable interpolation
-      rendered = rendered.replace(/\{\{(\w+)\}\}/g, (match, variableName) => {
+      const rendered = contentStr.replace(/\{\{(\w+)\}\}/g, (match, variableName) => {
         const value = context[variableName];
         if (value === undefined || value === null) {
           throw new TemplateError(template.name, `Variable ${variableName} is null or undefined`);

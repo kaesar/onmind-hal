@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-
+// ** First HomeLab Setup in One Script **
 import inquirer from 'inquirer';
 import { $ } from 'bun';
 import { writeFileSync, mkdirSync } from 'fs';

@@ -34,7 +34,7 @@ describe('TemplateEngine', () => {
       const template = await engine.load('greeting');
       
       expect(template.name).toBe('greeting');
-      expect(template.content).toBe(JSON.stringify(templateData.content));
+      expect(template.content).toBe(templateData.content);
       expect(template.variables).toEqual(templateData.variables);
     });
 
@@ -52,7 +52,7 @@ describe('TemplateEngine', () => {
       const template = await engine.load('simple');
       
       expect(template.name).toBe('simple');
-      expect(template.content).toBe(JSON.stringify(templateData));
+      expect(template.content).toEqual(templateData);
     });
 
     it('should cache loaded templates', async () => {

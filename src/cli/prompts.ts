@@ -176,9 +176,9 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'KeystoneJS'
     },
     {
-      name: 'Cockpit CMS - Headless CMS even with GraphQL (this also is for PHP)',
-      value: ServiceType.COCKPIT,
-      short: 'Cockpit'
+      name: 'Keycloak - Open-source identity and access management solution (requires PostgreSQL)',
+      value: ServiceType.KEYCLOAK,
+      short: 'Keycloak'
     },
     {
       name: 'Authelia - Authentication and authorization server (requires Redis)',
@@ -224,6 +224,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'RapiDoc - WebComponent for OpenAPI Spec viewer',
       value: ServiceType.RAPIDOC,
       short: 'RapiDoc'
+    },
+    {
+      name: 'Hoppscotch - Open-source API development ecosystem (Postman alternative)',
+      value: ServiceType.HOPPSCOTCH,
+      short: 'Hoppscotch'
     },
     {
       name: 'Grafana - Analytics and monitoring platform',

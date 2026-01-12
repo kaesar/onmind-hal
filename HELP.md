@@ -100,13 +100,13 @@ curl -fsSL https://bun.com/install | bash
    # ... (HAL will show you the complete list)
    ```
 
-> **macOS Notes**: 
-> - Firewall configuration is automatically skipped
-> - Services are accessible via localhost (127.0.0.1)
-> - Use the container runtime of your choice (Colima recommended for corporate environments)
-> - HAL will detect and use your installed runtime automatically
-> - **Important**: Colima needs at least 60GB disk space and 8GB RAM when installing all services. If you get "no space left" errors, recreate Colima with more resources: `colima delete && colima start --cpu 4 --memory 8 --disk 60`
-> - **Architecture Warning**: Some services (like Plane) may not work properly on ARM64 architecture due to Docker image compatibility. Consider using an x86_64 system for full compatibility.
+> **macOS Notes**:  
+- Firewall configuration is automatically skipped
+- Services are accessible via localhost (127.0.0.1)
+- Use the container runtime of your choice (Colima recommended for corporate environments)
+- HAL will detect and use your installed runtime automatically
+- **Important**: Colima needs at least 60GB disk space and 8GB RAM when installing all services. If you get "no space left" errors, recreate Colima with more resources: `colima delete && colima start --cpu 4 --memory 8 --disk 60`
+- **Architecture Warning**: Some services (like Plane) may not work properly on ARM64 architecture due to Docker image compatibility. Consider using an x86_64 system for full compatibility.
 
 ## Project Structure
 
@@ -597,18 +597,6 @@ cloudflared tunnel route dns homelab yourdomain.com
 
 # Run tunnel
 cloudflared tunnel run homelab
-```
-
-#### Tailscale (Private VPN)
-
-```bash
-# Install Tailscale
-curl -fsSL https://tailscale.com/install.sh | sh
-
-# Connect
-sudo tailscale up
-
-# Access via Tailscale IP (private, not public)
 ```
 
 ## Troubleshooting Ubuntu

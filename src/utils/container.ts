@@ -19,21 +19,39 @@ export class ContainerRuntimeUtils {
       return this.detectedRuntime;
     }
 
+    // Try Docker first
     try {
       await $`docker --version`.quiet();
-      this.detectedRuntime = 'docker';
-      this.logger.info('✅ Docker detected as container runtime');
-      return 'docker';
-    } catch {
+      // Verify Docker is actually working
       try {
-        await $`podman --version`.quiet();
+        await $`docker info`.quiet();
+        this.detectedRuntime = 'docker';
+        this.logger.info('✅ Docker detected as container runtime');
+        return 'docker';
+      } catch {
+        this.logger.warn('⚠️  Docker is installed but not running');
+      }
+    } catch {
+      // Docker not available
+    }
+
+    // Try Podman as fallback
+    try {
+      await $`podman --version`.quiet();
+      // Verify Podman is working
+      try {
+        await $`podman info`.quiet();
         this.detectedRuntime = 'podman';
         this.logger.info('✅ Podman detected as container runtime');
         return 'podman';
       } catch {
-        throw new Error('Neither Docker nor Podman found. Please install a container runtime.');
+        this.logger.warn('⚠️  Podman is installed but not running properly');
       }
+    } catch {
+      // Podman not available
     }
+
+    throw new Error('No working container runtime found. Please install and start Docker or Podman.');
   }
 
   /**
@@ -45,23 +63,22 @@ export class ContainerRuntimeUtils {
     }
 
     // For Podman, ensure full registry path
-    if (!imageName.includes('/') || !imageName.includes('.')) {
-      // Official images need docker.io/library/ prefix
-      const officialImages = [
-        'nginx', 'postgres', 'redis', 'mongo', 'caddy', 'vault', 'grafana',
-        'mariadb', 'alpine', 'ubuntu', 'debian', 'node', 'python'
-      ];
-      
-      const imageBase = imageName.split(':')[0];
-      if (officialImages.includes(imageBase)) {
-        return `docker.io/library/${imageName}`;
-      }
-      
-      // Other images get docker.io prefix
-      return `docker.io/${imageName}`;
+    // Check if image already has a registry (contains a dot before the first slash)
+    const firstSlashIndex = imageName.indexOf('/');
+    const firstDotIndex = imageName.indexOf('.');
+    
+    // If there's a dot before the first slash, it likely has a registry
+    if (firstDotIndex !== -1 && (firstSlashIndex === -1 || firstDotIndex < firstSlashIndex)) {
+      return imageName; // Already has registry
     }
     
-    return imageName;
+    // Official images (no slash) need docker.io/library/ prefix
+    if (firstSlashIndex === -1) {
+      return `docker.io/library/${imageName}`;
+    }
+    
+    // Images with slash but no registry (like portainer/portainer-ce) get docker.io prefix
+    return `docker.io/${imageName}`;
   }
 
   /**
@@ -82,27 +99,27 @@ export class ContainerRuntimeUtils {
   static async processCommand(command: string): Promise<string> {
     const runtime = await this.detectRuntime();
     
-    // First normalize image names in the command
-    let processedCommand = command;
+    // Replace all docker commands with runtime first (handles compound commands with &&)
+    let processedCommand = command.replace(/\bdocker\b/g, runtime);
     
+    // Then normalize image names in the command
     // Extract image names from pull commands
-    const pullMatch = command.match(/(?:docker|podman)\s+pull\s+([^\s]+)/);
+    const pullMatch = processedCommand.match(/(?:docker|podman)\s+pull\s+([^\s]+)/);
     if (pullMatch) {
       const originalImage = pullMatch[1];
       const normalizedImage = this.normalizeImageName(originalImage, runtime);
-      processedCommand = command.replace(originalImage, normalizedImage);
+      processedCommand = processedCommand.replace(originalImage, normalizedImage);
     }
     
-    // Extract image names from run commands
-    const runMatch = command.match(/(?:docker|podman)\s+run.*?([^\s]+)$/);
+    // Extract image names from run commands (last argument)
+    const runMatch = processedCommand.match(/(?:docker|podman)\s+run.*?([^\s]+)$/);
     if (runMatch) {
       const originalImage = runMatch[1];
       const normalizedImage = this.normalizeImageName(originalImage, runtime);
-      processedCommand = command.replace(new RegExp(`${originalImage}$`), normalizedImage);
+      processedCommand = processedCommand.replace(new RegExp(`${originalImage.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`), normalizedImage);
     }
     
-    // Replace docker command with runtime
-    return this.replaceContainerCommand(processedCommand, runtime);
+    return processedCommand;
   }
 
   /**
@@ -118,6 +135,19 @@ export class ContainerRuntimeUtils {
       ];
     }
     return [];
+  }
+
+  /**
+   * Get suggestions for starting container runtime
+   */
+  static getStartupSuggestions(): string[] {
+    return [
+      '💡 Container runtime startup suggestions:',
+      '   • For Docker: `sudo systemctl start docker` (Linux) or start Docker Desktop',
+      '   • For Colima: `colima start`',
+      '   • For Podman: `systemctl --user start podman` or `podman machine start`',
+      '   • Alternatively, install a different container runtime'
+    ];
   }
 
   /**
