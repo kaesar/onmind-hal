@@ -21,7 +21,7 @@
     "linux"
   ],
   "author": "HomeLab Project",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "inquirer": "^9.3.8"
   },

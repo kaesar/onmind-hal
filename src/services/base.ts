@@ -98,7 +98,6 @@ export abstract class BaseService implements Service {
           }
           
           // console.log(`Command processing: ${originalCommand}\n→ ${interpolatedCommand}`);
-          console.log(`Command processing: ${interpolatedCommand}`);
         }
         
         console.log(`Executing: ${interpolatedCommand}`);

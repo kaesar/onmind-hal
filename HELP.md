@@ -22,7 +22,7 @@ curl -fsSL https://bun.com/install | bash
 #### macOS
 - macOS 11.0+ (Big Sur or later)
 - One of the following container runtimes:
-  - **Colima** (Recommended): `brew install colima && colima start --cpu 4 --memory 8 --disk 60`
+  - **Colima** (Recommended): `brew install colima && colima start --cpu 4 --memory 8 --disk 70`
   - **Podman**: `brew install podman && podman machine init && podman machine start`
   - **Docker Desktop**: [Download](https://www.docker.com/products/docker-desktop)
 - Homebrew package manager
@@ -61,7 +61,7 @@ curl -fsSL https://bun.com/install | bash
    ```bash
    # Option 1: Colima (Recommended)
    brew install colima
-   colima start --cpu 4 --memory 8 --disk 60
+   colima start --cpu 4 --memory 8 --disk 70
    
    # Option 2: Podman
    brew install podman
@@ -105,7 +105,7 @@ curl -fsSL https://bun.com/install | bash
 - Services are accessible via localhost (127.0.0.1)
 - Use the container runtime of your choice (Colima recommended for corporate environments)
 - HAL will detect and use your installed runtime automatically
-- **Important**: Colima needs at least 60GB disk space and 8GB RAM when installing all services. If you get "no space left" errors, recreate Colima with more resources: `colima delete && colima start --cpu 4 --memory 8 --disk 60`
+- **Important**: Colima needs at least 70GB disk space and 8GB RAM when installing all services. If you get "no space left" errors, recreate Colima with more resources: `colima delete && colima start --cpu 4 --memory 8 --disk 70`
 - **Architecture Warning**: Some services (like Plane) may not work properly on ARM64 architecture due to Docker image compatibility. Consider using an x86_64 system for full compatibility.
 
 ## Project Structure
@@ -365,7 +365,7 @@ HAL on macOS provides a clean development environment without modifying your sys
 ```bash
 # Colima is recommended when Docker Desktop licensing is a concern
 brew install colima
-colima start --cpu 4 --memory 8 --disk 60
+colima start --cpu 4 --memory 8 --disk 70
 
 # Then run HAL
 cd hal

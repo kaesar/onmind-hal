@@ -40,9 +40,8 @@ export class CopypartyService extends BaseService {
       // Render configuration
       const configContent = this.templateEngine.render(copypartyTemplate, context);
       
-      // Parse the JSON string and convert \n to actual newlines
-      const parsedContent = JSON.parse(configContent);
-      const finalContent = parsedContent.replace(/\\n/g, '\n');
+      // Template engine returns the content field directly, convert \\n to actual newlines
+      const finalContent = configContent.replace(/\\n/g, '\n');
       
       // Write configuration file
       const configPath = join(configDir, 'copyparty.conf');
