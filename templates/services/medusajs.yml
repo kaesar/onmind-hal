@@ -1,0 +1,30 @@
+name: medusajs-service
+description: MedusaJS - Headless e-commerce platform
+commands:
+  install:
+    - docker pull medusajs/medusa:latest
+  setup:
+    - mkdir -p ~/wsdata/medusajs
+  run: |-
+    docker run \
+          -d \
+          --name medusajs \
+          --network {{NETWORK_NAME}} \
+          -p 9003:9000 \
+          -e DATABASE_TYPE=postgres \
+          -e DATABASE_URL=postgresql://postgres:postgres@postgresql:5432/medusa \
+          -e REDIS_URL=redis://redis:6379 \
+          -e JWT_SECRET=supersecret \
+          -e COOKIE_SECRET=supersecret \
+          -v ~/wsdata/medusajs:/app/medusa \
+          medusajs/medusa:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+ports:
+  - "9001:9000"
+volumes:
+  - ~/wsdata/medusajs:/data
+accessUrl: https://shop.{{DOMAIN}}
+dependencies: []
+isCore: false

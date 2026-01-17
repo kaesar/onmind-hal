@@ -10,6 +10,7 @@ commands:
           --name rapidoc \
           --network {{NETWORK_NAME}} \
           -p 8084:80 \
+          --restart unless-stopped \
           mrin9/rapidoc:latest
 variables:
   - NETWORK_NAME

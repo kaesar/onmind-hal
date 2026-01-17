@@ -157,6 +157,13 @@ export class CaddyService extends BaseService {
       [ServiceType.LIQUIBASE]: { subdomain: 'liquibase', port: 8091, container: 'liquibase' },
       [ServiceType.LIBRETRANSLATE]: { subdomain: 'translate', port: 5000, container: 'libretranslate' },
       [ServiceType.UPTIMEKUMA]: { subdomain: 'uptimekuma', port: 3003, container: 'uptimekuma' },
+      [ServiceType.KEYCLOAK]: { subdomain: 'keycloak', port: 8080, container: 'keycloak' },
+      [ServiceType.OPENNOTEBOOKLM]: { subdomain: 'notebook', port: 8502, container: 'opennotebooklm' },
+      [ServiceType.POCKETID]: { subdomain: 'auth', port: 80, container: 'pocketid' },
+      [ServiceType.HOPPSCOTCH]: { subdomain: 'hoppscotch', port: 3000, container: 'hoppscotch' },
+      [ServiceType.TWENTYCRM]: { subdomain: 'crm', port: 3000, container: 'twentycrm' },
+      [ServiceType.MEDUSAJS]: { subdomain: 'shop', port: 9000, container: 'medusajs' },
+      [ServiceType.LOCUST]: { subdomain: 'locust', port: 8089, container: 'locust' },
       
       // Services without web interfaces (excluded)
       [ServiceType.POSTGRESQL]: null,

@@ -132,9 +132,11 @@ export class ContainerRuntimeUtils {
     if (runtime === 'podman') {
       return [
         '⚠️  Using Podman runtime - some additional setup may be required:',
-        '   • For Portainer: Run `systemctl --user enable --now podman.socket`',
+        '   • For macOS: Ensure Podman machine is running with `podman machine start`',
+        '   • For Portainer: Run `systemctl --user enable --now podman.socket` (Linux)',
         '   • Rootless containers run under user namespace',
-        '   • Some Docker-specific features may not be available'
+        '   • Some Docker-specific features may not be available',
+        '   • Network creation might require manual setup'
       ];
     }
     return [];

@@ -17,6 +17,7 @@ export abstract class BaseService implements Service {
   protected config: HomelabConfig;
   protected templateEngine: TemplateEngine;
   protected serviceTemplate: any;
+  private installationFailed: boolean = false;
 
   constructor(
     name: string,
@@ -103,16 +104,19 @@ export abstract class BaseService implements Service {
         console.log(`Executing: ${interpolatedCommand}`);
         
         // Use sh -c to properly handle complex commands with pipes, redirects, etc.
-        // Suppress stdout to avoid visual clutter from package managers
         const result = await $`sh -c ${interpolatedCommand}`.quiet();
         if (result.exitCode !== 0) {
-          throw new Error(`Command failed with exit code ${result.exitCode}: ${result.stderr}`);
+          const errorMsg = result.stderr.toString().trim();
+          console.log(`❌ Error: ${errorMsg}`);
+          throw new Error(`Command failed with exit code ${result.exitCode}: ${errorMsg}`);
         }
       } catch (error) {
         // Check for container runtime issues (both Docker and Podman)
         const isContainerCommand = interpolatedCommand.includes('pull') || 
                                   interpolatedCommand.includes('volume create') ||
-                                  interpolatedCommand.includes('network create');
+                                  interpolatedCommand.includes('network create') ||
+                                  interpolatedCommand.includes('build') ||
+                                  interpolatedCommand.includes('run');
         const isKnownError = error instanceof Error && 
           (error.message.includes('unauthorized') || 
            error.message.includes('exit code 125') ||
@@ -123,18 +127,25 @@ export abstract class BaseService implements Service {
           const runtime = interpolatedCommand.includes('podman') ? 'Podman' : 'Docker';
           const commandType = interpolatedCommand.includes('pull') ? 'image pull' :
                             interpolatedCommand.includes('volume') ? 'volume creation' :
-                            interpolatedCommand.includes('network') ? 'network creation' : 'command';
+                            interpolatedCommand.includes('network') ? 'network creation' :
+                            interpolatedCommand.includes('build') ? 'image build' :
+                            interpolatedCommand.includes('run') ? 'container run' : 'command';
           
           console.log(`⚠️  ${commandType} failed with ${runtime}`);
-          console.log(`⏭️  Skipping ${this.name} installation due to ${runtime.toLowerCase()} issues`);
+          
+          // Specific handling for exit code 125
+          if (error.message.includes('exit code 125')) {
+            if (runtime === 'Podman') {
+              await this.diagnosePodmanError(interpolatedCommand, error.message);
+            } else {
+              await this.diagnoseDockRunFailure(interpolatedCommand);
+            }
+          }
+          
+          console.log(`⏭️  Skipping ${this.name} due to ${runtime.toLowerCase()} issues`);
           console.log(`💡 This might be temporary or the resource might already exist`);
-          return; // Skip this service and continue with others
-        }
-        
-        // For docker run failures, provide diagnostic information
-        if (interpolatedCommand.includes('run') && error instanceof Error && 
-            error.message.includes('exit code 125')) {
-          await this.diagnoseDockRunFailure(interpolatedCommand);
+          this.installationFailed = true;
+          return;
         }
         
         throw new ServiceInstallationError(
@@ -198,6 +209,10 @@ export abstract class BaseService implements Service {
       // Execute install commands (usually docker pull)
       if (this.serviceTemplate.commands?.install) {
         await this.executeCommands(this.serviceTemplate.commands.install);
+        if (this.installationFailed) {
+          console.log(`${this.name} installation skipped`);
+          return;
+        }
       }
 
       // Execute setup commands (create directories, volumes, etc.)
@@ -218,6 +233,11 @@ export abstract class BaseService implements Service {
    * Configure and start the service
    */
   async configure(): Promise<void> {
+    if (this.installationFailed) {
+      console.log(`⏭️  Skipping ${this.name} configuration due to installation failure`);
+      return;
+    }
+
     if (!this.serviceTemplate) {
       await this.loadServiceTemplate();
     }
@@ -261,26 +281,120 @@ export abstract class BaseService implements Service {
   }
 
   /**
-   * Generate configuration files for the service
-   * Override in subclasses if custom configuration is needed
+   * Diagnose Podman-specific errors
    */
-  protected async generateConfigFiles(): Promise<void> {
-    // Default implementation - can be overridden by subclasses
-    if (this.serviceTemplate.configFiles) {
-      console.log(`Generating config files for ${this.name}: ${this.serviceTemplate.configFiles.join(', ')}`);
+  private async diagnosePodmanError(command: string, errorMessage: string): Promise<void> {
+    console.log(`🔍 Diagnosing Podman error for ${this.name}:`);
+    
+    try {
+      // Check if Podman machine is running (macOS specific)
+      const machineResult = await $`podman machine list`.quiet();
+      const machineOutput = machineResult.stdout.toString();
+      
+      if (!machineOutput.includes('Running')) {
+        console.log(`❌ Podman machine not running`);
+        console.log(`💡 Try: podman machine start`);
+        return;
+      }
+      
+      // Check network existence
+      if (command.includes('--network')) {
+        const networkMatch = command.match(/--network\s+(\S+)/);
+        if (networkMatch) {
+          const networkName = networkMatch[1];
+          try {
+            await $`podman network inspect ${networkName}`.quiet();
+            console.log(`✅ Network '${networkName}' exists`);
+          } catch {
+            console.log(`❌ Network '${networkName}' not found`);
+            console.log(`💡 Try: podman network create ${networkName}`);
+            return;
+          }
+        }
+      }
+      
+      // Check port conflicts
+      const portMatch = command.match(/-p\s+(\d+):(\d+)/);
+      if (portMatch) {
+        const hostPort = portMatch[1];
+        try {
+          const portCheck = await $`lsof -i :${hostPort}`.quiet();
+          if (portCheck.stdout.toString().trim()) {
+            console.log(`❌ Port ${hostPort} is already in use`);
+            console.log(`💡 Try a different port or stop the conflicting service`);
+            return;
+          }
+        } catch {
+          // Port is free
+        }
+      }
+      
+      // Check image availability
+      const imageMatch = command.match(/([^\s]+)$/);
+      if (imageMatch) {
+        const imageName = imageMatch[1];
+        try {
+          await $`podman image inspect ${imageName}`.quiet();
+          console.log(`✅ Image '${imageName}' is available`);
+        } catch {
+          console.log(`❌ Image '${imageName}' not found locally`);
+          console.log(`💡 Try: podman pull ${imageName}`);
+          return;
+        }
+      }
+      
+      console.log(`❓ Unknown Podman error - check logs with: podman logs ${this.type}`);
+      
+    } catch (diagError) {
+      console.log(`⚠️  Could not diagnose Podman error: ${diagError}`);
     }
   }
 
   /**
-   * Check if service dependencies are satisfied
+   * Diagnose Docker run failure by checking common issues
    */
-  async checkDependencies(): Promise<boolean> {
-    // For now, just return true - dependency checking can be enhanced later
-    return true;
+  private async diagnoseDockRunFailure(command: string): Promise<void> {
+    console.log(`🔍 Diagnosing Docker run failure for ${this.name}...`);
+    
+    try {
+      // Extract image name from command
+      const imageMatch = command.match(/([^\s]+)\s*$/)?.[1];
+      if (imageMatch) {
+        // Check if image exists
+        const runtime = command.includes('podman') ? 'podman' : 'docker';
+        const checkImageResult = await $`sh -c "${runtime} images -q ${imageMatch}"`.quiet();
+        
+        if (!checkImageResult.stdout.toString().trim()) {
+          console.log(`⚠️  Image ${imageMatch} not found locally`);
+          console.log(`💡 Try running: ${runtime} pull ${imageMatch}`);
+        }
+        
+        // Check if container name already exists
+        const nameMatch = command.match(/--name\s+([^\s]+)/);
+        if (nameMatch) {
+          const containerName = nameMatch[1];
+          const checkContainerResult = await $`sh -c "${runtime} ps -a --format {{.Names}}"`.quiet();
+          const containers = checkContainerResult.stdout.toString().split('\n');
+          
+          if (containers.includes(containerName)) {
+            console.log(`⚠️  Container '${containerName}' already exists`);
+            console.log(`💡 Try running: ${runtime} rm ${containerName}`);
+          }
+        }
+        
+        // Check for port conflicts
+        const portMatches = command.match(/-p\s+(\d+):/g);
+        if (portMatches) {
+          console.log(`💡 Check if ports are available: ${portMatches.join(', ')}`);
+        }
+      }
+    } catch (diagError) {
+      console.log(`⚠️  Could not diagnose issue: ${diagError}`);
+    }
   }
 
   /**
-   * Check available disk space before pulling large images
+   * Check available disk space
    */
   private async checkDiskSpace(): Promise<void> {
     try {
@@ -324,45 +438,21 @@ export abstract class BaseService implements Service {
   }
 
   /**
-   * Diagnose docker run failure by checking common issues
+   * Generate configuration files for the service
+   * Override in subclasses if custom configuration is needed
    */
-  private async diagnoseDockRunFailure(command: string): Promise<void> {
-    console.log(`🔍 Diagnosing docker run failure for ${this.name}...`);
-    
-    try {
-      // Extract image name from command
-      const imageMatch = command.match(/([^\s]+)\s*$/)?.[1];
-      if (imageMatch) {
-        // Check if image exists
-        const runtime = command.includes('podman') ? 'podman' : 'docker';
-        const checkImageResult = await $`sh -c "${runtime} images -q ${imageMatch}"`.quiet();
-        
-        if (!checkImageResult.stdout.toString().trim()) {
-          console.log(`⚠️  Image ${imageMatch} not found locally`);
-          console.log(`💡 Try running: ${runtime} pull ${imageMatch}`);
-        }
-        
-        // Check if container name already exists
-        const nameMatch = command.match(/--name\s+([^\s]+)/);
-        if (nameMatch) {
-          const containerName = nameMatch[1];
-          const checkContainerResult = await $`sh -c "${runtime} ps -a --format {{.Names}}"`.quiet();
-          const containers = checkContainerResult.stdout.toString().split('\n');
-          
-          if (containers.includes(containerName)) {
-            console.log(`⚠️  Container '${containerName}' already exists`);
-            console.log(`💡 Try running: ${runtime} rm ${containerName}`);
-          }
-        }
-        
-        // Check for port conflicts
-        const portMatches = command.match(/-p\s+(\d+):/g);
-        if (portMatches) {
-          console.log(`💡 Check if ports are available: ${portMatches.join(', ')}`);
-        }
-      }
-    } catch (diagError) {
-      console.log(`⚠️  Could not diagnose issue: ${diagError}`);
+  protected async generateConfigFiles(): Promise<void> {
+    // Default implementation - can be overridden by subclasses
+    if (this.serviceTemplate.configFiles) {
+      console.log(`Generating config files for ${this.name}: ${this.serviceTemplate.configFiles.join(', ')}`);
     }
+  }
+
+  /**
+   * Check if service dependencies are satisfied
+   */
+  async checkDependencies(): Promise<boolean> {
+    // For now, just return true - dependency checking can be enhanced later
+    return true;
   }
 }

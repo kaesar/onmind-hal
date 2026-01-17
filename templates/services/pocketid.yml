@@ -1,0 +1,27 @@
+name: pocketid-service
+description: PocketID OIDC provider with passkeys support
+commands:
+  install:
+    - docker pull node:20-alpine
+  setup:
+    - mkdir -p ~/wsdata/pocketid
+    - docker build -f templates/dockerfiles/pocketid.dockerfile -t pocketid:latest .
+  run: |-
+    docker run \
+          -d \
+          --name pocketid \
+          --network {{NETWORK_NAME}} \
+          -p 8093:80 \
+          -e PUBLIC_APP_URL=https://auth.{{DOMAIN}} \
+          -v ~/wsdata/pocketid:/app/backend/data \
+          pocketid:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+ports:
+  - "8093:80"
+volumes:
+  - ~/wsdata/pocketid:/app/backend/data
+accessUrl: https://auth.{{DOMAIN}}
+dependencies: []
+isCore: false

@@ -18,11 +18,13 @@ import { MinioService } from './optional/minio.js';
 import { KafkaService } from './optional/kafka.js';
 import { RabbitMQService } from './optional/rabbitmq.js';
 import { OllamaService } from './optional/ollama.js';
+import { OpenNotebookLMService } from './optional/opennotebooklm.js';
 import { N8nService } from './optional/n8n.js';
 import { KestraService } from './optional/kestra.js';
 import { KeystoneJSService } from './optional/keystonejs.js';
 import { KeycloakService } from './optional/keycloak.js';
 import { AutheliaService } from './optional/authelia.js';
+import { PocketIDService } from './optional/pocketid.js';
 import { LocalStackService } from './optional/localstack.js';
 import { K3dService } from './optional/k3d.js';
 import { OneDevService } from './optional/onedev.js';
@@ -32,6 +34,7 @@ import { SonarQubeService } from './optional/sonarqube.js';
 import { TrivyService } from './optional/trivy.js';
 import { RapiDocService } from './optional/rapidoc.js';
 import { HoppscotchService } from './optional/hoppscotch.js';
+import { LocustService } from './optional/locust.js';
 import { GrafanaService } from './optional/grafana.js';
 import { LokiService } from './optional/loki.js';
 import { FluentBitService } from './optional/fluentbit.js';
@@ -46,6 +49,8 @@ import { KrokiService } from './optional/kroki.js';
 import { OutlineService } from './optional/outline.js';
 import { GristService } from './optional/grist.js';
 import { NocoDBService } from './optional/nocodb.js';
+import { TwentyCRMService } from './optional/twentycrm.js';
+import { MedusaJSService } from './optional/medusajs.js';
 import { PlaneService } from './optional/plane.js';
 import { JasperReportsService } from './optional/jasperreports.js';
 import { StirlingPDFService } from './optional/stirlingpdf.js';
@@ -121,6 +126,9 @@ export class ServiceFactory {
       case ServiceType.OLLAMA:
         service = new OllamaService(config, this.templateEngine);
         break;
+      case ServiceType.OPENNOTEBOOKLM:
+        service = new OpenNotebookLMService(config, this.templateEngine);
+        break;
 
       case ServiceType.N8N:
         service = new N8nService(config, this.templateEngine);
@@ -136,6 +144,9 @@ export class ServiceFactory {
         break;
       case ServiceType.AUTHELIA:
         service = new AutheliaService(config, this.templateEngine);
+        break;
+      case ServiceType.POCKETID:
+        service = new PocketIDService(config, this.templateEngine);
         break;
       case ServiceType.LOCALSTACK:
         service = new LocalStackService(config, this.templateEngine);
@@ -163,6 +174,9 @@ export class ServiceFactory {
         break;
       case ServiceType.HOPPSCOTCH:
         service = new HoppscotchService(config, this.templateEngine);
+        break;
+      case ServiceType.LOCUST:
+        service = new LocustService(config, this.templateEngine);
         break;
       case ServiceType.GRAFANA:
         service = new GrafanaService(config, this.templateEngine);
@@ -205,6 +219,12 @@ export class ServiceFactory {
         break;
       case ServiceType.NOCODB:
         service = new NocoDBService(config, this.templateEngine);
+        break;
+      case ServiceType.TWENTYCRM:
+        service = new TwentyCRMService(config, this.templateEngine);
+        break;
+      case ServiceType.MEDUSAJS:
+        service = new MedusaJSService(config, this.templateEngine);
         break;
       case ServiceType.PLANE:
         service = new PlaneService(config, this.templateEngine);
@@ -366,11 +386,13 @@ export class ServiceFactory {
       ServiceType.KAFKA,
       ServiceType.RABBITMQ,
       ServiceType.OLLAMA,
+      ServiceType.OPENNOTEBOOKLM,
       ServiceType.N8N,
       ServiceType.KESTRA,
       ServiceType.KEYSTONEJS,
       ServiceType.KEYCLOAK,
       ServiceType.AUTHELIA,
+      ServiceType.POCKETID,
       ServiceType.LOCALSTACK,
       ServiceType.K3D,
       ServiceType.ONEDEV,
@@ -380,6 +402,7 @@ export class ServiceFactory {
       ServiceType.TRIVY,
       ServiceType.RAPIDOC,
       ServiceType.HOPPSCOTCH,
+      ServiceType.LOCUST,
       ServiceType.GRAFANA,
       ServiceType.LOKI,
       ServiceType.FLUENTBIT,
@@ -395,6 +418,8 @@ export class ServiceFactory {
       ServiceType.OUTLINE,
       ServiceType.GRIST,
       ServiceType.NOCODB,
+      ServiceType.TWENTYCRM,
+      ServiceType.MEDUSAJS,
       ServiceType.PLANE,
       ServiceType.JASPERREPORTS,
       ServiceType.STIRLINGPDF,
@@ -467,10 +492,13 @@ export class ServiceFactory {
       'Kafka': ServiceType.KAFKA,
       'RabbitMQ': ServiceType.RABBITMQ,
       'Ollama': ServiceType.OLLAMA,
+      'Open NotebookLM': ServiceType.OPENNOTEBOOKLM,
       'n8n': ServiceType.N8N,
       'Kestra': ServiceType.KESTRA,
       'KeystoneJS': ServiceType.KEYSTONEJS,
+      'Keycloak': ServiceType.KEYCLOAK,
       'Authelia': ServiceType.AUTHELIA,
+      'PocketID': ServiceType.POCKETID,
       'LocalStack': ServiceType.LOCALSTACK,
       'k3d': ServiceType.K3D,
       'OneDev': ServiceType.ONEDEV,
@@ -480,6 +508,7 @@ export class ServiceFactory {
       'Trivy': ServiceType.TRIVY,
       'RapiDoc': ServiceType.RAPIDOC,
       'Hoppscotch': ServiceType.HOPPSCOTCH,
+      'Locust': ServiceType.LOCUST,
       'Grafana': ServiceType.GRAFANA,
       'Loki': ServiceType.LOKI,
       'Fluent Bit': ServiceType.FLUENTBIT,
@@ -494,6 +523,8 @@ export class ServiceFactory {
       'Outline': ServiceType.OUTLINE,
       'Grist': ServiceType.GRIST,
       'NocoDB': ServiceType.NOCODB,
+      'TwentyCRM': ServiceType.TWENTYCRM,
+      'MedusaJS': ServiceType.MEDUSAJS,
       'Plane': ServiceType.PLANE,
       'JasperReports Server': ServiceType.JASPERREPORTS,
       'Stirling-PDF': ServiceType.STIRLINGPDF,

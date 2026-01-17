@@ -1,0 +1,27 @@
+name: opennotebooklm-service
+description: Open-source alternative to Google NotebookLM
+commands:
+  install:
+    - docker pull python:3.12-slim
+  setup:
+    - mkdir -p ~/wsdata/opennotebooklm
+    - docker build -f templates/dockerfiles/opennotebooklm.dockerfile -t opennotebooklm:latest .
+  run: |-
+    docker run \
+          -d \
+          --name opennotebooklm \
+          --network {{NETWORK_NAME}} \
+          -p 3090:8502 \
+          -e OPENAI_API_KEY=${OPENAI_API_KEY:-} \
+          -v ~/wsdata/opennotebooklm:/app/data \
+          opennotebooklm:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+ports:
+  - "3090:8502"
+volumes:
+  - ~/wsdata/opennotebooklm:/app/data
+accessUrl: https://notebook.{{DOMAIN}}
+dependencies: []
+isCore: false

@@ -34,43 +34,48 @@
 8. **Kafka**: Distributed streaming platform (with KRaft)
 9. **RabbitMQ**: Message broker for distributed systems
 10. **Ollama**: Server for your LLM
-11. **n8n**: Workflow automation platform
-12. **Kestra**: Orchestration and scheduling platform
-13. **KeystoneJS**: Modern headless CMS and GraphQL API
-14. **Keycloak**: Open-source identity and access management solution
-15. **Authelia**: Authentication and authorization server
-16. **LocalStack**: Local AWS cloud stack for development
-17. **k3d**: Lightweight Kubernetes in Docker for local development
-18. **OneDev**: Self-hosted Git server with CI/CD
-19. **Semaphore-UI**: Modern UI for Ansible and shell automation
-20. **Liquibase**: Database schema change management and version control
-21. **SonarQube**: Code quality and security analysis (port 9002)
-22. **Trivy**: Container security scanner (port 8087)
-23. **RapiDoc**: WebComponent for OpenAPI Spec viewer
-24. **Hoppscotch**: Open-source API development ecosystem (Postman alternative)
-25. **Grafana**: Analytics and monitoring platform
-26. **Loki**: Log aggregation system by Grafana Labs
-27. **Fluent-Bit**: Lightweight log processor and forwarder
-28. **Uptime-Kuma**: Self-hosted uptime monitoring tool
-29. **Registry**: Private Docker container registry
-30. **Nexus-Repository**: Universal artifact repository manager
-31. **Vault**: Secrets and encryption management (HashiCorp)
-32. **Vaultwarden**: Self-hosted Bitwarden-compatible password manager
-33. **PsiTransfer**: File sharing platform (like WeTransfer)
-34. **Excalidraw**: Virtual whiteboard for sketching diagrams
-35. **Draw.io**: Web-based diagramming application
-36. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
-37. **Outline**: Team knowledge base and wiki
-38. **Grist**: Modern spreadsheet with relational database capabilities
-39. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
-40. **Plane**: Modern project management platform (like Jira) - ⚠️ *May not work on ARM64 architecture*
-41. **JasperReports**: Business intelligence and reporting platform
-42. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
-43. **LibreTranslate**: Free and open source machine translation API
-44. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
-45. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
+11. **Open-NotebookLM**: Open-source alternative to Google NotebookLM - ⚠️ *Requires API keys*
+12. **n8n**: Workflow automation platform
+13. **Kestra**: Orchestration and scheduling platform
+14. **KeystoneJS**: Modern headless CMS and GraphQL API
+15. **Keycloak**: Open-source identity and access management solution
+16. **Authelia**: Authentication and authorization server
+17. **PocketID**: OIDC provider with passkeys support
+18. **LocalStack**: Local AWS cloud stack for development
+19. **k3d**: Lightweight Kubernetes in Docker for local development
+20. **OneDev**: Self-hosted Git server with CI/CD
+21. **Semaphore-UI**: Modern UI for Ansible and shell automation
+22. **Liquibase**: Database schema change management and version control
+23. **SonarQube**: Code quality and security analysis (port 9002)
+24. **Trivy**: Container security scanner (port 8087)
+25. **RapiDoc**: WebComponent for OpenAPI Spec viewer
+26. **Hoppscotch**: Open-source API development ecosystem (Postman alternative)
+27. **Locust**: Open source load testing tool (K6/JMeter alternative)
+28. **Grafana**: Analytics and monitoring platform
+29. **Loki**: Log aggregation system by Grafana Labs
+30. **Fluent-Bit**: Lightweight log processor and forwarder
+31. **Uptime-Kuma**: Self-hosted uptime monitoring tool
+32. **Registry**: Private Docker container registry
+33. **Nexus-Repository**: Universal artifact repository manager
+34. **Vault**: Secrets and encryption management (HashiCorp)
+35. **Vaultwarden**: Self-hosted Bitwarden-compatible password manager
+36. **PsiTransfer**: File sharing platform (like WeTransfer)
+37. **Excalidraw**: Virtual whiteboard for sketching diagrams
+38. **Draw.io**: Web-based diagramming application
+39. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
+40. **Outline**: Team knowledge base and wiki
+41. **Grist**: Modern spreadsheet with relational database capabilities
+42. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
+43. **TwentyCRM**: Modern open-source CRM platform - ⚠️ *may have connectivity issues*
+44. **MedusaJS**: Headless e-commerce platform (Shopify alternative) - ⚠️ *may have connectivity issues*
+45. **Plane**: Modern project management platform (like Jira) - ⚠️ *May not work on ARM64 architecture*
+46. **JasperReports**: Business intelligence and reporting platform
+47. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
+48. **LibreTranslate**: Free and open source machine translation API
+49. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
+50. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
 
-> *Perhaps, I will consider includes in a future*: Zulip, Jitsi, DocuSeal, Cockpit-CMS
+> *Perhaps, I will consider includes in a future*: Zulip, Jitsi, DocuSeal, Cockpit-CMS, Koffan
 
 ## Quick Start
 

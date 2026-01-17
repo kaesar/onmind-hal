@@ -459,11 +459,12 @@ export class HomelabApplication {
       
       // Define web services list (used for both /etc/hosts and non-web services filtering)
       const webServices = ['copyparty', 'portainer', 'duckdb', 'n8n', 'kestra', 'keystonejs', 
-                          'minio', 'ollama', 'cockpit', 'authelia', 'rabbitmq', 'grafana', 
-                          'loki', 'trivy', 'sonarqube', 'nexus', 'vault', 'vaultwarden', 'rapidoc', 
-                          'psitransfer', 'excalidraw', 'drawio', 'kroki', 'outline', 
-                          'grist', 'nocodb', 'plane', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 
-                          'localstack', 'libretranslate', 'uptimekuma', 'k3d', 'semaphore', 'liquibase'];
+                          'minio', 'ollama', 'opennotebooklm', 'authelia', 'keycloak', 'pocketid', 
+                          'rabbitmq', 'grafana', 'loki', 'trivy', 'sonarqube', 'nexus', 'vault',
+                          'vaultwarden', 'rapidoc', 'hoppscotch', 'locust', 'psitransfer', 'excalidraw', 
+                          'locust', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'twentycrm', 'medusajs', 
+                          'plane', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 'localstack', 
+                          'libretranslate', 'uptimekuma', 'k3d', 'semaphore', 'liquibase'];
       
       if (needsHostsFile) {
         console.log('   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:');

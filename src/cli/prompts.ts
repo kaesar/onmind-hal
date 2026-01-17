@@ -161,6 +161,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Ollama'
     },
     {
+      name: 'Open NotebookLM - Open-source alternative to Google NotebookLM',
+      value: ServiceType.OPENNOTEBOOKLM,
+      short: 'Open NotebookLM'
+    },
+    {
       name: 'n8n - Workflow automation platform',
       value: ServiceType.N8N,
       short: 'n8n'
@@ -184,6 +189,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Authelia - Authentication and authorization server (requires Redis)',
       value: ServiceType.AUTHELIA,
       short: 'Authelia'
+    },
+    {
+      name: 'PocketID - OIDC provider with passkeys support (for Caddy + oauth2-proxy)',
+      value: ServiceType.POCKETID,
+      short: 'PocketID'
     },
     {
       name: 'LocalStack - Local AWS cloud stack',
@@ -229,6 +239,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Hoppscotch - Open-source API development ecosystem (Postman alternative)',
       value: ServiceType.HOPPSCOTCH,
       short: 'Hoppscotch'
+    },
+    {
+      name: 'Locust - Open source load testing tool (K6/JMeter alternative)',
+      value: ServiceType.LOCUST,
+      short: 'Locust'
     },
     {
       name: 'Grafana - Analytics and monitoring platform',
@@ -304,6 +319,16 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'NocoDB - Open-source Airtable alternative',
       value: ServiceType.NOCODB,
       short: 'NocoDB'
+    },
+    {
+      name: 'TwentyCRM - Modern open-source CRM platform',
+      value: ServiceType.TWENTYCRM,
+      short: 'TwentyCRM'
+    },
+    {
+      name: 'MedusaJS - Headless e-commerce platform (Shopify alternative)',
+      value: ServiceType.MEDUSAJS,
+      short: 'MedusaJS'
     },
     {
       name: 'Plane - Modern project management platform (like Jira)',

@@ -10,7 +10,7 @@ commands:
           -d \
           --name stirlingpdf \
           --network {{NETWORK_NAME}} \
-          -p 8089:8080 \
+          -p 8090:8080 \
           -v ~/wsdata/stirlingpdf/data:/usr/share/tessdata \
           frooodle/s-pdf:latest
 variables:

@@ -1,0 +1,35 @@
+name: twentycrm-service
+description: TwentyCRM - Modern open-source CRM platform
+commands:
+  install:
+    - docker pull twentyhq/twenty-server:latest
+    - docker pull twentyhq/twenty-front:latest
+  setup:
+    - mkdir -p ~/wsdata/twentycrm
+  run: |-
+    docker run \
+          -d \
+          --name twentycrm-server \
+          --network {{NETWORK_NAME}} \
+          -e PG_DATABASE_URL=postgres://postgres:postgres@postgresql:5432/twenty \
+          -e REDIS_URL=redis://redis:6379 \
+          -e SERVER_URL=https://crm.{{DOMAIN}} \
+          -e FRONT_BASE_URL=https://crm.{{DOMAIN}} \
+          twentyhq/twenty-server:latest && \
+    docker run \
+          -d \
+          --name twentycrm \
+          --network {{NETWORK_NAME}} \
+          -p 3021:3000 \
+          -e REACT_APP_SERVER_BASE_URL=https://crm.{{DOMAIN}} \
+          twentyhq/twenty-front:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+ports:
+  - "3021:3000"
+volumes:
+  - ~/wsdata/twentycrm:/app/.local-storage
+accessUrl: https://crm.{{DOMAIN}}
+dependencies: []
+isCore: false
