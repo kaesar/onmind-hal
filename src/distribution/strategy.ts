@@ -190,6 +190,8 @@ export class DistributionDetector {
         return DistributionType.AMAZON_LINUX;
       case 'macos':
         return DistributionType.MACOS;
+      case 'mingw64':
+        return DistributionType.MINGW;
       default:
         throw new DistributionNotSupportedError(strategy.name);
     }

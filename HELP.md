@@ -15,7 +15,7 @@ curl -fsSL https://bun.com/install | bash
 
 #### Linux
 - Distribution: Ubuntu 20.04+/Debian (even WSL), Arch Linux, Amazon Linux 2023
-- Docker support
+- Docker support (Podman experimental)
 - Root or sudo access
 - Network connectivity
 
@@ -30,7 +30,10 @@ curl -fsSL https://bun.com/install | bash
 
 > **Note for macOS**: HAL will automatically detect your container runtime. Firewall configuration is skipped on macOS, and DNS resolution uses `/etc/hosts` entries instead of dnsmasq.
 
-> Works for Windows? Yes, with Windows Subsystem for Linux (WSL), finally it's a Linux (with Ubuntu)
+#### Windows (Experimental)
+- **MINGW64/Git Bash**: Experimental support for Windows with Git Bash
+- **Prerequisites**: Git for Windows with Git Bash and Network connectivity (besides Docker Desktop)
+- **Recommended**: Use WSL2 for full Linux compatibility instead
 
 ## Quick Start
 

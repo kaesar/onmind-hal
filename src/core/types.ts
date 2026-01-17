@@ -7,7 +7,8 @@ export enum DistributionType {
   UBUNTU = 'ubuntu',
   ARCH = 'arch',
   AMAZON_LINUX = 'amazon',
-  MACOS = 'macos'
+  MACOS = 'macos',
+  MINGW = 'mingw'
 }
 
 // Container runtime types for macOS

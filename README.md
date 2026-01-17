@@ -8,7 +8,7 @@
 ## Features
 
 - **Automated Installation**: One-command setup for multiple services (even try `ufw` and `dnsmasq`)
-- **Multi-Platform Support**: Ubuntu/Debian (even WSL2: Windows Subsystem for Linux), Arch Linux, Amazon Linux 2023, macOS
+- **Multi-Platform Support**: Ubuntu/Debian (even WSL2: Windows Subsystem for Linux), Arch Linux, Amazon Linux 2023, macOS, Windows (MINGW64/Git Bash - experimental)
 - **Container Runtime Flexibility**: Docker, Colima, or Podman support on macOS and Linux
 - **Template-Based Configuration**: YAML templates for easy service customization
 - **Comprehensive Logging**: Detailed execution tracking for debugging

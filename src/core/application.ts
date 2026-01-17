@@ -13,6 +13,7 @@ import { UbuntuStrategy } from '../distribution/ubuntu.js';
 import { ArchStrategy } from '../distribution/arch.js';
 import { AmazonLinuxStrategy } from '../distribution/amazon.js';
 import { MacOSStrategy } from '../distribution/macos.js';
+import { MingwStrategy } from '../distribution/mingw.js';
 import { Logger } from '../utils/logger.js';
 import { NetworkUtils } from '../utils/network.js';
 import { ContainerRuntimeUtils } from '../utils/container.js';
@@ -565,6 +566,7 @@ export class HomelabApplication {
    */
   private registerDistributionStrategies(): void {
     this.distributionDetector.registerStrategy(new MacOSStrategy());
+    this.distributionDetector.registerStrategy(new MingwStrategy());
     this.distributionDetector.registerStrategy(new UbuntuStrategy());
     this.distributionDetector.registerStrategy(new ArchStrategy());
     this.distributionDetector.registerStrategy(new AmazonLinuxStrategy());
