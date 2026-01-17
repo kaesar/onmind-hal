@@ -69,13 +69,14 @@ export class CaddyService extends BaseService {
       content += '}\n\n';
     }
     
-    // Main domain redirect to portainer
-    content += `# Main domain redirect\n`;
+    // Main domain - Caddy default page (uncomment redir to customize)
+    content += `# Main domain\n`;
     content += `${this.config.domain} {\n`;
     if (isLocalDomain && !isMacOS) {
       content += `    tls internal\n`;
     }
-    content += `    redir https://portainer.${this.config.domain}\n`;
+    content += `    respond "Welcome to OnMind-HAL" 200\n`;
+    content += `    #redir https://files.${this.config.domain}\n`;
     content += '}\n\n';
     
     // Generate proxy configurations for selected services
@@ -117,28 +118,41 @@ export class CaddyService extends BaseService {
    */
   private getServiceProxyConfig(): Array<{name: string, subdomain: string, port: number, container: string}> {
     const serviceProxyMap = {
-      // Core services
+      // Core services (always installed)
       [ServiceType.PORTAINER]: { subdomain: 'portainer', port: 9000, container: 'portainer' },
       [ServiceType.COPYPARTY]: { subdomain: 'files', port: 3923, container: 'copyparty' },
-      [ServiceType.DUCKDB]: { subdomain: 'duckdb', port: 80, container: 'duckdb' },
       
-      // Optional services with web interfaces
+      // Optional services (in README order)
+      [ServiceType.DUCKDB]: { subdomain: 'duckdb', port: 80, container: 'duckdb' },
+      [ServiceType.MINIO]: { subdomain: 'minio', port: 9001, container: 'minio' },
+      [ServiceType.KAFKA]: null, // No web UI
+      [ServiceType.RABBITMQ]: { subdomain: 'rabbitmq', port: 15672, container: 'rabbitmq' },
+      [ServiceType.OLLAMA]: { subdomain: 'ollama', port: 11434, container: 'ollama' },
+      [ServiceType.OPENNOTEBOOKLM]: { subdomain: 'notebook', port: 8502, container: 'opennotebooklm' },
       [ServiceType.N8N]: { subdomain: 'n8n', port: 5678, container: 'n8n' },
       [ServiceType.KESTRA]: { subdomain: 'kestra', port: 8080, container: 'kestra' },
       [ServiceType.KEYSTONEJS]: { subdomain: 'keystonejs', port: 3000, container: 'keystonejs' },
-      [ServiceType.MINIO]: { subdomain: 'minio', port: 9001, container: 'minio' },
-      [ServiceType.OLLAMA]: { subdomain: 'ollama', port: 11434, container: 'ollama' },
-      [ServiceType.COCKPIT]: { subdomain: 'cockpit', port: 80, container: 'cockpit' },
+      [ServiceType.KEYCLOAK]: { subdomain: 'keycloak', port: 8080, container: 'keycloak' },
       [ServiceType.AUTHELIA]: { subdomain: 'authelia', port: 9091, container: 'authelia' },
-      [ServiceType.RABBITMQ]: { subdomain: 'rabbitmq', port: 15672, container: 'rabbitmq' },
+      [ServiceType.POCKETID]: { subdomain: 'auth', port: 80, container: 'pocketid' },
+      [ServiceType.LOCALSTACK]: { subdomain: 'localstack', port: 4566, container: 'localstack' },
+      [ServiceType.K3D]: { subdomain: 'k3d', port: 6444, container: 'k3d' },
+      [ServiceType.ONEDEV]: { subdomain: 'onedev', port: 6610, container: 'onedev' },
+      [ServiceType.SEMAPHORE]: { subdomain: 'semaphore', port: 3002, container: 'semaphore' },
+      [ServiceType.LIQUIBASE]: { subdomain: 'liquibase', port: 8091, container: 'liquibase' },
+      [ServiceType.SONARQUBE]: { subdomain: 'sonarqube', port: 9000, container: 'sonarqube' },
+      [ServiceType.TRIVY]: { subdomain: 'trivy', port: 8080, container: 'trivy' },
+      [ServiceType.RAPIDOC]: { subdomain: 'rapidoc', port: 80, container: 'rapidoc' },
+      [ServiceType.HOPPSCOTCH]: { subdomain: 'hoppscotch', port: 3000, container: 'hoppscotch' },
+      [ServiceType.LOCUST]: { subdomain: 'locust', port: 8089, container: 'locust' },
       [ServiceType.GRAFANA]: { subdomain: 'grafana', port: 3000, container: 'grafana' },
       [ServiceType.LOKI]: { subdomain: 'loki', port: 3100, container: 'loki' },
-      [ServiceType.TRIVY]: { subdomain: 'trivy', port: 8080, container: 'trivy' },
-      [ServiceType.SONARQUBE]: { subdomain: 'sonarqube', port: 9000, container: 'sonarqube' },
+      [ServiceType.FLUENTBIT]: null, // No web UI
+      [ServiceType.UPTIMEKUMA]: { subdomain: 'uptimekuma', port: 3003, container: 'uptimekuma' },
+      [ServiceType.REGISTRY]: { subdomain: 'registry', port: 5000, container: 'registry' },
       [ServiceType.NEXUS]: { subdomain: 'nexus', port: 8081, container: 'nexus' },
       [ServiceType.VAULT]: { subdomain: 'vault', port: 8200, container: 'vault' },
       [ServiceType.VAULTWARDEN]: { subdomain: 'vaultwarden', port: 8222, container: 'vaultwarden' },
-      [ServiceType.RAPIDOC]: { subdomain: 'rapidoc', port: 80, container: 'rapidoc' },
       [ServiceType.PSITRANSFER]: { subdomain: 'psitransfer', port: 3005, container: 'psitransfer' },
       [ServiceType.EXCALIDRAW]: { subdomain: 'excalidraw', port: 80, container: 'excalidraw' },
       [ServiceType.DRAWIO]: { subdomain: 'drawio', port: 8088, container: 'drawio' },
@@ -146,33 +160,19 @@ export class CaddyService extends BaseService {
       [ServiceType.OUTLINE]: { subdomain: 'outline', port: 3000, container: 'outline' },
       [ServiceType.GRIST]: { subdomain: 'grist', port: 8484, container: 'grist' },
       [ServiceType.NOCODB]: { subdomain: 'nocodb', port: 8080, container: 'nocodb' },
+      [ServiceType.TWENTYCRM]: { subdomain: 'crm', port: 3000, container: 'twentycrm' },
+      [ServiceType.MEDUSAJS]: { subdomain: 'shop', port: 9000, container: 'medusajs' },
       [ServiceType.PLANE]: { subdomain: 'plane', port: 3000, container: 'plane-frontend' },
       [ServiceType.JASPERREPORTS]: { subdomain: 'jasper', port: 8080, container: 'jasperreports' },
       [ServiceType.STIRLINGPDF]: { subdomain: 'pdf', port: 8080, container: 'stirlingpdf' },
-      [ServiceType.ONEDEV]: { subdomain: 'onedev', port: 6610, container: 'onedev' },
-      [ServiceType.REGISTRY]: { subdomain: 'registry', port: 5000, container: 'registry' },
-      [ServiceType.LOCALSTACK]: { subdomain: 'localstack', port: 4566, container: 'localstack' },
-      [ServiceType.K3D]: { subdomain: 'k3d', port: 6444, container: 'k3d' },
-      [ServiceType.SEMAPHORE]: { subdomain: 'semaphore', port: 3002, container: 'semaphore' },
-      [ServiceType.LIQUIBASE]: { subdomain: 'liquibase', port: 8091, container: 'liquibase' },
       [ServiceType.LIBRETRANSLATE]: { subdomain: 'translate', port: 5000, container: 'libretranslate' },
-      [ServiceType.UPTIMEKUMA]: { subdomain: 'uptimekuma', port: 3003, container: 'uptimekuma' },
-      [ServiceType.KEYCLOAK]: { subdomain: 'keycloak', port: 8080, container: 'keycloak' },
-      [ServiceType.OPENNOTEBOOKLM]: { subdomain: 'notebook', port: 8502, container: 'opennotebooklm' },
-      [ServiceType.POCKETID]: { subdomain: 'auth', port: 80, container: 'pocketid' },
-      [ServiceType.HOPPSCOTCH]: { subdomain: 'hoppscotch', port: 3000, container: 'hoppscotch' },
-      [ServiceType.TWENTYCRM]: { subdomain: 'crm', port: 3000, container: 'twentycrm' },
-      [ServiceType.MEDUSAJS]: { subdomain: 'shop', port: 9000, container: 'medusajs' },
-      [ServiceType.LOCUST]: { subdomain: 'locust', port: 8089, container: 'locust' },
       
-      // Services without web interfaces (excluded)
+      // Databases and others without web UI
       [ServiceType.POSTGRESQL]: null,
       [ServiceType.REDIS]: null,
       [ServiceType.MONGODB]: null,
       [ServiceType.MARIADB]: null,
       [ServiceType.SCYLLADB]: null,
-      [ServiceType.KAFKA]: null,
-      [ServiceType.FLUENTBIT]: null,
       [ServiceType.MAILSERVER]: null,
       [ServiceType.FRP]: null
     };
