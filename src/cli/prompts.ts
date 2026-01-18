@@ -216,6 +216,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Semaphore'
     },
     {
+      name: 'Backstage - Developer portal platform by Spotify (requires PostgreSQL)',
+      value: ServiceType.BACKSTAGE,
+      short: 'Backstage'
+    },
+    {
       name: 'Liquibase - Database schema change management',
       value: ServiceType.LIQUIBASE,
       short: 'Liquibase'
@@ -254,6 +259,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Loki - Log aggregation system',
       value: ServiceType.LOKI,
       short: 'Loki'
+    },
+    {
+      name: 'OpenSearch - Search and analytics engine (Elasticsearch alternative)',
+      value: ServiceType.OPENSEARCH,
+      short: 'OpenSearch'
     },
     {
       name: 'Fluent Bit - Lightweight log processor and forwarder',

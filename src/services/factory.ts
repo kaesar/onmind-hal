@@ -29,6 +29,7 @@ import { LocalStackService } from './optional/localstack.js';
 import { K3dService } from './optional/k3d.js';
 import { OneDevService } from './optional/onedev.js';
 import { SemaphoreService } from './optional/semaphore.js';
+import { BackstageService } from './optional/backstage.js';
 import { LiquibaseService } from './optional/liquibase.js';
 import { SonarQubeService } from './optional/sonarqube.js';
 import { TrivyService } from './optional/trivy.js';
@@ -37,6 +38,7 @@ import { HoppscotchService } from './optional/hoppscotch.js';
 import { LocustService } from './optional/locust.js';
 import { GrafanaService } from './optional/grafana.js';
 import { LokiService } from './optional/loki.js';
+import { OpenSearchService } from './optional/opensearch.js';
 import { FluentBitService } from './optional/fluentbit.js';
 import { RegistryService } from './optional/registry.js';
 import { NexusService } from './optional/nexus.js';
@@ -160,6 +162,9 @@ export class ServiceFactory {
       case ServiceType.SEMAPHORE:
         service = new SemaphoreService(config, this.templateEngine);
         break;
+      case ServiceType.BACKSTAGE:
+        service = new BackstageService(config, this.templateEngine);
+        break;
       case ServiceType.LIQUIBASE:
         service = new LiquibaseService(config, this.templateEngine);
         break;
@@ -183,6 +188,9 @@ export class ServiceFactory {
         break;
       case ServiceType.LOKI:
         service = new LokiService(config, this.templateEngine);
+        break;
+      case ServiceType.OPENSEARCH:
+        service = new OpenSearchService(config, this.templateEngine);
         break;
       case ServiceType.FLUENTBIT:
         service = new FluentBitService(config, this.templateEngine);
@@ -397,6 +405,7 @@ export class ServiceFactory {
       ServiceType.K3D,
       ServiceType.ONEDEV,
       ServiceType.SEMAPHORE,
+      ServiceType.BACKSTAGE,
       ServiceType.LIQUIBASE,
       ServiceType.SONARQUBE,
       ServiceType.TRIVY,
@@ -405,6 +414,7 @@ export class ServiceFactory {
       ServiceType.LOCUST,
       ServiceType.GRAFANA,
       ServiceType.LOKI,
+      ServiceType.OPENSEARCH,
       ServiceType.FLUENTBIT,
       ServiceType.UPTIMEKUMA,
       ServiceType.REGISTRY,
@@ -435,14 +445,15 @@ export class ServiceFactory {
    * @throws ServiceInstallationError if configuration is invalid
    */
   validateConfiguration(config: HomelabConfig): void {
-    // Check if PostgreSQL, MariaDB, or MongoDB is selected but password is not provided
+    // Check if PostgreSQL, MariaDB, MongoDB, or OpenSearch is selected but password is not provided
     if (config.selectedServices.includes(ServiceType.POSTGRESQL) || 
         config.selectedServices.includes(ServiceType.MARIADB) || 
-        config.selectedServices.includes(ServiceType.MONGODB)) {
+        config.selectedServices.includes(ServiceType.MONGODB) ||
+        config.selectedServices.includes(ServiceType.OPENSEARCH)) {
       if (!config.storagePassword || config.storagePassword.trim() === '') {
         throw new ServiceInstallationError(
           ServiceType.CADDY, // Use a generic service type for this combined error
-          'Database service (PostgreSQL, MariaDB, or MongoDB) is selected but no database password is provided in configuration'
+          'Database service (PostgreSQL, MariaDB, MongoDB, or OpenSearch) is selected but no database password is provided in configuration'
         );
       }
     }
@@ -503,6 +514,7 @@ export class ServiceFactory {
       'k3d': ServiceType.K3D,
       'OneDev': ServiceType.ONEDEV,
       'Semaphore UI': ServiceType.SEMAPHORE,
+      'Backstage': ServiceType.BACKSTAGE,
       'Liquibase': ServiceType.LIQUIBASE,
       'SonarQube': ServiceType.SONARQUBE,
       'Trivy': ServiceType.TRIVY,
@@ -511,6 +523,7 @@ export class ServiceFactory {
       'Locust': ServiceType.LOCUST,
       'Grafana': ServiceType.GRAFANA,
       'Loki': ServiceType.LOKI,
+      'OpenSearch': ServiceType.OPENSEARCH,
       'Fluent Bit': ServiceType.FLUENTBIT,
       'Registry': ServiceType.REGISTRY,
       'Nexus Repository': ServiceType.NEXUS,

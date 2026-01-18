@@ -265,9 +265,20 @@ dependencies: []
 
 > **Configuration Variables**: Variables like `{{NETWORK_NAME}}` and `{{STORAGE_PASSWORD}}` are dynamically replaced by the `TemplateEngine` using values from the `HomelabConfig` object, which is populated during the interactive setup.
 
-### 5. Update CLI Prompts (Optional)
+### 5. Update CLI Interface
 
-If the service requires additional configuration, update `src/cli/prompts.ts`:
+Add the service to `src/cli/interface.ts` in the service mapping:
+
+```typescript
+const serviceMap: Record<ServiceType, string> = {
+  // ... existing services
+  [ServiceType.MONGODB]: 'MongoDB'
+};
+```
+
+### 6. Update CLI Prompts
+
+Add the service to the optional services list in `src/cli/prompts.ts`:
 
 ```typescript
 export async function promptForOptionalServices(): Promise<ServiceType[]> {
@@ -283,7 +294,21 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
 }
 ```
 
-### 6. Add Validation (If Needed)
+### 7. Update Caddy Configuration
+
+Add the service proxy mapping to `src/services/core/caddy.ts`:
+
+```typescript
+private getServiceProxyMappings(): string {
+  const mappings = [
+    // ... existing services
+    'mongodb.{$DOMAIN} {\n  reverse_proxy mongodb:27017\n}'
+  ];
+  return mappings.join('\n\n');
+}
+```
+
+### 8. Add Validation (If Needed)
 
 If the service requires special validation, add it to `src/utils/validation.ts`:
 
@@ -293,7 +318,7 @@ export function validateMongoDBPassword(password: string): void {
 }
 ```
 
-### 7. Create Tests
+### 9. Create Tests
 
 Create `tests/unit/services/mongodb.test.ts`:
 
@@ -303,7 +328,7 @@ import { MongoDBService } from '../../../src/services/optional/mongodb.js';
 // ... test implementation
 ```
 
-### 8. Update Documentation
+### 10. Update Documentation
 
 Add the service to the README.md services list and any specific configuration notes.
 

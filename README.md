@@ -45,35 +45,37 @@
 19. **k3d**: Lightweight Kubernetes in Docker for local development
 20. **OneDev**: Self-hosted Git server with CI/CD
 21. **Semaphore-UI**: Modern UI for Ansible and shell automation
-22. **Liquibase**: Database schema change management and version control
-23. **SonarQube**: Code quality and security analysis (port 9002)
-24. **Trivy**: Container security scanner (port 8087)
-25. **RapiDoc**: WebComponent for OpenAPI Spec viewer
-26. **Hoppscotch**: Open-source API development ecosystem (Postman alternative)
-27. **Locust**: Open source load testing tool (K6/JMeter alternative)
-28. **Grafana**: Analytics and monitoring platform
-29. **Loki**: Log aggregation system by Grafana Labs
-30. **Fluent-Bit**: Lightweight log processor and forwarder
-31. **Uptime-Kuma**: Self-hosted uptime monitoring tool
-32. **Registry**: Private Docker container registry
-33. **Nexus-Repository**: Universal artifact repository manager
-34. **Vault**: Secrets and encryption management (HashiCorp)
-35. **Vaultwarden**: Self-hosted Bitwarden-compatible password manager
-36. **PsiTransfer**: File sharing platform (like WeTransfer)
-37. **Excalidraw**: Virtual whiteboard for sketching diagrams
-38. **Draw.io**: Web-based diagramming application
-39. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
-40. **Outline**: Team knowledge base and wiki
-41. **Grist**: Modern spreadsheet with relational database capabilities
-42. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
-43. **TwentyCRM**: Modern open-source CRM platform - ⚠️ *may have connectivity issues*
-44. **MedusaJS**: Headless e-commerce platform (Shopify alternative) - ⚠️ *may have connectivity issues*
-45. **Plane**: Modern project management platform (like Jira) - ⚠️ *May not work on ARM64 architecture*
-46. **JasperReports**: Business intelligence and reporting platform
-47. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
-48. **LibreTranslate**: Free and open source machine translation API
-49. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
-50. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
+22. **Backstage**: Developer portal platform by Spotify - ⚠️ *Requires manual configuration*
+23. **Liquibase**: Database schema change management and version control
+24. **SonarQube**: Code quality and security analysis (port 9002)
+25. **Trivy**: Container security scanner (port 8087)
+26. **RapiDoc**: WebComponent for OpenAPI Spec viewer
+27. **Hoppscotch**: Open-source API development ecosystem (Postman alternative)
+28. **Locust**: Open source load testing tool (K6/JMeter alternative)
+29. **Grafana**: Analytics and monitoring platform
+30. **Loki**: Log aggregation system by Grafana Labs
+31. **OpenSearch**: Search and analytics engine (Elasticsearch alternative) - ⚠️ *Requires 2GB+ RAM*
+32. **Fluent-Bit**: Lightweight log processor and forwarder
+33. **Uptime-Kuma**: Self-hosted uptime monitoring tool
+34. **Registry**: Private Docker container registry
+35. **Nexus-Repository**: Universal artifact repository manager
+36. **Vault**: Secrets and encryption management (HashiCorp)
+37. **Vaultwarden**: Self-hosted Bitwarden-compatible password manager
+38. **PsiTransfer**: File sharing platform (like WeTransfer)
+39. **Excalidraw**: Virtual whiteboard for sketching diagrams
+40. **Draw.io**: Web-based diagramming application
+41. **Kroki**: API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.)
+42. **Outline**: Team knowledge base and wiki
+43. **Grist**: Modern spreadsheet with relational database capabilities
+44. **NocoDB**: Open-source Airtable alternative - Smart spreadsheet
+45. **TwentyCRM**: Modern open-source CRM platform - ⚠️ *may have connectivity issues*
+46. **MedusaJS**: Headless e-commerce platform (Shopify alternative) - ⚠️ *may have connectivity issues*
+47. **Plane**: Modern project management platform (like Jira) - ⚠️ *May not work on ARM64 architecture*
+48. **JasperReports**: Business intelligence and reporting platform
+49. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
+50. **LibreTranslate**: Free and open source machine translation API
+51. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
+52. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
 
 > *Perhaps, I will consider includes in a future*: Zulip, Jitsi, DocuSeal, Cockpit-CMS, Koffan
 

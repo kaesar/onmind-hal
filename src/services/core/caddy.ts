@@ -139,6 +139,7 @@ export class CaddyService extends BaseService {
       [ServiceType.K3D]: { subdomain: 'k3d', port: 6444, container: 'k3d' },
       [ServiceType.ONEDEV]: { subdomain: 'onedev', port: 6610, container: 'onedev' },
       [ServiceType.SEMAPHORE]: { subdomain: 'semaphore', port: 3002, container: 'semaphore' },
+      [ServiceType.BACKSTAGE]: { subdomain: 'backstage', port: 7007, container: 'backstage' },
       [ServiceType.LIQUIBASE]: { subdomain: 'liquibase', port: 8091, container: 'liquibase' },
       [ServiceType.SONARQUBE]: { subdomain: 'sonarqube', port: 9000, container: 'sonarqube' },
       [ServiceType.TRIVY]: { subdomain: 'trivy', port: 8080, container: 'trivy' },
@@ -147,6 +148,7 @@ export class CaddyService extends BaseService {
       [ServiceType.LOCUST]: { subdomain: 'locust', port: 8089, container: 'locust' },
       [ServiceType.GRAFANA]: { subdomain: 'grafana', port: 3000, container: 'grafana' },
       [ServiceType.LOKI]: { subdomain: 'loki', port: 3100, container: 'loki' },
+      [ServiceType.OPENSEARCH]: { subdomain: 'opensearch', port: 5601, container: 'opensearch-dashboards' },
       [ServiceType.FLUENTBIT]: null, // No web UI
       [ServiceType.UPTIMEKUMA]: { subdomain: 'uptimekuma', port: 3003, container: 'uptimekuma' },
       [ServiceType.REGISTRY]: { subdomain: 'registry', port: 5000, container: 'registry' },

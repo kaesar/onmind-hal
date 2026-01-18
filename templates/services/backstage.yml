@@ -1,0 +1,25 @@
+name: Backstage
+description: Developer portal platform by Spotify
+commands:
+  install:
+    - docker pull spotify/backstage:latest
+  setup:
+    - mkdir -p ~/wsconf/backstage
+  run: |-
+    docker run \
+          -d \
+          --name backstage \
+          --network {{NETWORK_NAME}} \
+          -p 7007:7007 \
+          -v ~/wsconf/backstage:/app/config \
+          -e POSTGRES_HOST=postgresql \
+          -e POSTGRES_PORT=5432 \
+          -e POSTGRES_USER=postgres \
+          -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
+          --restart unless-stopped \
+          spotify/backstage:latest
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+dependencies:
+  - postgresql

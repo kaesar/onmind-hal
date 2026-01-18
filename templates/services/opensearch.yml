@@ -1,0 +1,37 @@
+name: OpenSearch
+description: Search and analytics engine (Elasticsearch alternative)
+commands:
+  install:
+    - docker pull opensearchproject/opensearch:latest
+    - docker pull opensearchproject/opensearch-dashboards:latest
+  setup:
+    - docker volume create opensearch_data
+  run: |-
+    docker run \
+          -d \
+          --name opensearch \
+          --network {{NETWORK_NAME}} \
+          -p 9200:9200 \
+          -p 9600:9600 \
+          -e "discovery.type=single-node" \
+          -e "OPENSEARCH_INITIAL_ADMIN_PASSWORD={{STORAGE_PASSWORD}}" \
+          -e "DISABLE_SECURITY_PLUGIN=false" \
+          -e "bootstrap.memory_lock=true" \
+          -e "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" \
+          --ulimit nofile=65536:65536 \
+          -v opensearch_data:/usr/share/opensearch/data \
+          --restart unless-stopped \
+          opensearchproject/opensearch:latest && docker run \
+          -d \
+          --name opensearch-dashboards \
+          --network {{NETWORK_NAME}} \
+          -p 5601:5601 \
+          -e "OPENSEARCH_HOSTS=https://opensearch:9200" \
+          -e "OPENSEARCH_USERNAME=admin" \
+          -e "OPENSEARCH_PASSWORD={{STORAGE_PASSWORD}}" \
+          --restart unless-stopped \
+          opensearchproject/opensearch-dashboards:latest
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+dependencies: []
