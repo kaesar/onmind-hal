@@ -584,23 +584,77 @@ docker restart caddy
 
 #### Cloudflare Tunnel (Free)
 
+To clarify the use with `cloudflared` (the Cloudflare Tunnel client), first lets install it. Example for **Linux**:
+
 ```bash
 # Install cloudflared
 wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
 sudo dpkg -i cloudflared-linux-amd64.deb
+```
 
-# Authenticate
+> For **macOS** you can install it with: `brew install cloudflared`  
+> For **Windows** you can download [**Cloudflare Tunnel** binary](https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe) and run it (from command line): `.\cloudflared-windows-amd64.exe tunnel ...`
+
+Once installed it you can execute the next commands to authenticate, create the tunnel, configure it and run it:
+
+```bash
 cloudflared tunnel login
-
-# Create tunnel
 cloudflared tunnel create homelab
-
-# Configure tunnel
-cloudflared tunnel route dns homelab yourdomain.com
-
-# Run tunnel
+cloudflared tunnel route dns homelab subdomain.yourdomain.com
 cloudflared tunnel run homelab
 ```
+
+> Change `homelab` by your preference name
+
+For setting with config file (`config.yml`) you can use a content like this:
+
+```yml
+tunnel: homelab
+credentials-file: C:\Users\you\.cloudflared\YOUR_UUID.json
+
+ingress:
+  - hostname: subdomain.yourdomain.net
+    service: http://localhost:80
+  - service: http_status:404
+```
+
+> `YOUR_UUID.json` refers to the id given by cloudflare for the tunnel with the command `cloudflared tunnel create homelab`
+
+Then, instead of `cloudflared tunnel run homelab` command, execute:
+
+```bash
+cloudflared tunnel --config config.yml run
+```
+
+## Troubleshooting MINGW64 (Windows - Git Bash)
+
+To fix **caddy** with the right path for **Git Bash** in **Windows**, run something like this:
+
+```powershell
+docker run -d \
+  --name caddy \
+  --network homelab-network \
+  -p 80:80 \
+  -p 443:443 \
+  -v "C:\Users\youruser\wsconf\Caddyfile:/etc/caddy/Caddyfile" \
+  -v "C:\Users\youruser\wsdata\caddy:/data" \
+  caddy:latest
+```
+
+In the same way, for **copyparty** run something like this:
+
+```powershell
+docker run \
+      -d \
+      --name copyparty \
+      --network homelab-network \
+      -p 3923:3923 \
+      -v "C:\Users\youruser\wsdata\copyparty:/w" \
+      -v "C:\Users\youruser\wsconf:/cfg" \
+      copyparty/ac:latest
+```
+
+> You can change `docker` by `podman` command (depends on your installation)
 
 ## Troubleshooting Ubuntu
 

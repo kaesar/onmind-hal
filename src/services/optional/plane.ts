@@ -10,7 +10,7 @@ export class PlaneService extends BaseService {
       'Plane',
       ServiceType.PLANE,
       false,
-      [],
+      [ServiceType.POSTGRESQL, ServiceType.REDIS],
       config,
       templateEngine
     );

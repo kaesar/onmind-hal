@@ -4,6 +4,7 @@
 
 import { $ } from 'bun';
 import { Logger } from './logger.js';
+import { PathConverter } from './path.js';
 
 export type ContainerRuntime = 'docker' | 'podman';
 
@@ -104,6 +105,9 @@ export class ContainerRuntimeUtils {
     
     // Replace 'docker ' (with space) to avoid changing paths like /var/run/docker.sock
     processedCommand = processedCommand.replace(/\bdocker\s/g, `${runtime} `);
+    
+    // Convert volume paths for MINGW64
+    processedCommand = await PathConverter.convertDockerVolumes(processedCommand);
     
     // Then normalize image names in the command
     // Extract image names from pull commands
