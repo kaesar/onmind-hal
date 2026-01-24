@@ -605,8 +605,100 @@ docker restart caddy
    sudo journalctl -u frps -f
    ```
 
-### Alternative Tunneling Solutions
+### Using Cloudflare Tunnel (Recommended for Beginners)
 
+Cloudflare Tunnel is easier to set up than FRP and doesn't require a VPS. It's perfect for:
+- Exposing services without a public IP
+- No port forwarding configuration
+- Automatic SSL/TLS certificates
+- Built-in DDoS protection
+- Free tier available
+
+**Prerequisites:**
+1. Cloudflare account (free)
+2. Domain managed by Cloudflare (can use free domains)
+
+**Setup with HAL:**
+
+When running HAL setup, select **Cloudflare Tunnel** from the optional services list.
+
+After installation, run the setup helper script:
+
+```bash
+cd hal
+./scripts/setup-cloudflared.sh
+```
+
+The script will guide you through:
+1. Authentication with Cloudflare
+2. Creating a tunnel
+3. Configuring DNS routes
+4. Setting up service ingress rules
+
+**Manual Setup (Alternative):**
+
+If you prefer manual configuration:
+
+```bash
+# Step 1: Authenticate
+docker run -v ~/.cloudflared:/home/nonroot/.cloudflared \
+  cloudflare/cloudflared:latest tunnel login
+
+# Step 2: Create tunnel
+docker run -v ~/.cloudflared:/home/nonroot/.cloudflared \
+  cloudflare/cloudflared:latest tunnel create homelab
+
+# Step 3: Configure tunnel
+cat > ~/.cloudflared/config.yml <<EOF
+tunnel: <TUNNEL_ID>
+credentials-file: /etc/cloudflared/<TUNNEL_ID>.json
+
+ingress:
+  # Portainer
+  - hostname: portainer.yourdomain.com
+    service: http://portainer:9000
+  
+  # n8n
+  - hostname: n8n.yourdomain.com
+    service: http://n8n:5678
+  
+  # Grafana
+  - hostname: grafana.yourdomain.com
+    service: http://grafana:3000
+  
+  # Catch-all (required)
+  - service: http_status:404
+EOF
+
+# Step 4: Route DNS (for each service)
+docker run -v ~/.cloudflared:/home/nonroot/.cloudflared \
+  cloudflare/cloudflared:latest tunnel route dns homelab portainer.yourdomain.com
+
+# Step 5: Start tunnel
+docker start cloudflared
+```
+
+**Configuration Tips:**
+
+1. **Multiple services**: Add multiple hostname entries in `config.yml`
+2. **Wildcard domains**: Use `*.yourdomain.com` for catch-all
+3. **Internal services**: Reference containers by name (e.g., `http://portainer:9000`)
+4. **HTTPS backends**: Use `https://` if service uses TLS internally
+
+**Verify tunnel is working:**
+
+```bash
+# Check tunnel status
+docker logs cloudflared
+
+# List active tunnels
+docker run -v ~/.cloudflared:/home/nonroot/.cloudflared \
+  cloudflare/cloudflared:latest tunnel list
+
+# Test access
+curl https://portainer.yourdomain.com
+```
+<!--
 #### Cloudflare Tunnel (Free)
 
 To clarify the use with `cloudflared` (the Cloudflare Tunnel client), first lets install it. Example for **Linux**:
@@ -650,7 +742,7 @@ Then, instead of `cloudflared tunnel run homelab` command, execute:
 ```bash
 cloudflared tunnel --config config.yml run
 ```
-
+-->
 ## Troubleshooting MINGW64 (Windows - Git Bash)
 
 To fix **caddy** with the right path for **Git Bash** in **Windows**, run something like this:

@@ -75,6 +75,7 @@ export enum ServiceType {
   MEDUSAJS = 'medusajs',
   PLANE = 'plane',
   MATTERMOST = 'mattermost',
+  CALCOM = 'calcom',
   JASPERREPORTS = 'jasperreports',
   STIRLINGPDF = 'stirlingpdf',
   LIBRETRANSLATE = 'libretranslate',
@@ -82,6 +83,7 @@ export enum ServiceType {
   KURRIER = 'kurrier',
   FRP = 'frp',
   CLOUDFLARED = 'cloudflared',
+  WETTY = 'wetty',
   UPTIMEKUMA = 'uptimekuma',
 }
 

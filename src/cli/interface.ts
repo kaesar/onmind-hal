@@ -146,6 +146,7 @@ export class CLIInterface {
       medusajs: 'MedusaJS (E-commerce)',
       plane: 'Plane (Jira-like)',
       mattermost: 'Mattermost (Team Chat)',
+      calcom: 'Cal.com (Scheduling Platform)',
       jasperreports: 'JasperReports (Business Intelligence)',
       stirlingpdf: 'Stirling-PDF (PDF Tools)',
       libretranslate: 'LibreTranslate (Translation API)',
@@ -153,6 +154,7 @@ export class CLIInterface {
       kurrier: 'Kurrier (Email Marketing)',
       frp: 'FRP (Reverse Proxy Client and Tunnel)',
       cloudflared: 'Cloudflare Tunnel (Secure Tunnel)',
+      wetty: 'Wetty (Web SSH Terminal)',
     };
     return serviceNames[service] || service;
   }

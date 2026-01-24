@@ -77,13 +77,15 @@
 51. **MedusaJS**: Headless e-commerce platform (Shopify alternative) - ⚠️ *may have connectivity issues*
 52. **Plane**: Modern project management platform (like Jira) - ⚠️ *May not work on ARM64 architecture*
 53. **Mattermost**: Open-source team collaboration and messaging platform (like Slack)
-54. **JasperReports**: Business intelligence and reporting platform
-55. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
-56. **LibreTranslate**: Free and open source machine translation API
-57. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
-58. **Kurrier**: Self-hosted email marketing and newsletter platform
-59. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
-60. **Cloudflare Tunnel**: Secure tunnel to expose services without opening ports - ⚠️ *Requires Cloudflare account and manual setup*
+54. **Cal.com**: Open-source scheduling platform (Calendly alternative)
+55. **JasperReports**: Business intelligence and reporting platform
+56. **Stirling-PDF**: Powerful locally hosted PDF manipulation tool
+57. **LibreTranslate**: Free and open source machine translation API
+58. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
+59. **Kurrier**: Self-hosted email marketing and newsletter platform
+60. **FRP**: Fast Reverse Proxy client for secure tunneling to expose services to internet
+61. **Cloudflare Tunnel**: Secure tunnel to expose services without opening ports - ⚠️ *Requires Cloudflare account and manual setup*
+62. **Wetty**: Web-based SSH terminal for secure host access
 
 > *Perhaps, I will consider includes in a future*: Beszel, Jitsi, DocuSeal, Cockpit-CMS, Koffan
 

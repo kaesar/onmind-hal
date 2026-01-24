@@ -144,6 +144,7 @@ describe('ServiceFactory', () => {
       ServiceType.MEDUSAJS,
       ServiceType.PLANE,
       ServiceType.MATTERMOST,
+      ServiceType.CALCOM,
       ServiceType.JASPERREPORTS,
       ServiceType.STIRLINGPDF,
       ServiceType.LIBRETRANSLATE,
@@ -151,6 +152,7 @@ describe('ServiceFactory', () => {
       ServiceType.KURRIER,
       ServiceType.FRP,
       ServiceType.CLOUDFLARED,
+      ServiceType.WETTY,
     ]);
   });
 

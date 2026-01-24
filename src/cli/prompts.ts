@@ -376,6 +376,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Mattermost'
     },
     {
+      name: 'Cal.com - Open-source scheduling platform (Calendly alternative, requires PostgreSQL)',
+      value: ServiceType.CALCOM,
+      short: 'Cal.com'
+    },
+    {
       name: 'JasperReports - Business intelligence and reporting platform (requires PostgreSQL)',
       value: ServiceType.JASPERREPORTS,
       short: 'JasperReports'
@@ -409,6 +414,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Cloudflare Tunnel - Secure tunnel to expose services (requires Cloudflare account)',
       value: ServiceType.CLOUDFLARED,
       short: 'Cloudflared'
+    },
+    {
+      name: 'Wetty - Web-based SSH terminal for secure host access',
+      value: ServiceType.WETTY,
+      short: 'Wetty'
     }
   ];
 

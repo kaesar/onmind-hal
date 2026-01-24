@@ -60,6 +60,7 @@ import { TwentyCRMService } from './optional/twentycrm.js';
 import { MedusaJSService } from './optional/medusajs.js';
 import { PlaneService } from './optional/plane.js';
 import { MattermostService } from './optional/mattermost.js';
+import { CalcomService } from './optional/calcom.js';
 import { JasperReportsService } from './optional/jasperreports.js';
 import { StirlingPDFService } from './optional/stirlingpdf.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
@@ -67,6 +68,7 @@ import { MailserverService } from './optional/mailserver.js';
 import { KurrierService } from './optional/kurrier.js';
 import { FrpService } from './optional/frp.js';
 import { CloudflaredService } from './optional/cloudflared.js';
+import { WettyService } from './optional/wetty.js';
 import { UptimeKumaService } from './optional/uptimekuma.js';
 
 /**
@@ -263,6 +265,9 @@ export class ServiceFactory {
       case ServiceType.MATTERMOST:
         service = new MattermostService(config, this.templateEngine);
         break;
+      case ServiceType.CALCOM:
+        service = new CalcomService(config, this.templateEngine);
+        break;
       case ServiceType.JASPERREPORTS:
         service = new JasperReportsService(config, this.templateEngine);
         break;
@@ -283,6 +288,9 @@ export class ServiceFactory {
         break;
       case ServiceType.CLOUDFLARED:
         service = new CloudflaredService(config, this.templateEngine);
+        break;
+      case ServiceType.WETTY:
+        service = new WettyService(config, this.templateEngine);
         break;
       case ServiceType.UPTIMEKUMA:
         service = new UptimeKumaService(config, this.templateEngine);
@@ -469,6 +477,7 @@ export class ServiceFactory {
       ServiceType.MEDUSAJS,
       ServiceType.PLANE,
       ServiceType.MATTERMOST,
+      ServiceType.CALCOM,
       ServiceType.JASPERREPORTS,
       ServiceType.STIRLINGPDF,
       ServiceType.LIBRETRANSLATE,
@@ -476,6 +485,7 @@ export class ServiceFactory {
       ServiceType.KURRIER,
       ServiceType.FRP,
       ServiceType.CLOUDFLARED,
+      ServiceType.WETTY,
     ];
   }
 
@@ -585,6 +595,7 @@ export class ServiceFactory {
       'MedusaJS': ServiceType.MEDUSAJS,
       'Plane': ServiceType.PLANE,
       'Mattermost': ServiceType.MATTERMOST,
+      'Cal.com': ServiceType.CALCOM,
       'JasperReports Server': ServiceType.JASPERREPORTS,
       'Stirling-PDF': ServiceType.STIRLINGPDF,
       'LibreTranslate': ServiceType.LIBRETRANSLATE,
@@ -592,6 +603,7 @@ export class ServiceFactory {
       'Kurrier': ServiceType.KURRIER,
       'FRP Client': ServiceType.FRP,
       'Cloudflare Tunnel': ServiceType.CLOUDFLARED,
+      'Wetty': ServiceType.WETTY,
       'Uptime Kuma': ServiceType.UPTIMEKUMA,
     };
 

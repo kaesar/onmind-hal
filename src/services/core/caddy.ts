@@ -170,6 +170,7 @@ export class CaddyService extends BaseService {
       [ServiceType.MEDUSAJS]: { subdomain: 'shop', port: 9000, container: 'medusajs' },
       [ServiceType.PLANE]: { subdomain: 'plane', port: 3000, container: 'plane-frontend' },
       [ServiceType.MATTERMOST]: { subdomain: 'mattermost', port: 8065, container: 'mattermost' },
+      [ServiceType.CALCOM]: { subdomain: 'cal', port: 3000, container: 'calcom' },
       [ServiceType.JASPERREPORTS]: { subdomain: 'jasper', port: 8080, container: 'jasperreports' },
       [ServiceType.STIRLINGPDF]: { subdomain: 'pdf', port: 8080, container: 'stirlingpdf' },
       [ServiceType.LIBRETRANSLATE]: { subdomain: 'translate', port: 5000, container: 'libretranslate' },
@@ -185,6 +186,7 @@ export class CaddyService extends BaseService {
       [ServiceType.MAILSERVER]: null,
       [ServiceType.FRP]: null,
       [ServiceType.CLOUDFLARED]: null, // No web UI - managed via Cloudflare Dashboard
+      [ServiceType.WETTY]: { subdomain: 'wetty', port: 3000, container: 'wetty' },
     };
 
     return this.config.selectedServices

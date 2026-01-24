@@ -1,0 +1,22 @@
+name: Wetty
+description: Web-based SSH terminal for secure host access
+
+commands:
+  install:
+    - docker pull wettyoss/wetty:latest
+  setup: []
+  run: |
+    docker run -d \
+      --name wetty \
+      --network {{NETWORK_NAME}} \
+      -p 3033:3000 \
+      -e SSHHOST={{IP}} \
+      -e SSHPORT=22 \
+      --restart=always \
+      wettyoss/wetty:latest
+
+variables:
+  - NETWORK_NAME
+  - IP
+
+dependencies: []
