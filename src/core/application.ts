@@ -335,7 +335,16 @@ export class HomelabApplication {
       // Configure the service
       await service.configure();
       
-      this.logger.info(`✅ ${service.name} installed and configured successfully`);
+      // Check if service was actually installed successfully
+      if ('isInstalled' in service && typeof service.isInstalled === 'function') {
+        if (service.isInstalled()) {
+          this.logger.info(`✅ ${service.name} installed and configured successfully`);
+        } else {
+          this.logger.warn(`⚠️  ${service.name} installation was skipped`);
+        }
+      } else {
+        this.logger.info(`✅ ${service.name} installed and configured successfully`);
+      }
 
     } catch (error) {
       this.logger.error(`❌ Failed to install ${service.name}`);
@@ -460,12 +469,12 @@ export class HomelabApplication {
       
       // Define web services list (used for both /etc/hosts and non-web services filtering)
       const webServices = ['copyparty', 'portainer', 'duckdb', 'n8n', 'kestra', 'keystonejs', 
-                          'minio', 'ollama', 'opennotebooklm', 'authelia', 'keycloak', 'pocketid', 
+                          'minio', 'ollama', 'openwebui', 'opennotebooklm', 'authelia', 'keycloak', 'pocketid', 
                           'rabbitmq', 'grafana', 'loki', 'trivy', 'sonarqube', 'nexus', 'vault',
-                          'vaultwarden', 'rapidoc', 'hoppscotch', 'locust', 'psitransfer', 'excalidraw', 
-                          'locust', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'twentycrm', 'medusajs', 
-                          'plane', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 'localstack', 
-                          'libretranslate', 'uptimekuma', 'k3d', 'semaphore', 'liquibase'];
+                          'vaultwarden', 'backvault', 'linkwarden', 'rapidoc', 'hoppscotch', 'locust', 'psitransfer', 'excalidraw', 
+                          'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'twentycrm', 'medusajs', 
+                          'plane', 'mattermost', 'calcom', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 'localstack', 
+                          'libretranslate', 'uptimekuma', 'k3d', 'semaphore', 'liquibase', 'backstage', 'apisix', 'opensearch', 'kurrier', 'wetty'];
       
       if (needsHostsFile) {
         console.log('   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:');
@@ -506,19 +515,20 @@ export class HomelabApplication {
         console.log('\n   📧 Non-web services (no DNS configuration needed):');
         for (const service of nonWebServices) {
           const descriptions: Record<string, string> = {
-            'mailserver': 'Configure email client with localhost:587 (SMTP), localhost:993 (IMAPS)',
+            'mailserver': 'Mail server - configure email client with SMTP/IMAP ports',
             'frp': 'Tunnel client - check ~/wsconf/frpc.ini for configuration',
-            'kafka': 'Distributed streaming platform - connect via localhost with mapped ports',
-            'rabbitmq': 'Message broker - connect via localhost with mapped ports',
-            'postgresql': 'Relational database - connect via localhost with mapped ports',
-            'redis': 'In-memory data store - connect via localhost with mapped ports',
-            'mongodb': 'NoSQL database - connect via localhost with mapped ports',
-            'mariadb': 'Relational database - connect via localhost with mapped ports',
-            'scylladb': 'NoSQL database - connect via localhost with mapped ports',
+            'cloudflared': 'Cloudflare Tunnel - managed via Cloudflare Dashboard',
+            'kafka': 'Streaming platform - connect via localhost:9092',
+            'postgresql': 'Database server - connect via localhost:5432',
+            'redis': 'Cache server - connect via localhost:6379',
+            'mongodb': 'Database server - connect via localhost:27017',
+            'mariadb': 'Database server - connect via localhost:3306',
+            'scylladb': 'Database server - connect via localhost:9042',
+            'ignite': 'In-memory database - JDBC via localhost:10800',
             'fluentbit': 'Log processor - no direct connection needed'
           };
           
-          const desc = descriptions[service.type] || 'Database service - connect via localhost with mapped ports';
+          const desc = descriptions[service.type] || 'Service - check documentation for connection details';
           console.log(`   • ${service.name}: ${desc}`);
         }
       }

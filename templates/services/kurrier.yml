@@ -2,7 +2,7 @@ name: Kurrier
 description: Self-hosted email marketing and newsletter platform
 commands:
   install:
-    - docker pull ghcr.io/kurrier-org/kurrier:latest
+    - docker pull ghcr.io/kurrier/kurrier:latest
   setup:
     - mkdir -p ~/wsconf/kurrier
     - docker volume create kurrier_data
@@ -17,7 +17,7 @@ commands:
           -e DATABASE_URL=sqlite:///app/data/kurrier.db \
           -e NODE_ENV=production \
           --restart unless-stopped \
-          ghcr.io/kurrier-org/kurrier:latest
+          ghcr.io/kurrier/kurrier:latest
 variables:
   - NETWORK_NAME
 dependencies: []

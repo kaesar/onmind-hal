@@ -220,13 +220,22 @@ export abstract class BaseService implements Service {
         await this.executeCommands(this.serviceTemplate.commands.setup);
       }
 
-      console.log(`${this.name} installation completed`);
+      if (!this.installationFailed) {
+        console.log(`${this.name} installation completed`);
+      }
     } catch (error) {
       throw new ServiceInstallationError(
         this.type,
         `Installation failed: ${error}`
       );
     }
+  }
+
+  /**
+   * Check if installation was successful
+   */
+  isInstalled(): boolean {
+    return !this.installationFailed;
   }
 
   /**
