@@ -128,6 +128,7 @@ export class CaddyService extends BaseService {
       [ServiceType.KAFKA]: null, // No web UI
       [ServiceType.RABBITMQ]: { subdomain: 'rabbitmq', port: 15672, container: 'rabbitmq' },
       [ServiceType.OLLAMA]: { subdomain: 'ollama', port: 11434, container: 'ollama' },
+      [ServiceType.OPENWEBUI]: { subdomain: 'openwebui', port: 8080, container: 'openwebui' },
       [ServiceType.OPENNOTEBOOKLM]: { subdomain: 'notebook', port: 8502, container: 'opennotebooklm' },
       [ServiceType.N8N]: { subdomain: 'n8n', port: 5678, container: 'n8n' },
       [ServiceType.KESTRA]: { subdomain: 'kestra', port: 8080, container: 'kestra' },
@@ -135,6 +136,7 @@ export class CaddyService extends BaseService {
       [ServiceType.KEYCLOAK]: { subdomain: 'keycloak', port: 8080, container: 'keycloak' },
       [ServiceType.AUTHELIA]: { subdomain: 'authelia', port: 9091, container: 'authelia' },
       [ServiceType.POCKETID]: { subdomain: 'auth', port: 80, container: 'pocketid' },
+      [ServiceType.APISIX]: { subdomain: 'apisix', port: 9000, container: 'apisix-dashboard' },
       [ServiceType.LOCALSTACK]: { subdomain: 'localstack', port: 4566, container: 'localstack' },
       [ServiceType.K3D]: { subdomain: 'k3d', port: 6444, container: 'k3d' },
       [ServiceType.ONEDEV]: { subdomain: 'onedev', port: 6610, container: 'onedev' },
@@ -155,6 +157,8 @@ export class CaddyService extends BaseService {
       [ServiceType.NEXUS]: { subdomain: 'nexus', port: 8081, container: 'nexus' },
       [ServiceType.VAULT]: { subdomain: 'vault', port: 8200, container: 'vault' },
       [ServiceType.VAULTWARDEN]: { subdomain: 'vaultwarden', port: 8222, container: 'vaultwarden' },
+      [ServiceType.BACKVAULT]: { subdomain: 'backvault', port: 8080, container: 'backvault' },
+      [ServiceType.LINKWARDEN]: { subdomain: 'linkwarden', port: 3000, container: 'linkwarden' },
       [ServiceType.PSITRANSFER]: { subdomain: 'psitransfer', port: 3005, container: 'psitransfer' },
       [ServiceType.EXCALIDRAW]: { subdomain: 'excalidraw', port: 80, container: 'excalidraw' },
       [ServiceType.DRAWIO]: { subdomain: 'drawio', port: 8088, container: 'drawio' },
@@ -165,9 +169,11 @@ export class CaddyService extends BaseService {
       [ServiceType.TWENTYCRM]: { subdomain: 'crm', port: 3000, container: 'twentycrm' },
       [ServiceType.MEDUSAJS]: { subdomain: 'shop', port: 9000, container: 'medusajs' },
       [ServiceType.PLANE]: { subdomain: 'plane', port: 3000, container: 'plane-frontend' },
+      [ServiceType.MATTERMOST]: { subdomain: 'mattermost', port: 8065, container: 'mattermost' },
       [ServiceType.JASPERREPORTS]: { subdomain: 'jasper', port: 8080, container: 'jasperreports' },
       [ServiceType.STIRLINGPDF]: { subdomain: 'pdf', port: 8080, container: 'stirlingpdf' },
       [ServiceType.LIBRETRANSLATE]: { subdomain: 'translate', port: 5000, container: 'libretranslate' },
+      [ServiceType.KURRIER]: { subdomain: 'kurrier', port: 3000, container: 'kurrier' },
       
       // Databases and others without web UI
       [ServiceType.POSTGRESQL]: null,
@@ -175,8 +181,10 @@ export class CaddyService extends BaseService {
       [ServiceType.MONGODB]: null,
       [ServiceType.MARIADB]: null,
       [ServiceType.SCYLLADB]: null,
+      [ServiceType.IGNITE]: null, // No web UI - JDBC/SQL only
       [ServiceType.MAILSERVER]: null,
-      [ServiceType.FRP]: null
+      [ServiceType.FRP]: null,
+      [ServiceType.CLOUDFLARED]: null, // No web UI - managed via Cloudflare Dashboard
     };
 
     return this.config.selectedServices

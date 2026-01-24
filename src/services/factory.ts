@@ -14,10 +14,12 @@ import { RedisService } from './optional/redis.js';
 import { MongoDBService } from './optional/mongodb.js';
 import { MariaDBService } from './optional/mariadb.js';
 import { ScyllaDBService } from './optional/scylladb.js';
+import { IgniteService } from './optional/ignite.js';
 import { MinioService } from './optional/minio.js';
 import { KafkaService } from './optional/kafka.js';
 import { RabbitMQService } from './optional/rabbitmq.js';
 import { OllamaService } from './optional/ollama.js';
+import { OpenWebUIService } from './optional/openwebui.js';
 import { OpenNotebookLMService } from './optional/opennotebooklm.js';
 import { N8nService } from './optional/n8n.js';
 import { KestraService } from './optional/kestra.js';
@@ -25,6 +27,7 @@ import { KeystoneJSService } from './optional/keystonejs.js';
 import { KeycloakService } from './optional/keycloak.js';
 import { AutheliaService } from './optional/authelia.js';
 import { PocketIDService } from './optional/pocketid.js';
+import { ApisixService } from './optional/apisix.js';
 import { LocalStackService } from './optional/localstack.js';
 import { K3dService } from './optional/k3d.js';
 import { OneDevService } from './optional/onedev.js';
@@ -44,6 +47,8 @@ import { RegistryService } from './optional/registry.js';
 import { NexusService } from './optional/nexus.js';
 import { VaultService } from './optional/vault.js';
 import { VaultwardenService } from './optional/vaultwarden.js';
+import { BackVaultService } from './optional/backvault.js';
+import { LinkwardenService } from './optional/linkwarden.js';
 import { PsiTransferService } from './optional/psitransfer.js';
 import { ExcalidrawService } from './optional/excalidraw.js';
 import { DrawIOService } from './optional/drawio.js';
@@ -54,11 +59,14 @@ import { NocoDBService } from './optional/nocodb.js';
 import { TwentyCRMService } from './optional/twentycrm.js';
 import { MedusaJSService } from './optional/medusajs.js';
 import { PlaneService } from './optional/plane.js';
+import { MattermostService } from './optional/mattermost.js';
 import { JasperReportsService } from './optional/jasperreports.js';
 import { StirlingPDFService } from './optional/stirlingpdf.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
 import { MailserverService } from './optional/mailserver.js';
+import { KurrierService } from './optional/kurrier.js';
 import { FrpService } from './optional/frp.js';
+import { CloudflaredService } from './optional/cloudflared.js';
 import { UptimeKumaService } from './optional/uptimekuma.js';
 
 /**
@@ -116,6 +124,9 @@ export class ServiceFactory {
       case ServiceType.SCYLLADB:
         service = new ScyllaDBService(config, this.templateEngine);
         break;
+      case ServiceType.IGNITE:
+        service = new IgniteService(config, this.templateEngine);
+        break;
       case ServiceType.MINIO:
         service = new MinioService(config, this.templateEngine);
         break;
@@ -127,6 +138,9 @@ export class ServiceFactory {
         break;
       case ServiceType.OLLAMA:
         service = new OllamaService(config, this.templateEngine);
+        break;
+      case ServiceType.OPENWEBUI:
+        service = new OpenWebUIService(config, this.templateEngine);
         break;
       case ServiceType.OPENNOTEBOOKLM:
         service = new OpenNotebookLMService(config, this.templateEngine);
@@ -149,6 +163,9 @@ export class ServiceFactory {
         break;
       case ServiceType.POCKETID:
         service = new PocketIDService(config, this.templateEngine);
+        break;
+      case ServiceType.APISIX:
+        service = new ApisixService(config, this.templateEngine);
         break;
       case ServiceType.LOCALSTACK:
         service = new LocalStackService(config, this.templateEngine);
@@ -207,6 +224,12 @@ export class ServiceFactory {
       case ServiceType.VAULTWARDEN:
         service = new VaultwardenService(config, this.templateEngine);
         break;
+      case ServiceType.BACKVAULT:
+        service = new BackVaultService(config, this.templateEngine);
+        break;
+      case ServiceType.LINKWARDEN:
+        service = new LinkwardenService(config, this.templateEngine);
+        break;
       case ServiceType.PSITRANSFER:
         service = new PsiTransferService(config, this.templateEngine);
         break;
@@ -237,6 +260,9 @@ export class ServiceFactory {
       case ServiceType.PLANE:
         service = new PlaneService(config, this.templateEngine);
         break;
+      case ServiceType.MATTERMOST:
+        service = new MattermostService(config, this.templateEngine);
+        break;
       case ServiceType.JASPERREPORTS:
         service = new JasperReportsService(config, this.templateEngine);
         break;
@@ -249,8 +275,14 @@ export class ServiceFactory {
       case ServiceType.MAILSERVER:
         service = new MailserverService(config, this.templateEngine);
         break;
+      case ServiceType.KURRIER:
+        service = new KurrierService(config, this.templateEngine);
+        break;
       case ServiceType.FRP:
         service = new FrpService(config, this.templateEngine);
+        break;
+      case ServiceType.CLOUDFLARED:
+        service = new CloudflaredService(config, this.templateEngine);
         break;
       case ServiceType.UPTIMEKUMA:
         service = new UptimeKumaService(config, this.templateEngine);
@@ -390,10 +422,12 @@ export class ServiceFactory {
       ServiceType.MONGODB,
       ServiceType.MARIADB,
       ServiceType.SCYLLADB,
+      ServiceType.IGNITE,
       ServiceType.MINIO,
       ServiceType.KAFKA,
       ServiceType.RABBITMQ,
       ServiceType.OLLAMA,
+      ServiceType.OPENWEBUI,
       ServiceType.OPENNOTEBOOKLM,
       ServiceType.N8N,
       ServiceType.KESTRA,
@@ -401,6 +435,7 @@ export class ServiceFactory {
       ServiceType.KEYCLOAK,
       ServiceType.AUTHELIA,
       ServiceType.POCKETID,
+      ServiceType.APISIX,
       ServiceType.LOCALSTACK,
       ServiceType.K3D,
       ServiceType.ONEDEV,
@@ -421,6 +456,8 @@ export class ServiceFactory {
       ServiceType.NEXUS,
       ServiceType.VAULT,
       ServiceType.VAULTWARDEN,
+      ServiceType.BACKVAULT,
+      ServiceType.LINKWARDEN,
       ServiceType.PSITRANSFER,
       ServiceType.EXCALIDRAW,
       ServiceType.DRAWIO,
@@ -431,11 +468,14 @@ export class ServiceFactory {
       ServiceType.TWENTYCRM,
       ServiceType.MEDUSAJS,
       ServiceType.PLANE,
+      ServiceType.MATTERMOST,
       ServiceType.JASPERREPORTS,
       ServiceType.STIRLINGPDF,
       ServiceType.LIBRETRANSLATE,
       ServiceType.MAILSERVER,
+      ServiceType.KURRIER,
       ServiceType.FRP,
+      ServiceType.CLOUDFLARED,
     ];
   }
 
@@ -499,10 +539,12 @@ export class ServiceFactory {
       'MongoDB': ServiceType.MONGODB,
       'MariaDB': ServiceType.MARIADB,
       'ScyllaDB': ServiceType.SCYLLADB,
+      'Apache Ignite': ServiceType.IGNITE,
       'Minio': ServiceType.MINIO,
       'Kafka': ServiceType.KAFKA,
       'RabbitMQ': ServiceType.RABBITMQ,
       'Ollama': ServiceType.OLLAMA,
+      'Open WebUI': ServiceType.OPENWEBUI,
       'Open NotebookLM': ServiceType.OPENNOTEBOOKLM,
       'n8n': ServiceType.N8N,
       'Kestra': ServiceType.KESTRA,
@@ -510,6 +552,7 @@ export class ServiceFactory {
       'Keycloak': ServiceType.KEYCLOAK,
       'Authelia': ServiceType.AUTHELIA,
       'PocketID': ServiceType.POCKETID,
+      'Apache APISIX': ServiceType.APISIX,
       'LocalStack': ServiceType.LOCALSTACK,
       'k3d': ServiceType.K3D,
       'OneDev': ServiceType.ONEDEV,
@@ -529,6 +572,8 @@ export class ServiceFactory {
       'Nexus Repository': ServiceType.NEXUS,
       'Vault': ServiceType.VAULT,
       'Vaultwarden': ServiceType.VAULTWARDEN,
+      'BackVault': ServiceType.BACKVAULT,
+      'Linkwarden': ServiceType.LINKWARDEN,
       'PsiTransfer': ServiceType.PSITRANSFER,
       'Excalidraw': ServiceType.EXCALIDRAW,
       'Draw.io': ServiceType.DRAWIO,
@@ -539,11 +584,14 @@ export class ServiceFactory {
       'TwentyCRM': ServiceType.TWENTYCRM,
       'MedusaJS': ServiceType.MEDUSAJS,
       'Plane': ServiceType.PLANE,
+      'Mattermost': ServiceType.MATTERMOST,
       'JasperReports Server': ServiceType.JASPERREPORTS,
       'Stirling-PDF': ServiceType.STIRLINGPDF,
       'LibreTranslate': ServiceType.LIBRETRANSLATE,
       'Docker Mailserver': ServiceType.MAILSERVER,
+      'Kurrier': ServiceType.KURRIER,
       'FRP Client': ServiceType.FRP,
+      'Cloudflare Tunnel': ServiceType.CLOUDFLARED,
       'Uptime Kuma': ServiceType.UPTIMEKUMA,
     };
 

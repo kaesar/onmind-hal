@@ -1,0 +1,23 @@
+name: Apache Ignite
+description: Distributed in-memory database with SQL and JDBC support
+
+commands:
+  install:
+    - docker pull apacheignite/ignite:3.1.0
+  setup:
+    - docker volume create ignite_data
+  run: |
+    docker run -d \
+      --name ignite \
+      --network {{NETWORK_NAME}} \
+      -p 10800:10800 \
+      -p 10900:10900 \
+      -v ignite_data:/opt/ignite/work \
+      -e IGNITE_WORK_DIR=/opt/ignite/work \
+      --restart=always \
+      apacheignite/ignite:3.1.0
+
+variables:
+  - NETWORK_NAME
+
+dependencies: []

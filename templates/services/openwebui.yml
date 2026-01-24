@@ -1,0 +1,23 @@
+name: Open WebUI
+description: User-friendly web interface for Ollama LLMs
+
+commands:
+  install:
+    - docker pull ghcr.io/open-webui/open-webui:main
+  setup:
+    - docker volume create openwebui_data
+  run: |
+    docker run -d \
+      --name openwebui \
+      --network {{NETWORK_NAME}} \
+      -p 3010:8080 \
+      -v openwebui_data:/app/backend/data \
+      -e OLLAMA_BASE_URL=http://ollama:11434 \
+      --restart=always \
+      ghcr.io/open-webui/open-webui:main
+
+variables:
+  - NETWORK_NAME
+
+dependencies:
+  - Ollama

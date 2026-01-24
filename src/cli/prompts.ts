@@ -141,6 +141,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'ScyllaDB'
     },
     {
+      name: 'Apache Ignite - Distributed in-memory database with SQL and JDBC',
+      value: ServiceType.IGNITE,
+      short: 'Apache Ignite'
+    },
+    {
       name: 'Minio - S3-compatible object storage',
       value: ServiceType.MINIO,
       short: 'Minio'
@@ -159,6 +164,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Ollama - Local LLM server',
       value: ServiceType.OLLAMA,
       short: 'Ollama'
+    },
+    {
+      name: 'Open WebUI - User-friendly web interface for Ollama (requires Ollama)',
+      value: ServiceType.OPENWEBUI,
+      short: 'Open WebUI'
     },
     {
       name: 'Open NotebookLM - Open-source alternative to Google NotebookLM',
@@ -194,6 +204,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'PocketID - OIDC provider with passkeys support (for Caddy + oauth2-proxy)',
       value: ServiceType.POCKETID,
       short: 'PocketID'
+    },
+    {
+      name: 'Apache APISIX - Cloud-native API Gateway and microservices management',
+      value: ServiceType.APISIX,
+      short: 'APISIX'
     },
     {
       name: 'LocalStack - Local AWS cloud stack',
@@ -296,6 +311,16 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Vaultwarden'
     },
     {
+      name: 'BackVault - Self-hosted backup solution for Vaultwarden/Bitwarden',
+      value: ServiceType.BACKVAULT,
+      short: 'BackVault'
+    },
+    {
+      name: 'Linkwarden - Self-hosted bookmark manager (requires PostgreSQL)',
+      value: ServiceType.LINKWARDEN,
+      short: 'Linkwarden'
+    },
+    {
       name: 'PsiTransfer - File sharing platform (like WeTransfer)',
       value: ServiceType.PSITRANSFER,
       short: 'PsiTransfer'
@@ -346,6 +371,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Plane'
     },
     {
+      name: 'Mattermost - Open-source team collaboration platform (like Slack, requires PostgreSQL)',
+      value: ServiceType.MATTERMOST,
+      short: 'Mattermost'
+    },
+    {
       name: 'JasperReports - Business intelligence and reporting platform (requires PostgreSQL)',
       value: ServiceType.JASPERREPORTS,
       short: 'JasperReports'
@@ -366,9 +396,19 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Mailserver'
     },
     {
+      name: 'Kurrier - Self-hosted email marketing and newsletter platform',
+      value: ServiceType.KURRIER,
+      short: 'Kurrier'
+    },
+    {
       name: 'FRP Client - Fast Reverse Proxy for secure tunneling (requires VPS with frps)',
       value: ServiceType.FRP,
       short: 'FRP'
+    },
+    {
+      name: 'Cloudflare Tunnel - Secure tunnel to expose services (requires Cloudflare account)',
+      value: ServiceType.CLOUDFLARED,
+      short: 'Cloudflared'
     }
   ];
 

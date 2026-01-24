@@ -1,0 +1,20 @@
+name: Cloudflare Tunnel
+description: Secure tunnel to expose services without opening ports
+commands:
+  install:
+    - docker pull cloudflare/cloudflared:latest
+  setup:
+    - mkdir -p ~/.cloudflared
+    - echo "Cloudflare Tunnel requires manual configuration"
+    - echo "Follow the instructions displayed after installation"
+  run: |-
+    docker run \
+          -d \
+          --name cloudflared \
+          --network {{NETWORK_NAME}} \
+          -v ~/.cloudflared:/etc/cloudflared \
+          --restart unless-stopped \
+          cloudflare/cloudflared:latest tunnel --no-autoupdate run
+variables:
+  - NETWORK_NAME
+dependencies: []

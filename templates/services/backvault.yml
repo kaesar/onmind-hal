@@ -1,0 +1,22 @@
+name: BackVault
+description: Self-hosted backup solution for Vaultwarden
+
+commands:
+  install:
+    - docker pull mvfc/backvault:latest
+  setup:
+    - docker volume create backvault_data
+  run: |
+    docker run -d \
+      --name backvault \
+      --network {{NETWORK_NAME}} \
+      -p 8223:8080 \
+      -v backvault_data:/data \
+      -e BACKVAULT_DATA_DIR=/data \
+      --restart=always \
+      mvfc/backvault:latest
+
+variables:
+  - NETWORK_NAME
+
+dependencies: []

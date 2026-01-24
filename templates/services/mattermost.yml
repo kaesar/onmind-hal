@@ -1,0 +1,31 @@
+name: Mattermost
+description: Open-source team collaboration and messaging platform
+commands:
+  install:
+    - docker pull mattermost/mattermost-team-edition:latest
+  setup:
+    - mkdir -p ~/wsconf/mattermost
+    - docker volume create mattermost_data
+    - docker volume create mattermost_logs
+    - docker volume create mattermost_plugins
+  run: |-
+    docker run \
+          -d \
+          --name mattermost \
+          --network {{NETWORK_NAME}} \
+          -p 8065:8065 \
+          -v ~/wsconf/mattermost:/mattermost/config \
+          -v mattermost_data:/mattermost/data \
+          -v mattermost_logs:/mattermost/logs \
+          -v mattermost_plugins:/mattermost/plugins \
+          -e MM_SQLSETTINGS_DRIVERNAME=postgres \
+          -e MM_SQLSETTINGS_DATASOURCE=postgres://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/mattermost?sslmode=disable \
+          -e MM_SERVICESETTINGS_SITEURL=https://mattermost.{{DOMAIN}} \
+          --restart unless-stopped \
+          mattermost/mattermost-team-edition:latest
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+  - DOMAIN
+dependencies:
+  - postgresql

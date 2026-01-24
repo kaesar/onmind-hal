@@ -1,0 +1,25 @@
+name: Linkwarden
+description: Self-hosted bookmark manager with tagging and archiving
+commands:
+  install:
+    - docker pull ghcr.io/linkwarden/linkwarden:latest
+  setup:
+    - docker volume create linkwarden_data
+  run: |-
+    docker run \
+          -d \
+          --name linkwarden \
+          --network {{NETWORK_NAME}} \
+          -p 3101:3000 \
+          -v linkwarden_data:/data/data \
+          -e DATABASE_URL=postgresql://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/linkwarden \
+          -e NEXTAUTH_SECRET={{STORAGE_PASSWORD}} \
+          -e NEXTAUTH_URL=https://linkwarden.{{DOMAIN}} \
+          --restart unless-stopped \
+          ghcr.io/linkwarden/linkwarden:latest
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+  - DOMAIN
+dependencies:
+  - postgresql

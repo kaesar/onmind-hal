@@ -1,0 +1,43 @@
+name: Apache APISIX
+description: Cloud-native API Gateway and microservices management
+commands:
+  install:
+    - docker pull apache/apisix:latest
+    - docker pull apache/apisix-dashboard:latest
+    - docker pull bitnami/etcd:latest
+  setup:
+    - mkdir -p ~/wsconf/apisix
+    - docker volume create apisix_data
+    - docker volume create etcd_data
+  run: |-
+    docker run \
+          -d \
+          --name etcd \
+          --network {{NETWORK_NAME}} \
+          -p 2379:2379 \
+          -e ALLOW_NONE_AUTHENTICATION=yes \
+          -e ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379 \
+          -v etcd_data:/bitnami/etcd \
+          --restart unless-stopped \
+          bitnami/etcd:latest && docker run \
+          -d \
+          --name apisix \
+          --network {{NETWORK_NAME}} \
+          -p 9080:9080 \
+          -p 9443:9443 \
+          -e APISIX_STAND_ALONE=false \
+          -e APISIX_DEPLOYMENT_ETCD_HOST=http://etcd:2379 \
+          -v ~/wsconf/apisix:/usr/local/apisix/conf \
+          -v apisix_data:/usr/local/apisix/logs \
+          --restart unless-stopped \
+          apache/apisix:latest && docker run \
+          -d \
+          --name apisix-dashboard \
+          --network {{NETWORK_NAME}} \
+          -p 9180:9000 \
+          -e APISIX_DASHBOARD_ETCD_ENDPOINTS=http://etcd:2379 \
+          --restart unless-stopped \
+          apache/apisix-dashboard:latest
+variables:
+  - NETWORK_NAME
+dependencies: []
