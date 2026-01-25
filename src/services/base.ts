@@ -97,8 +97,6 @@ export abstract class BaseService implements Service {
           if (interpolatedCommand.includes('pull')) {
             await this.checkDiskSpace();
           }
-          
-          // console.log(`Command processing: ${originalCommand}\n→ ${interpolatedCommand}`);
         }
         
         console.log(`Executing: ${interpolatedCommand}`);
@@ -131,7 +129,7 @@ export abstract class BaseService implements Service {
                             interpolatedCommand.includes('build') ? 'image build' :
                             interpolatedCommand.includes('run') ? 'container run' : 'command';
           
-          console.log(`⚠️  ${commandType} failed with ${runtime}`);
+          console.log(`⚠️  ${commandType} failed with ${runtime}:\n→ ${interpolatedCommand}`);
           
           // Specific handling for exit code 125
           if (error.message.includes('exit code 125')) {
@@ -142,9 +140,11 @@ export abstract class BaseService implements Service {
             }
           }
           
-          console.log(`⏭️  Skipping ${this.name} due to ${runtime.toLowerCase()} issues`);
+          this.installationFailed = !interpolatedCommand.includes('volume');
+          if (this.installationFailed) {
+            console.log(`⏭️  Skipping ${this.name} due to ${runtime.toLowerCase()} issues`);
+          }
           console.log(`💡 This might be temporary or the resource might already exist`);
-          this.installationFailed = true;
           return;
         }
         
