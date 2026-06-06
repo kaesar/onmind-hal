@@ -1,0 +1,104 @@
+name: Redash
+description: Open-source SQL query editor and visualization platform
+commands:
+  install:
+    - docker pull redash/redash:latest
+    - docker pull postgres:16-alpine
+    - docker pull redis:7-alpine
+  setup:
+    - mkdir -p ~/wsdata/redash/postgres
+    - mkdir -p ~/wsdata/redash/redis
+    - docker volume create redash_postgres_data
+    - docker volume create redash_redis_data
+  run: |-
+    docker run \
+          -d \
+          --name redash-postgres \
+          --network {{NETWORK_NAME}} \
+          -e POSTGRES_DB=redash \
+          -e POSTGRES_USER=redash \
+          -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
+          -v redash_postgres_data:/var/lib/postgresql/data \
+          --restart=unless-stopped \
+          postgres:16-alpine
+
+    docker run \
+          -d \
+          --name redash-redis \
+          --network {{NETWORK_NAME}} \
+          -v redash_redis_data:/data \
+          --restart=unless-stopped \
+          redis:7-alpine
+
+    docker run \
+          -d \
+          --name redash-server \
+          --network {{NETWORK_NAME}} \
+          -p 5000:5000 \
+          -e REDASH_COOKIE_SECRET={{ADMIN_TOKEN}} \
+          -e REDASH_SECRET_KEY={{ADMIN_TOKEN}} \
+          -e REDASH_DATABASE_URL=postgresql://redash:{{STORAGE_PASSWORD}}@redash-postgres:5432/redash \
+          -e REDASH_REDIS_URL=redis://redash-redis:6379/0 \
+          -e REDASH_HOST=https://redash.{{DOMAIN}} \
+          -e PYTHONUNBUFFERED=0 \
+          -e REDASH_LOG_LEVEL=INFO \
+          -e REDASH_WEB_WORKERS=4 \
+          --restart=unless-stopped \
+          redash/redash:latest \
+          server
+
+    docker run \
+          -d \
+          --name redash-scheduler \
+          --network {{NETWORK_NAME}} \
+          -e REDASH_COOKIE_SECRET={{ADMIN_TOKEN}} \
+          -e REDASH_SECRET_KEY={{ADMIN_TOKEN}} \
+          -e REDASH_DATABASE_URL=postgresql://redash:{{STORAGE_PASSWORD}}@redash-postgres:5432/redash \
+          -e REDASH_REDIS_URL=redis://redash-redis:6379/0 \
+          -e PYTHONUNBUFFERED=0 \
+          -e REDASH_LOG_LEVEL=INFO \
+          -e QUEUES=celery \
+          -e WORKERS_COUNT=1 \
+          --restart=unless-stopped \
+          redash/redash:latest \
+          scheduler
+
+    docker run \
+          -d \
+          --name redash-worker \
+          --network {{NETWORK_NAME}} \
+          -e REDASH_COOKIE_SECRET={{ADMIN_TOKEN}} \
+          -e REDASH_SECRET_KEY={{ADMIN_TOKEN}} \
+          -e REDASH_DATABASE_URL=postgresql://redash:{{STORAGE_PASSWORD}}@redash-postgres:5432/redash \
+          -e REDASH_REDIS_URL=redis://redash-redis:6379/0 \
+          -e PYTHONUNBUFFERED=0 \
+          -e REDASH_LOG_LEVEL=INFO \
+          -e QUEUES=queries,scheduled_queries,celery \
+          -e WORKERS_COUNT=2 \
+          --restart=unless-stopped \
+          redash/redash:latest \
+          worker
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - STORAGE_PASSWORD
+  - ADMIN_TOKEN
+ports:
+  - "5000:5000"
+volumes:
+  - redash_postgres_data:/var/lib/postgresql/data
+  - redash_redis_data:/data
+environment:
+  REDASH_COOKIE_SECRET: "{{ADMIN_TOKEN}}"
+  REDASH_SECRET_KEY: "{{ADMIN_TOKEN}}"
+  REDASH_DATABASE_URL: "postgresql://redash:{{STORAGE_PASSWORD}}@redash-postgres:5432/redash"
+  REDASH_REDIS_URL: "redis://redash-redis:6379/0"
+  REDASH_HOST: "https://redash.{{DOMAIN}}"
+  PYTHONUNBUFFERED: "0"
+  REDASH_LOG_LEVEL: "INFO"
+  REDASH_WEB_WORKERS: "4"
+accessUrl: https://redash.{{DOMAIN}}
+dependencies:
+  - PostgreSQL
+  - Redis
+isCore: false

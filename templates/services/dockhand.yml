@@ -1,0 +1,35 @@
+name: Dockhand
+description: Lightweight Docker management UI (alternative to Portainer)
+commands:
+  install:
+    - docker pull fnsys/dockhand:latest
+  setup:
+    - mkdir -p ~/wsdata/dockhand/data
+    - docker volume create dockhand_data
+  run: |-
+    docker run \
+          -d \
+          --name dockhand \
+          --network {{NETWORK_NAME}} \
+          -p 3000:3000 \
+          -e DATA_DIR=/app/data \
+          -e PUID=1000 \
+          -e PGID=1000 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v dockhand_data:/app/data \
+          --restart=unless-stopped \
+          fnsys/dockhand:latest
+variables:
+  - NETWORK_NAME
+ports:
+  - "3000:3000"
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock
+  - dockhand_data:/app/data
+environment:
+  DATA_DIR: "/app/data"
+  PUID: "1000"
+  PGID: "1000"
+accessUrl: https://dockhand.{{DOMAIN}}
+dependencies: []
+isCore: false

@@ -1,0 +1,46 @@
+name: LiteLLM Proxy
+description: LLM proxy with unified API for 100+ LLMs
+commands:
+  install:
+    - docker pull ghcr.io/berriai/litellm:main-stable
+  setup:
+    - mkdir -p ~/wsdata/litellm/data
+    - mkdir -p ~/wsconf/litellm
+    - docker volume create litellm_data
+    - docker volume create litellm_postgres_data
+  run: |-
+    docker run \
+          -d \
+          --name litellm \
+          --network {{NETWORK_NAME}} \
+          -p 4000:4000 \
+          -e DATABASE_URL=postgresql://llmproxy:{{STORAGE_PASSWORD}}@postgresql:5432/litellm \
+          -e LITELLM_MASTER_KEY={{ADMIN_TOKEN}} \
+          -e STORE_MODEL_IN_DB=True \
+          -e REDIS_HOST=redis \
+          -e REDIS_PORT=6379 \
+          -v ~/wsconf/litellm/config.yaml:/app/config.yaml \
+          -v litellm_data:/app/logs \
+          ghcr.io/berriai/litellm:main-stable \
+          --config /app/config.yaml --port 4000
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+  - ADMIN_TOKEN
+ports:
+  - "4000:4000"
+volumes:
+  - ~/wsconf/litellm/config.yaml:/app/config.yaml
+  - litellm_data:/app/logs
+  - litellm_postgres_data:/var/lib/postgresql/data
+environment:
+  DATABASE_URL: "postgresql://llmproxy:{{STORAGE_PASSWORD}}@postgresql:5432/litellm"
+  LITELLM_MASTER_KEY: "{{ADMIN_TOKEN}}"
+  STORE_MODEL_IN_DB: "True"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+accessUrl: https://litellm.{{DOMAIN}}
+dependencies:
+  - PostgreSQL
+  - Redis
+isCore: false

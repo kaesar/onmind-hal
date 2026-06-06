@@ -1,0 +1,35 @@
+name: OrcaRouter Lite
+description: Lightweight LLM router with multi-provider support and API key management
+commands:
+  install:
+    - docker pull ghcr.io/continuum-ai-corp/orcarouter-lite:latest
+  setup:
+    - mkdir -p ~/wsdata/orcarouter/data
+    - docker volume create orcarouter_data
+  run: |-
+    docker run \
+          -d \
+          --name orcarouter-lite \
+          --network {{NETWORK_NAME}} \
+          -p 8000:8000 \
+          -e DATABASE_URL=sqlite+aiosqlite:////data/orca.db \
+          -e CREDENTIAL_ENCRYPTION_KEY={{ADMIN_TOKEN}} \
+          -e API_KEY_PEPPER={{ADMIN_TOKEN}} \
+          -e OPENAI_API_KEY= \
+          -v orcarouter_data:/data \
+          ghcr.io/continuum-ai-corp/orcarouter-lite:latest
+variables:
+  - NETWORK_NAME
+  - ADMIN_TOKEN
+ports:
+  - "8000:8000"
+volumes:
+  - orcarouter_data:/data
+environment:
+  DATABASE_URL: "sqlite+aiosqlite:////data/orca.db"
+  CREDENTIAL_ENCRYPTION_KEY: "{{ADMIN_TOKEN}}"
+  API_KEY_PEPPER: "{{ADMIN_TOKEN}}"
+  OPENAI_API_KEY: ""
+accessUrl: https://orcarouter.{{DOMAIN}}/v1
+dependencies: []
+isCore: false

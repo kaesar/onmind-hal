@@ -1,0 +1,44 @@
+name: Infisical Secrets Manager
+description: Open-source secret management platform
+commands:
+  install:
+    - docker pull infisical/infisical:latest
+  setup:
+    - mkdir -p ~/wsdata/infisical/data
+    - docker volume create infisical_data
+  run: |-
+    docker run \
+          -d \
+          --name infisical \
+          --network {{NETWORK_NAME}} \
+          -p 8080:8080 \
+          -e ENCRYPTION_KEY={{ADMIN_TOKEN}} \
+          -e AUTH_SECRET={{ADMIN_TOKEN}} \
+          -e DB_CONNECTION_URI=postgresql://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/infisical \
+          -e REDIS_URL=redis://redis:6379 \
+          -e SITE_URL=https://infisical.{{DOMAIN}} \
+          -e PORT=8080 \
+          -e HOST=0.0.0.0 \
+          infisical/infisical:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - STORAGE_PASSWORD
+  - ADMIN_TOKEN
+ports:
+  - "8080:8080"
+volumes:
+  - infisical_data:/data
+environment:
+  ENCRYPTION_KEY: "{{ADMIN_TOKEN}}"
+  AUTH_SECRET: "{{ADMIN_TOKEN}}"
+  DB_CONNECTION_URI: "postgresql://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/infisical"
+  REDIS_URL: "redis://redis:6379"
+  SITE_URL: "https://infisical.{{DOMAIN}}"
+  PORT: "8080"
+  HOST: "0.0.0.0"
+accessUrl: https://infisical.{{DOMAIN}}
+dependencies:
+  - PostgreSQL
+  - Redis
+isCore: false

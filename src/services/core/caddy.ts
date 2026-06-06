@@ -120,11 +120,18 @@ export class CaddyService extends BaseService {
     const serviceProxyMap = {
       // Core services (always installed)
       [ServiceType.PORTAINER]: { subdomain: 'portainer', port: 9000, container: 'portainer' },
+      [ServiceType.DOCKHAND]: { subdomain: 'dockhand', port: 3000, container: 'dockhand' },
       [ServiceType.COPYPARTY]: { subdomain: 'files', port: 3923, container: 'copyparty' },
       
       // Optional services (in README order)
       [ServiceType.DUCKDB]: { subdomain: 'duckdb', port: 80, container: 'duckdb' },
-      [ServiceType.MINIO]: { subdomain: 'minio', port: 9001, container: 'minio' },
+      [ServiceType.POSTGRESQL]: null,
+      [ServiceType.REDIS]: null,
+      [ServiceType.MONGODB]: null,
+      [ServiceType.MARIADB]: null,
+      [ServiceType.SCYLLADB]: null,
+      [ServiceType.IGNITE]: null, // No web UI - JDBC/SQL only
+      [ServiceType.RUSTFS]: { subdomain: 'rustfs', port: 9001, container: 'rustfs' },
       [ServiceType.KAFKA]: null, // No web UI
       [ServiceType.RABBITMQ]: { subdomain: 'rabbitmq', port: 15672, container: 'rabbitmq' },
       [ServiceType.OLLAMA]: { subdomain: 'ollama', port: 11434, container: 'ollama' },
@@ -137,11 +144,11 @@ export class CaddyService extends BaseService {
       [ServiceType.AUTHELIA]: { subdomain: 'authelia', port: 9091, container: 'authelia' },
       [ServiceType.POCKETID]: { subdomain: 'auth', port: 80, container: 'pocketid' },
       [ServiceType.APISIX]: { subdomain: 'apisix', port: 9000, container: 'apisix-dashboard' },
+      [ServiceType.FLOCI]: { subdomain: 'floci', port: 4566, container: 'floci' },
       [ServiceType.LOCALSTACK]: { subdomain: 'localstack', port: 4566, container: 'localstack' },
       [ServiceType.K3D]: { subdomain: 'k3d', port: 6444, container: 'k3d' },
       [ServiceType.ONEDEV]: { subdomain: 'onedev', port: 6610, container: 'onedev' },
       [ServiceType.SEMAPHORE]: { subdomain: 'semaphore', port: 3002, container: 'semaphore' },
-      [ServiceType.BACKSTAGE]: { subdomain: 'backstage', port: 7007, container: 'backstage' },
       [ServiceType.LIQUIBASE]: { subdomain: 'liquibase', port: 8091, container: 'liquibase' },
       [ServiceType.SONARQUBE]: { subdomain: 'sonarqube', port: 9000, container: 'sonarqube' },
       [ServiceType.TRIVY]: { subdomain: 'trivy', port: 8080, container: 'trivy' },
@@ -151,10 +158,13 @@ export class CaddyService extends BaseService {
       [ServiceType.GRAFANA]: { subdomain: 'grafana', port: 3000, container: 'grafana' },
       [ServiceType.LOKI]: { subdomain: 'loki', port: 3100, container: 'loki' },
       [ServiceType.OPENSEARCH]: { subdomain: 'opensearch', port: 5601, container: 'opensearch-dashboards' },
+      [ServiceType.REDASH]: { subdomain: 'redash', port: 5000, container: 'redash-server' },
       [ServiceType.FLUENTBIT]: null, // No web UI
       [ServiceType.UPTIMEKUMA]: { subdomain: 'uptimekuma', port: 3003, container: 'uptimekuma' },
+      [ServiceType.DOZZLE]: { subdomain: 'dozzle', port: 8080, container: 'dozzle' },
       [ServiceType.REGISTRY]: { subdomain: 'registry', port: 5000, container: 'registry' },
       [ServiceType.NEXUS]: { subdomain: 'nexus', port: 8081, container: 'nexus' },
+      [ServiceType.INFISCAL]: { subdomain: 'infiscal', port: 8080, container: 'infiscal' },
       [ServiceType.VAULT]: { subdomain: 'vault', port: 8200, container: 'vault' },
       [ServiceType.VAULTWARDEN]: { subdomain: 'vaultwarden', port: 8222, container: 'vaultwarden' },
       [ServiceType.BACKVAULT]: { subdomain: 'backvault', port: 8080, container: 'backvault' },
@@ -166,25 +176,24 @@ export class CaddyService extends BaseService {
       [ServiceType.OUTLINE]: { subdomain: 'outline', port: 3000, container: 'outline' },
       [ServiceType.GRIST]: { subdomain: 'grist', port: 8484, container: 'grist' },
       [ServiceType.NOCODB]: { subdomain: 'nocodb', port: 8080, container: 'nocodb' },
+      [ServiceType.DIRECTUS]: { subdomain: 'directus', port: 8055, container: 'directus' },
       [ServiceType.TWENTYCRM]: { subdomain: 'crm', port: 3000, container: 'twentycrm' },
       [ServiceType.MEDUSAJS]: { subdomain: 'shop', port: 9000, container: 'medusajs' },
       [ServiceType.PLANE]: { subdomain: 'plane', port: 3000, container: 'plane-frontend' },
+      [ServiceType.HULY]: { subdomain: 'huly', port: 3000, container: 'huly' },
       [ServiceType.MATTERMOST]: { subdomain: 'mattermost', port: 8065, container: 'mattermost' },
       [ServiceType.CALCOM]: { subdomain: 'cal', port: 3000, container: 'calcom' },
       [ServiceType.JASPERREPORTS]: { subdomain: 'jasper', port: 8080, container: 'jasperreports' },
       [ServiceType.STIRLINGPDF]: { subdomain: 'pdf', port: 8080, container: 'stirlingpdf' },
       [ServiceType.LIBRETRANSLATE]: { subdomain: 'translate', port: 5000, container: 'libretranslate' },
-      [ServiceType.KURRIER]: { subdomain: 'kurrier', port: 3000, container: 'kurrier' },
-      
-      // Databases and others without web UI
-      [ServiceType.POSTGRESQL]: null,
-      [ServiceType.REDIS]: null,
-      [ServiceType.MONGODB]: null,
-      [ServiceType.MARIADB]: null,
-      [ServiceType.SCYLLADB]: null,
-      [ServiceType.IGNITE]: null, // No web UI - JDBC/SQL only
+      [ServiceType.ORCAROUTERLITE]: { subdomain: 'orcarouter', port: 8000, container: 'orcarouter-lite' },
+      [ServiceType.LITELLM]: { subdomain: 'litellm', port: 4000, container: 'litellm' },
+      [ServiceType.OPENCLAW]: { subdomain: 'openclaw', port: 18789, container: 'openclaw-gateway' },
+      [ServiceType.OPENJARVIS]: { subdomain: 'openjarvis', port: 8000, container: 'openjarvis' },
+      [ServiceType.FIRECRAWL]: { subdomain: 'firecrawl', port: 3002, container: 'firecrawl' },
       [ServiceType.MAILSERVER]: null,
-      [ServiceType.FRP]: null,
+      [ServiceType.KURRIER]: { subdomain: 'kurrier', port: 3000, container: 'kurrier' },
+      [ServiceType.ZROK]: { subdomain: 'zrok', port: 443, container: 'zrok-caddy' },
       [ServiceType.CLOUDFLARED]: null, // No web UI - managed via Cloudflare Dashboard
       [ServiceType.WETTY]: { subdomain: 'wetty', port: 3000, container: 'wetty' },
     };

@@ -69,11 +69,10 @@ describe('ServiceFactory', () => {
     const services = factory.createServices(config);
     
     // Should include all core services + selected optional services
-    expect(services).toHaveLength(5); // 3 core + 2 selected optional
+    expect(services).toHaveLength(4); // 2 core + 2 selected optional
     
     const serviceTypes = services.map(s => s.type);
     expect(serviceTypes).toContain(ServiceType.CADDY);
-    expect(serviceTypes).toContain(ServiceType.PORTAINER);
     expect(serviceTypes).toContain(ServiceType.COPYPARTY);
     expect(serviceTypes).toContain(ServiceType.N8N);
     expect(serviceTypes).toContain(ServiceType.POSTGRESQL);
@@ -83,7 +82,6 @@ describe('ServiceFactory', () => {
     const coreServices = factory.getCoreServices();
     expect(coreServices).toEqual([
       ServiceType.CADDY,
-      ServiceType.PORTAINER,
       ServiceType.COPYPARTY
     ]);
   });
@@ -115,7 +113,6 @@ describe('ServiceFactory', () => {
       ServiceType.K3D,
       ServiceType.ONEDEV,
       ServiceType.SEMAPHORE,
-      ServiceType.BACKSTAGE,
       ServiceType.LIQUIBASE,
       ServiceType.SONARQUBE,
       ServiceType.TRIVY,
@@ -125,8 +122,19 @@ describe('ServiceFactory', () => {
       ServiceType.GRAFANA,
       ServiceType.LOKI,
       ServiceType.OPENSEARCH,
+      ServiceType.REDASH,
       ServiceType.FLUENTBIT,
       ServiceType.UPTIMEKUMA,
+      ServiceType.DOZZLE,
+      ServiceType.HULY,
+      ServiceType.RUSTFS,
+      ServiceType.INFISCAL,
+      ServiceType.FLOCI,
+      ServiceType.LITELLM,
+      ServiceType.OPENCLAW,
+      ServiceType.OPENJARVIS,
+      ServiceType.FIRECRAWL,
+      ServiceType.DOCKHAND,
       ServiceType.REGISTRY,
       ServiceType.NEXUS,
       ServiceType.VAULT,
@@ -148,11 +156,14 @@ describe('ServiceFactory', () => {
       ServiceType.JASPERREPORTS,
       ServiceType.STIRLINGPDF,
       ServiceType.LIBRETRANSLATE,
+      ServiceType.DIRECTUS,
+      ServiceType.ORCAROUTERLITE,
       ServiceType.MAILSERVER,
       ServiceType.KURRIER,
-      ServiceType.FRP,
+      ServiceType.ZROK,
       ServiceType.CLOUDFLARED,
       ServiceType.WETTY,
+      ServiceType.PORTAINER,
     ]);
   });
 

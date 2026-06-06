@@ -1,0 +1,70 @@
+name: Directus CMS
+description: Open-source headless CMS and backend-as-a-service
+commands:
+  install:
+    - docker pull directus/directus:latest
+  setup:
+    - mkdir -p ~/wsdata/directus/uploads
+    - mkdir -p ~/wsdata/directus/extensions
+    - docker volume create directus_data
+  run: |-
+    docker run \
+          -d \
+          --name directus \
+          --network {{NETWORK_NAME}} \
+          -p 8055:8055 \
+          -e KEY={{ADMIN_TOKEN}} \
+          -e SECRET={{ADMIN_TOKEN}} \
+          -e ADMIN_EMAIL=admin@{{DOMAIN}} \
+          -e ADMIN_PASSWORD={{STORAGE_PASSWORD}} \
+          -e PUBLIC_URL=https://directus.{{DOMAIN}} \
+          -e DB_CLIENT=pg \
+          -e DB_HOST=postgresql \
+          -e DB_PORT=5432 \
+          -e DB_DATABASE=directus \
+          -e DB_USER=directus \
+          -e DB_PASSWORD={{STORAGE_PASSWORD}} \
+          -e CACHE_ENABLED=true \
+          -e CACHE_STORE=redis \
+          -e CACHE_REDIS=redis://redis:6379 \
+          -e STORAGE_LOCATIONS=local \
+          -e STORAGE_LOCAL_ROOT=/directus/uploads \
+          -e RATE_LIMITER_ENABLED=true \
+          -e RATE_LIMITER_STORE=redis \
+          -v directus_data:/directus/uploads \
+          -v directus_data:/directus/extensions \
+          directus/directus:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - STORAGE_PASSWORD
+  - ADMIN_TOKEN
+ports:
+  - "8055:8055"
+volumes:
+  - directus_data:/directus/uploads
+  - directus_data:/directus/extensions
+environment:
+  KEY: "{{ADMIN_TOKEN}}"
+  SECRET: "{{ADMIN_TOKEN}}"
+  ADMIN_EMAIL: "admin@{{DOMAIN}}"
+  ADMIN_PASSWORD: "{{STORAGE_PASSWORD}}"
+  PUBLIC_URL: "https://directus.{{DOMAIN}}"
+  DB_CLIENT: "pg"
+  DB_HOST: "postgresql"
+  DB_PORT: "5432"
+  DB_DATABASE: "directus"
+  DB_USER: "directus"
+  DB_PASSWORD: "{{STORAGE_PASSWORD}}"
+  CACHE_ENABLED: "true"
+  CACHE_STORE: "redis"
+  CACHE_REDIS: "redis://redis:6379"
+  STORAGE_LOCATIONS: "local"
+  STORAGE_LOCAL_ROOT: "/directus/uploads"
+  RATE_LIMITER_ENABLED: "true"
+  RATE_LIMITER_STORE: "redis"
+accessUrl: https://directus.{{DOMAIN}}
+dependencies:
+  - PostgreSQL
+  - Redis
+isCore: false

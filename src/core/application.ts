@@ -60,6 +60,9 @@ export class HomelabApplication {
       // Step 3: Install Docker if needed
       await this.installDocker();
 
+      // Step 3b: Configure Docker management UI (Dockhand/Portainer)
+      await this.configureDockerManagementUI();
+
       // Step 4: Configure firewall
       await this.configureFirewall();
 
@@ -154,6 +157,54 @@ export class HomelabApplication {
     } catch (error) {
       this.logger.error('❌ Docker installation failed');
       throw new ServiceInstallationError('Docker', error instanceof Error ? error.message : String(error));
+    }
+  }
+
+  /**
+   * Determine and configure Docker management UI (Dockhand vs Portainer)
+   * Dockhand is the default for Docker, Portainer for Podman or if explicitly chosen
+   */
+  private async configureDockerManagementUI(): Promise<void> {
+    if (!this.config || !this.distributionStrategy) {
+      return;
+    }
+
+    const containerRuntime = await ContainerRuntimeUtils.detectRuntime();
+    const isDocker = containerRuntime === 'docker';
+    const isPodman = containerRuntime === 'podman';
+
+    const hasDockhand = this.config.selectedServices.includes(ServiceType.DOCKHAND);
+    const hasPortainer = this.config.selectedServices.includes(ServiceType.PORTAINER);
+
+    // If neither is selected, apply defaults based on container runtime
+    if (!hasDockhand && !hasPortainer) {
+      if (isDocker) {
+        this.logger.info('🐳 Docker detected: Adding Dockhand (default Docker management UI)');
+        this.config.selectedServices.push(ServiceType.DOCKHAND);
+      } else if (isPodman) {
+        this.logger.info('🦭 Podman detected: Adding Portainer (default Podman management UI)');
+        this.config.selectedServices.push(ServiceType.PORTAINER);
+      }
+    } else if (hasDockhand && hasPortainer) {
+      // Mutually exclusive - keep only one based on runtime
+      this.logger.warn('⚠️ Both Dockhand and Portainer selected. Keeping only one based on container runtime.');
+      if (isDocker) {
+        this.config.selectedServices = this.config.selectedServices.filter(s => s !== ServiceType.PORTAINER);
+        this.logger.info('🐳 Docker detected: Keeping Dockhand, removing Portainer');
+      } else {
+        this.config.selectedServices = this.config.selectedServices.filter(s => s !== ServiceType.DOCKHAND);
+        this.logger.info('🦭 Podman detected: Keeping Portainer, removing Dockhand');
+      }
+    } else if (hasDockhand && isPodman) {
+      // User selected Dockhand but using Podman - switch to Portainer
+      this.logger.warn('⚠️ Dockhand requires Docker. Switching to Portainer for Podman.');
+      this.config.selectedServices = this.config.selectedServices.filter(s => s !== ServiceType.DOCKHAND);
+      if (!this.config.selectedServices.includes(ServiceType.PORTAINER)) {
+        this.config.selectedServices.push(ServiceType.PORTAINER);
+      }
+    } else if (hasPortainer && isDocker) {
+      // User explicitly chose Portainer for Docker - respect their choice
+      this.logger.info('🐳 Docker detected with Portainer (user choice respected)');
     }
   }
 
@@ -469,12 +520,13 @@ export class HomelabApplication {
       
       // Define web services list (used for both /etc/hosts and non-web services filtering)
       const webServices = ['copyparty', 'portainer', 'duckdb', 'n8n', 'kestra', 'keystonejs', 
-                          'minio', 'ollama', 'openwebui', 'opennotebooklm', 'authelia', 'keycloak', 'pocketid', 
-                          'rabbitmq', 'grafana', 'loki', 'trivy', 'sonarqube', 'nexus', 'vault',
-                          'vaultwarden', 'backvault', 'linkwarden', 'rapidoc', 'hoppscotch', 'locust', 'psitransfer', 'excalidraw', 
-                          'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'twentycrm', 'medusajs', 
-                          'plane', 'mattermost', 'calcom', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 'localstack', 
-                          'libretranslate', 'uptimekuma', 'k3d', 'semaphore', 'liquibase', 'backstage', 'apisix', 'opensearch', 'kurrier', 'wetty'];
+                           'ollama', 'openwebui', 'opennotebooklm', 'authelia', 'keycloak', 'pocketid', 
+                           'rabbitmq', 'grafana', 'loki', 'trivy', 'sonarqube', 'nexus', 'vault',
+                           'vaultwarden', 'backvault', 'linkwarden', 'rapidoc', 'hoppscotch', 'locust', 'psitransfer', 'excalidraw', 
+                           'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'twentycrm', 'medusajs', 
+                           'plane', 'mattermost', 'calcom', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 'localstack', 
+                           'libretranslate', 'uptimekuma', 'dozzle', 'k3d', 'semaphore', 'liquibase', 'apisix', 'opensearch', 'redash', 'kurrier', 'wetty',
+                           'huly', 'rustfs', 'infisical', 'floci', 'litellm', 'openclaw', 'openjarvis', 'firecrawl', 'directus', 'orcarouterlite', 'zrok'];
       
       if (needsHostsFile) {
         console.log('   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:');
@@ -491,7 +543,20 @@ export class HomelabApplication {
           'portainer': 'portainer',
           'jasperreports': 'jasper',
           'stirlingpdf': 'pdf',
-          'libretranslate': 'translate'
+          'libretranslate': 'translate',
+          'huly': 'huly',
+          'rustfs': 'rustfs',
+          'infisical': 'infisical',
+          'floci': 'floci',
+          'litellm': 'litellm',
+          'openclaw': 'openclaw',
+          'openjarvis': 'openjarvis',
+          'firecrawl': 'firecrawl',
+          'directus': 'directus',
+          'orcarouterlite': 'orcarouter',
+          'dozzle': 'dozzle',
+          'zrok': 'zrok',
+          'redash': 'redash'
         };
         
         for (const service of this.installedServices) {

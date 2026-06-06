@@ -146,9 +146,14 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Apache Ignite'
     },
     {
-      name: 'Minio - S3-compatible object storage',
-      value: ServiceType.MINIO,
-      short: 'Minio'
+      name: 'RustFS - High-performance S3-compatible distributed object storage',
+      value: ServiceType.RUSTFS,
+      short: 'RustFS'
+    },
+    {
+      name: 'OpenJarvis - AI assistant platform with Ollama backend',
+      value: ServiceType.OPENJARVIS,
+      short: 'OpenJarvis'
     },
     {
       name: 'Kafka - Distributed streaming platform (with KRaft)',
@@ -211,6 +216,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'APISIX'
     },
     {
+      name: 'Floci - LocalStack alternative - AWS service emulator for local development',
+      value: ServiceType.FLOCI,
+      short: 'Floci'
+    },
+    {
       name: 'LocalStack - Local AWS cloud stack',
       value: ServiceType.LOCALSTACK,
       short: 'LocalStack'
@@ -229,11 +239,6 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Semaphore UI - Modern UI for Ansible and shell automation',
       value: ServiceType.SEMAPHORE,
       short: 'Semaphore'
-    },
-    {
-      name: 'Backstage - Developer portal platform by Spotify (requires PostgreSQL)',
-      value: ServiceType.BACKSTAGE,
-      short: 'Backstage'
     },
     {
       name: 'Liquibase - Database schema change management',
@@ -281,6 +286,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'OpenSearch'
     },
     {
+      name: 'Redash - SQL query editor and visualization platform',
+      value: ServiceType.REDASH,
+      short: 'Redash'
+    },
+    {
       name: 'Fluent Bit - Lightweight log processor and forwarder',
       value: ServiceType.FLUENTBIT,
       short: 'Fluent Bit'
@@ -291,6 +301,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Uptime Kuma'
     },
     {
+      name: 'Dozzle - Lightweight Docker log viewer and monitor',
+      value: ServiceType.DOZZLE,
+      short: 'Dozzle'
+    },
+    {
       name: 'Registry - Private Docker container registry',
       value: ServiceType.REGISTRY,
       short: 'Registry'
@@ -299,6 +314,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Nexus Repository - Universal artifact repository manager',
       value: ServiceType.NEXUS,
       short: 'Nexus'
+    },
+    {
+      name: 'Infisical - Open-source secret management platform',
+      value: ServiceType.INFISCAL,
+      short: 'Infisical'
     },
     {
       name: 'Vault - Secrets and encryption management (HashiCorp)',
@@ -356,6 +376,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'NocoDB'
     },
     {
+      name: 'Directus - Open-source headless CMS and backend-as-a-service',
+      value: ServiceType.DIRECTUS,
+      short: 'Directus'
+    },
+    {
       name: 'TwentyCRM - Modern open-source CRM platform',
       value: ServiceType.TWENTYCRM,
       short: 'TwentyCRM'
@@ -369,6 +394,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Plane - Modern project management platform (like Jira)',
       value: ServiceType.PLANE,
       short: 'Plane'
+    },
+    {
+      name: 'Huly - All-in-one project management platform (Linear + Notion + GitHub alternative)',
+      value: ServiceType.HULY,
+      short: 'Huly'
     },
     {
       name: 'Mattermost - Open-source team collaboration platform (like Slack, requires PostgreSQL)',
@@ -396,6 +426,31 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'LibreTranslate'
     },
     {
+      name: 'OrcaRouter Lite - Lightweight LLM router with multi-provider support',
+      value: ServiceType.ORCAROUTERLITE,
+      short: 'OrcaRouter Lite'
+    },
+    {
+      name: 'LiteLLM - LLM proxy with unified API for 100+ LLMs',
+      value: ServiceType.LITELLM,
+      short: 'LiteLLM'
+    },
+    {
+      name: 'OpenClaw - AI agent gateway for Claude Code, OpenAI Codex and more',
+      value: ServiceType.OPENCLAW,
+      short: 'OpenClaw'
+    },
+    {
+      name: 'OpenJarvis - AI assistant platform with Ollama backend',
+      value: ServiceType.OPENJARVIS,
+      short: 'OpenJarvis'
+    },
+    {
+      name: 'Firecrawl - Open-source web scraping API with JavaScript rendering',
+      value: ServiceType.FIRECRAWL,
+      short: 'Firecrawl'
+    },
+    {
       name: 'Docker Mailserver - Full-featured mail server',
       value: ServiceType.MAILSERVER,
       short: 'Mailserver'
@@ -406,9 +461,9 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Kurrier'
     },
     {
-      name: 'FRP Client - Fast Reverse Proxy for secure tunneling (requires VPS with frps)',
-      value: ServiceType.FRP,
-      short: 'FRP'
+      name: 'Zrok - Zero-trust tunneling platform (NGROK alternative) with OpenZiti',
+      value: ServiceType.ZROK,
+      short: 'Zrok'
     },
     {
       name: 'Cloudflare Tunnel - Secure tunnel to expose services (requires Cloudflare account)',
@@ -419,6 +474,16 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Wetty - Web-based SSH terminal for secure host access',
       value: ServiceType.WETTY,
       short: 'Wetty'
+    },
+    {
+      name: 'Dockhand - Lightweight Docker management UI (default for Docker)',
+      value: ServiceType.DOCKHAND,
+      short: 'Dockhand'
+    },
+    {
+      name: 'Portainer - Docker container management interface',
+      value: ServiceType.PORTAINER,
+      short: 'Portainer'
     }
   ];
 
@@ -481,8 +546,8 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
     storagePassword = await promptForStoragePassword();
   }
 
-  // Core services are always included (no longer includes DuckDB)
-  const coreServices = [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY];
+  // Core services are always included (no longer includes DuckDB or Portainer)
+  const coreServices = [ServiceType.CADDY, ServiceType.COPYPARTY];
   const selectedServices = [...coreServices, ...optionalServices];
 
   return {

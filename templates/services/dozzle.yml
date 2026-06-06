@@ -1,0 +1,30 @@
+name: Dozzle
+description: Lightweight Docker log viewer and monitor
+commands:
+  install:
+    - docker pull amir20/dozzle:latest
+  setup:
+    - mkdir -p ~/wsdata/dozzle/data
+    - docker volume create dozzle_data
+  run: |-
+    docker run \
+          -d \
+          --name dozzle \
+          --network {{NETWORK_NAME}} \
+          -p 8080:8080 \
+          -v /var/run/docker.sock:/var/run/docker.sock:ro \
+          -v dozzle_data:/data \
+          amir20/dozzle:latest
+variables:
+  - NETWORK_NAME
+ports:
+  - "8080:8080"
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock:ro
+  - dozzle_data:/data
+environment:
+  DOZZLE_ADDR: ":8080"
+  DOZZLE_HOSTNAME: "{{DOMAIN}}"
+accessUrl: https://dozzle.{{DOMAIN}}
+dependencies: []
+isCore: false

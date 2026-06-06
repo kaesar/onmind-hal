@@ -1,0 +1,59 @@
+name: Huly Platform
+description: All-in-one project management platform (Linear + Notion + GitHub alternative)
+commands:
+  install:
+    - docker pull hcengineering/huly:latest
+  setup:
+    - mkdir -p ~/wsdata/huly/data
+    - docker volume create huly_data
+  run: |-
+    docker run \
+          -d \
+          --name huly \
+          --network {{NETWORK_NAME}} \
+          -p 3000:3000 \
+          -e HOST_ADDRESS={{DOMAIN}} \
+          -e SECURE=true \
+          -e HTTP_PORT=3000 \
+          -e HTTP_BIND=0.0.0.0 \
+          -e TITLE=Huly \
+          -e DEFAULT_LANGUAGE=en \
+          -e LAST_NAME_FIRST=true \
+          -e STORAGE_CONFIG=minio|minio?accessKey=minioadmin&secretKey=minioadmin \
+          -e STORAGE_PROVIDER_NAME=minio \
+          -e DB_URL=postgresql://postgres:postgres@postgresql:5432/huly \
+          -e REDIS_URL=redis://redis:6379 \
+          -e SECRET={{ADMIN_TOKEN}} \
+          -e COCKROACH_SECRET={{ADMIN_TOKEN}} \
+          -e REDPANDA_SECRET={{ADMIN_TOKEN}} \
+          -v huly_data:/data \
+          hcengineering/huly:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - ADMIN_TOKEN
+ports:
+  - "3000:3000"
+volumes:
+  - huly_data:/data
+environment:
+  HOST_ADDRESS: "{{DOMAIN}}"
+  SECURE: "true"
+  HTTP_PORT: "3000"
+  HTTP_BIND: "0.0.0.0"
+  TITLE: "Huly"
+  DEFAULT_LANGUAGE: "en"
+  LAST_NAME_FIRST: "true"
+  STORAGE_CONFIG: "minio|minio?accessKey=minioadmin&secretKey=minioadmin"
+  STORAGE_PROVIDER_NAME: "minio"
+  DB_URL: "postgresql://postgres:postgres@postgresql:5432/huly"
+  REDIS_URL: "redis://redis:6379"
+  SECRET: "{{ADMIN_TOKEN}}"
+  COCKROACH_SECRET: "{{ADMIN_TOKEN}}"
+  REDPANDA_SECRET: "{{ADMIN_TOKEN}}"
+accessUrl: https://huly.{{DOMAIN}}
+dependencies:
+  - PostgreSQL
+  - Redis
+  - Minio
+isCore: false

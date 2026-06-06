@@ -1,0 +1,50 @@
+name: OpenJarvis
+description: AI assistant platform with Ollama backend for local LLM inference
+commands:
+  install:
+    - docker pull openjarvis/openjarvis:latest
+    - docker pull ollama/ollama:latest
+  setup:
+    - mkdir -p ~/wsdata/openjarvis/data
+    - mkdir -p ~/wsdata/openjarvis/ollama
+    - docker volume create openjarvis_data
+    - docker volume create openjarvis_ollama_data
+  run: |-
+    docker run \
+          -d \
+          --name openjarvis-ollama \
+          --network {{NETWORK_NAME}} \
+          -p 11434:11434 \
+          -v openjarvis_ollama_data:/root/.ollama \
+          --restart=unless-stopped \
+          ollama/ollama:latest
+
+    docker run \
+          -d \
+          --name openjarvis \
+          --network {{NETWORK_NAME}} \
+          -p 8000:8000 \
+          -e OPENJARVIS_ENGINE_DEFAULT=ollama \
+          -e OPENJARVIS_OLLAMA_HOST=http://openjarvis-ollama:11434 \
+          -e OPENJARVIS_API_KEY={{ADMIN_TOKEN}} \
+          -v openjarvis_data:/root/.openjarvis \
+          --restart=unless-stopped \
+          openjarvis/openjarvis:latest \
+          serve --host 0.0.0.0 --port 8000
+variables:
+  - NETWORK_NAME
+  - ADMIN_TOKEN
+ports:
+  - "8000:8000"
+  - "11434:11434"
+volumes:
+  - openjarvis_data:/root/.openjarvis
+  - openjarvis_ollama_data:/root/.ollama
+environment:
+  OPENJARVIS_ENGINE_DEFAULT: "ollama"
+  OPENJARVIS_OLLAMA_HOST: "http://openjarvis-ollama:11434"
+  OPENJARVIS_API_KEY: "{{ADMIN_TOKEN}}"
+accessUrl: https://openjarvis.{{DOMAIN}}
+dependencies:
+  - Ollama
+isCore: false

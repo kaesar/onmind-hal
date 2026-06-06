@@ -1,0 +1,42 @@
+name: RustFS Object Storage
+description: High-performance S3-compatible distributed object storage
+commands:
+  install:
+    - docker pull rustfs/rustfs:latest
+  setup:
+    - mkdir -p ~/wsdata/rustfs/data
+    - docker volume create rustfs_data
+  run: |-
+    docker run \
+          -d \
+          --name rustfs \
+          --network {{NETWORK_NAME}} \
+          -p 9000:9000 \
+          -p 9001:9001 \
+          -e RUSTFS_ACCESS_KEY=rustfsadmin \
+          -e RUSTFS_SECRET_KEY=rustfsadmin \
+          -e RUSTFS_CONSOLE_ENABLE=true \
+          -e RUSTFS_SERVER_DOMAINS={{DOMAIN}} \
+          -e RUSTFS_ADDRESS=:9000 \
+          -e RUSTFS_CONSOLE_ADDRESS=:9001 \
+          -v rustfs_data:/data \
+          rustfs/rustfs:latest \
+          /data
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+ports:
+  - "9000:9000"
+  - "9001:9001"
+volumes:
+  - rustfs_data:/data
+environment:
+  RUSTFS_ACCESS_KEY: "rustfsadmin"
+  RUSTFS_SECRET_KEY: "rustfsadmin"
+  RUSTFS_CONSOLE_ENABLE: "true"
+  RUSTFS_SERVER_DOMAINS: "{{DOMAIN}}"
+  RUSTFS_ADDRESS: ":9000"
+  RUSTFS_CONSOLE_ADDRESS: ":9001"
+accessUrl: https://rustfs.{{DOMAIN}}
+dependencies: []
+isCore: false

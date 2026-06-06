@@ -154,9 +154,21 @@ tests/                      # Test suite
 
 ## Adding New Services
 
-**Core vs. Optional Services**: Consider when defining a service, the third parameter in the `BaseService` constructor indicates if it's a core service (always installed) or an optional one. Core services are automatically included in every setup, while optional services are presented to the user for selection during the interactive prompts.
+**Core vs. Optional Services**: Consider when defining a service, the third parameter in the `BaseService` constructor indicates if it's a core service (always installed) or an optional one.
 
-To add a new service like **MongoDB**, follow these steps...
+Core services are automatically included in every setup, while optional services are presented to the user for selection during the interactive prompts. It's good to consider some aspects or steps:
+
+- Include ServiceType Enum for the new service
+- Create an implementation file for the new service
+- Register the new service in `factory.ts`
+- Create template in `.yml` (YAML)
+- Update CLI prompts in `interface.ts`
+- Update Cadddy configuration
+- Add validation if need it
+- Consider include new test
+- Check `README.md` to update documentation
+
+For example, to add a new service like **MongoDB**, follow these steps...
 
 ### 1. Define Service Type
 
@@ -356,7 +368,7 @@ If you need to remove all HAL services and start fresh:
 
 ```bash
 # Stop and remove all HAL containers
-docker ps -a --filter "name=caddy|portainer|copyparty|postgresql|redis|mongodb|mariadb|minio|kafka|rabbitmq|ollama|n8n|kestra|authelia|localstack|onedev|sonarqube|trivy|rapidoc|grafana|loki|fluentbit|registry|nexus|vault|psitransfer|excalidraw|kroki|outline|grist|nocodb|mailserver|cockpit" --format "{{.Names}}" | xargs -r docker rm -f
+docker ps -a --filter "name=caddy|portainer|copyparty|postgresql|redis|mongodb|mariadb|minio|kafka|rabbitmq|ollama|n8n|kestra|authelia|localstack|onedev|sonarqube|trivy|rapidoc|grafana|loki|fluentbit|registry|nexus|vault|psitransfer|excalidraw|kroki|outline|grist|nocodb|mailserver" --format "{{.Names}}" | xargs -r docker rm -f
 
 # Remove HAL network
 docker network rm homelab-network 2>/dev/null || true
@@ -410,7 +422,7 @@ bun run start
 ```
 
 ## Exposing HAL to the Internet
-
+<!--
 ### Using FRP (Fast Reverse Proxy)
 
 FRP allows you to expose your local HAL services to the internet through a VPS with a public IP. This is useful for:
@@ -604,10 +616,11 @@ docker restart caddy
    ```bash
    sudo journalctl -u frps -f
    ```
-
+-->
 ### Using Cloudflare Tunnel (Recommended for Beginners)
 
-Cloudflare Tunnel is easier to set up than FRP and doesn't require a VPS. It's perfect for:
+Cloudflare Tunnel is easier to set up and doesn't require a VPS. It's perfect for:
+
 - Exposing services without a public IP
 - No port forwarding configuration
 - Automatic SSL/TLS certificates
@@ -1010,8 +1023,8 @@ docker restart caddy portainer
 
 **Client can't connect to server:**
 ```bash
-# Check FRP client logs
-docker logs frp
+# Check tunnel client logs
+docker logs cloudflared
 
 # Verify VPS firewall allows port 7000
 sudo ufw status

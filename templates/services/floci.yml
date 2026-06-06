@@ -1,0 +1,36 @@
+name: Floci AWS Emulator
+description: LocalStack alternative - AWS service emulator for local development
+commands:
+  install:
+    - docker pull floci/floci:latest
+  setup:
+    - mkdir -p ~/wsdata/floci/data
+    - docker volume create floci_data
+  run: |-
+    docker run \
+          -d \
+          --name floci \
+          --network {{NETWORK_NAME}} \
+          -p 4566:4566 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v floci_data:/app/data \
+          -e FLOCI_HOSTNAME=floci \
+          -e FLOCI_STORAGE_MODE=persistent \
+          -e FLOCI_STORAGE_PERSISTENT_PATH=/app/data \
+          -e FLOCI_SERVICES_DOCKER_NETWORK={{NETWORK_NAME}} \
+          floci/floci:latest
+variables:
+  - NETWORK_NAME
+ports:
+  - "4566:4566"
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock
+  - floci_data:/app/data
+environment:
+  FLOCI_HOSTNAME: "floci"
+  FLOCI_STORAGE_MODE: "persistent"
+  FLOCI_STORAGE_PERSISTENT_PATH: "/app/data"
+  FLOCI_SERVICES_DOCKER_NETWORK: "{{NETWORK_NAME}}"
+accessUrl: http://floci.{{DOMAIN}}:4566
+dependencies: []
+isCore: false
