@@ -436,9 +436,19 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'LiteLLM'
     },
     {
+      name: 'AnythingLLM - Multi-user AI platform with RAG, Agents, and local LLM support',
+      value: ServiceType.ANYTHINGLLM,
+      short: 'AnythingLLM'
+    },
+    {
       name: 'OpenClaw - AI agent gateway for Claude Code, OpenAI Codex and more',
       value: ServiceType.OPENCLAW,
       short: 'OpenClaw'
+    },
+    {
+      name: 'OpenHuman - Open-source AI agent platform with Rust core',
+      value: ServiceType.OPENHUMAN,
+      short: 'OpenHuman'
     },
     {
       name: 'OpenJarvis - AI assistant platform with Ollama backend',
@@ -484,6 +494,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Portainer - Docker container management interface',
       value: ServiceType.PORTAINER,
       short: 'Portainer'
+    },
+    {
+      name: 'RustDesk Server - Open-source remote desktop server',
+      value: ServiceType.RUSTDESK,
+      short: 'RustDesk'
     }
   ];
 

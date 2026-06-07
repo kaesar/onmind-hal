@@ -76,12 +76,16 @@ import { RustFSService } from './optional/rustfs.js';
 import { InfisicalService } from './optional/infisical.js';
 import { FlociService } from './optional/floci.js';
 import { LiteLLMService } from './optional/litellm.js';
+import { AnythingLLMService } from './optional/anythingllm.js';
 import { OpenClawService } from './optional/openclaw.js';
+import { OpenHumanService } from './optional/openhuman.js';
 import { FirecrawlService } from './optional/firecrawl.js';
 import { DirectusService } from './optional/directus.js';
 import { OrcaRouterLiteService } from './optional/orcarouter-lite.js';
 import { DockhandService } from './optional/dockhand.js';
 import { ZrokService } from './optional/zrok.js';
+import { OpenHumanService } from './optional/openhuman.js';
+import { RustDeskService } from './optional/rustdesk.js';
 
 /**
  * Service factory for creating service instances based on configuration
@@ -325,8 +329,14 @@ export class ServiceFactory {
       case ServiceType.LITELLM:
         service = new LiteLLMService(config, this.templateEngine);
         break;
+      case ServiceType.ANYTHINGLLM:
+        service = new AnythingLLMService(config, this.templateEngine);
+        break;
       case ServiceType.OPENCLAW:
         service = new OpenClawService(config, this.templateEngine);
+        break;
+      case ServiceType.OPENHUMAN:
+        service = new OpenHumanService(config, this.templateEngine);
         break;
       case ServiceType.FIRECRAWL:
         service = new FirecrawlService(config, this.templateEngine);
@@ -342,6 +352,9 @@ export class ServiceFactory {
         break;
       case ServiceType.ZROK:
         service = new ZrokService(config, this.templateEngine);
+        break;
+      case ServiceType.RUSTDESK:
+        service = new RustDeskService(config, this.templateEngine);
         break;
       default:
         throw new ServiceInstallationError(
@@ -513,7 +526,9 @@ export class ServiceFactory {
       ServiceType.INFISCAL,
       ServiceType.FLOCI,
       ServiceType.LITELLM,
+      ServiceType.ANYTHINGLLM,
       ServiceType.OPENCLAW,
+      ServiceType.OPENHUMAN,
       ServiceType.FIRECRAWL,
       ServiceType.DOCKHAND,
       ServiceType.REGISTRY,
@@ -544,6 +559,7 @@ export class ServiceFactory {
       ServiceType.ZROK,
       ServiceType.CLOUDFLARED,
       ServiceType.WETTY,
+      ServiceType.RUSTDESK,
       ServiceType.PORTAINER,
     ];
   }
@@ -672,9 +688,12 @@ export class ServiceFactory {
       'Infisical': ServiceType.INFISCAL,
       'Floci': ServiceType.FLOCI,
       'LiteLLM': ServiceType.LITELLM,
+      'AnythingLLM': ServiceType.ANYTHINGLLM,
       'OpenClaw': ServiceType.OPENCLAW,
+      'OpenHuman': ServiceType.OPENHUMAN,
       'Firecrawl': ServiceType.FIRECRAWL,
       'Dockhand': ServiceType.DOCKHAND,
+      'RustDesk': ServiceType.RUSTDESK,
       'Portainer': ServiceType.PORTAINER,
     };
 

@@ -1,0 +1,54 @@
+name: AnythingLLM
+description: Multi-user AI platform with RAG, Agents, and local LLM support
+commands:
+  install:
+    - docker pull mintplexlabs/anythingllm:latest
+  setup:
+    - mkdir -p ~/wsdata/anythingllm/storage
+    - mkdir -p ~/wsdata/anythingllm/env
+    - docker volume create anythingllm_storage
+  run: |-
+    docker run \
+          -d \
+          --name anythingllm \
+          --network {{NETWORK_NAME}} \
+          -p 3001:3001 \
+          --cap-add SYS_ADMIN \
+          -e STORAGE_DIR=/app/server/storage \
+          -e JWT_SECRET={{ADMIN_TOKEN}} \
+          -e LLM_PROVIDER=ollama \
+          -e OLLAMA_BASE_PATH=http://ollama:11434 \
+          -e OLLAMA_MODEL_PREF=llama2 \
+          -e OLLAMA_MODEL_TOKEN_LIMIT=4096 \
+          -e EMBEDDING_ENGINE=ollama \
+          -e EMBEDDING_BASE_PATH=http://ollama:11434 \
+          -e EMBEDDING_MODEL_PREF=nomic-embed-text:latest \
+          -e VECTOR_DB=lancedb \
+          -e WHISPER_PROVIDER=local \
+          -e TTS_PROVIDER=native \
+          -v anythingllm_storage:/app/server/storage \
+          mintplexlabs/anythingllm:latest
+variables:
+  - NETWORK_NAME
+  - ADMIN_TOKEN
+ports:
+  - "3001:3001"
+volumes:
+  - anythingllm_storage:/app/server/storage
+environment:
+  STORAGE_DIR: "/app/server/storage"
+  JWT_SECRET: "{{ADMIN_TOKEN}}"
+  LLM_PROVIDER: "ollama"
+  OLLAMA_BASE_PATH: "http://ollama:11434"
+  OLLAMA_MODEL_PREF: "llama2"
+  OLLAMA_MODEL_TOKEN_LIMIT: "4096"
+  EMBEDDING_ENGINE: "ollama"
+  EMBEDDING_BASE_PATH: "http://ollama:11434"
+  EMBEDDING_MODEL_PREF: "nomic-embed-text:latest"
+  VECTOR_DB: "lancedb"
+  WHISPER_PROVIDER: "local"
+  TTS_PROVIDER: "native"
+accessUrl: https://anythingllm.{{DOMAIN}}
+dependencies:
+  - Ollama
+isCore: false

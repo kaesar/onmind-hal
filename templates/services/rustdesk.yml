@@ -1,0 +1,45 @@
+name: RustDesk Server
+description: Open-source remote desktop server (hbbs + hbbr)
+commands:
+  install:
+    - docker pull rustdesk/rustdesk-server:latest
+  setup:
+    - mkdir -p ~/wsdata/rustdesk/data
+    - docker volume create rustdesk_data
+  run: |-
+    docker run \
+          -d \
+          --name rustdesk-hbbs \
+          --network {{NETWORK_NAME}} \
+          --restart=unless-stopped \
+          -v rustdesk_data:/data \
+          --network=host \
+          rustdesk/rustdesk-server:latest \
+          hbbs -r {{DOMAIN}}:21117
+
+    docker run \
+          -d \
+          --name rustdesk-hbbr \
+          --network {{NETWORK_NAME}} \
+          --restart=unless-stopped \
+          -v rustdesk_data:/data \
+          --network=host \
+          rustdesk/rustdesk-server:latest \
+          hbbr
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+ports:
+  - "21115:21115"
+  - "21116:21116"
+  - "21116:21116/udp"
+  - "21117:21117"
+  - "21118:21118"
+  - "21119:21119"
+volumes:
+  - rustdesk_data:/data
+environment:
+  RELAY: "{{DOMAIN}}:21117"
+accessUrl: https://rustdesk.{{DOMAIN}}
+dependencies: []
+isCore: false

@@ -188,7 +188,9 @@ export class CaddyService extends BaseService {
       [ServiceType.LIBRETRANSLATE]: { subdomain: 'translate', port: 5000, container: 'libretranslate' },
       [ServiceType.ORCAROUTERLITE]: { subdomain: 'orcarouter', port: 8000, container: 'orcarouter-lite' },
       [ServiceType.LITELLM]: { subdomain: 'litellm', port: 4000, container: 'litellm' },
+      [ServiceType.ANYTHINGLLM]: { subdomain: 'anythingllm', port: 3001, container: 'anythingllm' },
       [ServiceType.OPENCLAW]: { subdomain: 'openclaw', port: 18789, container: 'openclaw-gateway' },
+      [ServiceType.OPENHUMAN]: { subdomain: 'openhuman', port: 7788, container: 'openhuman-core' },
       [ServiceType.OPENJARVIS]: { subdomain: 'openjarvis', port: 8000, container: 'openjarvis' },
       [ServiceType.FIRECRAWL]: { subdomain: 'firecrawl', port: 3002, container: 'firecrawl' },
       [ServiceType.MAILSERVER]: null,
@@ -196,6 +198,7 @@ export class CaddyService extends BaseService {
       [ServiceType.ZROK]: { subdomain: 'zrok', port: 443, container: 'zrok-caddy' },
       [ServiceType.CLOUDFLARED]: null, // No web UI - managed via Cloudflare Dashboard
       [ServiceType.WETTY]: { subdomain: 'wetty', port: 3000, container: 'wetty' },
+      [ServiceType.RUSTDESK]: { subdomain: 'rustdesk', port: 21115, container: 'rustdesk-hbbs' },
     };
 
     return this.config.selectedServices

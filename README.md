@@ -90,14 +90,17 @@
 63. **LibreTranslate**: Free and open source machine translation API
 64. **OrcaRouter-Lite**: Lightweight LLM router with multi-provider support
 65. **LiteLLM**: LLM proxy with unified API for 100+ LLMs
-66. **OpenClaw**: AI agent gateway for Claude Code, OpenAI Codex and more
-67. **OpenJarvis**: AI assistant platform with Ollama backend
-68. **Firecrawl**: Open-source web scraping API with JavaScript rendering
-68. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
-69. **Kurrier**: Self-hosted email marketing and newsletter platform
-70. **Zrok**: Zero-trust tunneling platform (NGROK alternative) with OpenZiti
-71. **Cloudflare Tunnel**: Secure tunnel to expose services without opening ports - ⚠️ *Requires Cloudflare account and manual setup*
-72. **Wetty**: Web-based SSH terminal for secure host access
+66. **AnythingLLM**: Multi-user AI platform with RAG, Agents, and local LLM support
+67. **OpenClaw**: AI agent gateway for Claude Code, OpenAI Codex and more
+68. **OpenHuman**: Open-source AI agent platform with Rust core
+69. **OpenJarvis**: AI assistant platform with Ollama backend
+70. **Firecrawl**: Open-source web scraping API with JavaScript rendering
+71. **Docker-Mailserver**: Full-featured mail server (SMTP, IMAP, antispam, antivirus)
+72. **Kurrier**: Self-hosted email marketing and newsletter platform
+73. **Zrok**: Zero-trust tunneling platform (NGROK alternative) with OpenZiti
+74. **Cloudflare Tunnel**: Secure tunnel to expose services without opening ports - ⚠️ *Requires Cloudflare account and manual setup*
+75. **Wetty**: Web-based SSH terminal for secure host access
+76. **RustDesk Server**: Open-source remote desktop server
 
 > *Perhaps, I will consider includes in a future*: Jitsi, DocuSeal, FRP, Minio, Backstage, Beszel, Koffan
 

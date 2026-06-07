@@ -88,14 +88,17 @@ export enum ServiceType {
   DOZZLE = 'dozzle',
   HULY = 'huly',
   RUSTFS = 'rustfs',
-  INFISCAL = 'infisical',
+  INFISCAL = 'infiscal',
   FLOCI = 'floci',
   LITELLM = 'litellm',
+  ANYTHINGLLM = 'anythingllm',
   OPENCLAW = 'openclaw',
+  OPENHUMAN = 'openhuman',
   FIRECRAWL = 'firecrawl',
   DIRECTUS = 'directus',
   ORCAROUTERLITE = 'orcarouterlite',
   DOCKHAND = 'dockhand',
+  RUSTDESK = 'rustdesk',
 }
 
 // Configuration interface

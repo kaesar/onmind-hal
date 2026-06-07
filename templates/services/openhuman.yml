@@ -1,0 +1,42 @@
+name: OpenHuman
+description: Open-source AI agent platform with Rust core
+commands:
+  install:
+    - docker pull ghcr.io/tinyhumansai/openhuman-core:latest
+  setup:
+    - mkdir -p ~/wsdata/openhuman/workspace
+    - docker volume create openhuman_workspace
+  run: |-
+    docker run \
+          -d \
+          --name openhuman-core \
+          --network {{NETWORK_NAME}} \
+          -p 7788:7788 \
+          -e OPENHUMAN_CORE_TOKEN={{ADMIN_TOKEN}} \
+          -e BACKEND_URL=https://api.tinyhumans.ai \
+          -e OPENHUMAN_APP_ENV=production \
+          -e OPENHUMAN_CORE_HOST=0.0.0.0 \
+          -e OPENHUMAN_CORE_PORT=7788 \
+          -e OPENHUMAN_WORKSPACE=/home/openhuman/.openhuman \
+          -e RUST_LOG=info \
+          -v openhuman_workspace:/home/openhuman/.openhuman \
+          --restart=unless-stopped \
+          ghcr.io/tinyhumansai/openhuman-core:latest
+variables:
+  - NETWORK_NAME
+  - ADMIN_TOKEN
+ports:
+  - "7788:7788"
+volumes:
+  - openhuman_workspace:/home/openhuman/.openhuman
+environment:
+  OPENHUMAN_CORE_TOKEN: "{{ADMIN_TOKEN}}"
+  BACKEND_URL: "https://api.tinyhumans.ai"
+  OPENHUMAN_APP_ENV: "production"
+  OPENHUMAN_CORE_HOST: "0.0.0.0"
+  OPENHUMAN_CORE_PORT: "7788"
+  OPENHUMAN_WORKSPACE: "/home/openhuman/.openhuman"
+  RUST_LOG: "info"
+accessUrl: https://openhuman.{{DOMAIN}}
+dependencies: []
+isCore: false
