@@ -222,14 +222,19 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Floci'
     },
     {
-      name: 'LocalStack - Local AWS cloud stack',
-      value: ServiceType.LOCALSTACK,
-      short: 'LocalStack'
-    },
-    {
       name: 'k3d - Lightweight Kubernetes in Docker',
       value: ServiceType.K3D,
       short: 'k3d'
+    },
+    {
+      name: 'Code Server - Web-based VS Code IDE (code-server)',
+      value: ServiceType.CODESERVER,
+      short: 'Code Server'
+    },
+    {
+      name: 'JupyterLab - Web-based interactive development environment for notebooks and code',
+      value: ServiceType.JUPYTERLAB,
+      short: 'JupyterLab'
     },
     {
       name: 'OneDev - Self-hosted Git server with CI/CD',
@@ -265,11 +270,6 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Hoppscotch - Open-source API development ecosystem (Postman alternative)',
       value: ServiceType.HOPPSCOTCH,
       short: 'Hoppscotch'
-    },
-    {
-      name: 'Locust - Open source load testing tool (K6/JMeter alternative)',
-      value: ServiceType.LOCUST,
-      short: 'Locust'
     },
     {
       name: 'K6 OSS - Open-source load testing tool (Grafana)',
@@ -345,11 +345,6 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Vaultwarden - Self-hosted Bitwarden-compatible password manager',
       value: ServiceType.VAULTWARDEN,
       short: 'Vaultwarden'
-    },
-    {
-      name: 'BackVault - Self-hosted backup solution for Vaultwarden/Bitwarden',
-      value: ServiceType.BACKVAULT,
-      short: 'BackVault'
     },
     {
       name: 'Linkwarden - Self-hosted bookmark manager (requires PostgreSQL)',

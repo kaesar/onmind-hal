@@ -31,11 +31,14 @@ import { PocketIDService } from './optional/pocketid.js';
 import { ApisixService } from './optional/apisix.js';
 import { LocalStackService } from './optional/localstack.js';
 import { K3dService } from './optional/k3d.js';
+import { CodeServerService } from './optional/codeserver.js';
+import { JupyterLabService } from './optional/jupyterlab.js';
 import { OneDevService } from './optional/onedev.js';
 import { SemaphoreService } from './optional/semaphore.js';
 import { LiquibaseService } from './optional/liquibase.js';
 import { SonarQubeService } from './optional/sonarqube.js';
 import { TrivyService } from './optional/trivy.js';
+import { KarateService } from './optional/karate.js';
 import { RapiDocService } from './optional/rapidoc.js';
 import { HoppscotchService } from './optional/hoppscotch.js';
 import { LocustService } from './optional/locust.js';
@@ -51,7 +54,6 @@ import { NexusService } from './optional/nexus.js';
 import { VaultService } from './optional/vault.js';
 import { ConsulService } from './optional/consul.js';
 import { VaultwardenService } from './optional/vaultwarden.js';
-import { BackVaultService } from './optional/backvault.js';
 import { LinkwardenService } from './optional/linkwarden.js';
 import { PsiTransferService } from './optional/psitransfer.js';
 import { FilestashService } from './optional/filestash.js';
@@ -198,6 +200,12 @@ export class ServiceFactory {
       case ServiceType.K3D:
         service = new K3dService(config, this.templateEngine);
         break;
+      case ServiceType.CODESERVER:
+        service = new CodeServerService(config, this.templateEngine);
+        break;
+      case ServiceType.JUPYTERLAB:
+        service = new JupyterLabService(config, this.templateEngine);
+        break;
       case ServiceType.ONEDEV:
         service = new OneDevService(config, this.templateEngine);
         break;
@@ -212,6 +220,9 @@ export class ServiceFactory {
         break;
       case ServiceType.TRIVY:
         service = new TrivyService(config, this.templateEngine);
+        break;
+      case ServiceType.KARATE:
+        service = new KarateService(config, this.templateEngine);
         break;
       case ServiceType.RAPIDOC:
         service = new RapiDocService(config, this.templateEngine);
@@ -257,9 +268,6 @@ export class ServiceFactory {
         break;
       case ServiceType.VAULTWARDEN:
         service = new VaultwardenService(config, this.templateEngine);
-        break;
-      case ServiceType.BACKVAULT:
-        service = new BackVaultService(config, this.templateEngine);
         break;
       case ServiceType.LINKWARDEN:
         service = new LinkwardenService(config, this.templateEngine);
@@ -527,16 +535,17 @@ export class ServiceFactory {
       ServiceType.AUTHELIA,
       ServiceType.POCKETID,
       ServiceType.APISIX,
-      ServiceType.LOCALSTACK,
       ServiceType.K3D,
+      ServiceType.CODESERVER,
+      ServiceType.JUPYTERLAB,
       ServiceType.ONEDEV,
       ServiceType.SEMAPHORE,
       ServiceType.LIQUIBASE,
       ServiceType.SONARQUBE,
       ServiceType.TRIVY,
+      ServiceType.KARATE,
       ServiceType.RAPIDOC,
       ServiceType.HOPPSCOTCH,
-      ServiceType.LOCUST,
       ServiceType.K6,
       ServiceType.GRAFANA,
       ServiceType.LOKI,
@@ -563,7 +572,6 @@ export class ServiceFactory {
       ServiceType.VAULT,
       ServiceType.CONSUL,
       ServiceType.VAULTWARDEN,
-      ServiceType.BACKVAULT,
       ServiceType.LINKWARDEN,
       ServiceType.PSITRANSFER,
       ServiceType.FILESTASH,
@@ -668,16 +676,17 @@ export class ServiceFactory {
       'Authelia': ServiceType.AUTHELIA,
       'PocketID': ServiceType.POCKETID,
       'Apache APISIX': ServiceType.APISIX,
-      'LocalStack': ServiceType.LOCALSTACK,
       'k3d': ServiceType.K3D,
+      'Code Server': ServiceType.CODESERVER,
+      'JupyterLab': ServiceType.JUPYTERLAB,
       'OneDev': ServiceType.ONEDEV,
       'Semaphore UI': ServiceType.SEMAPHORE,
       'Liquibase': ServiceType.LIQUIBASE,
       'SonarQube': ServiceType.SONARQUBE,
       'Trivy': ServiceType.TRIVY,
+      'Karate': ServiceType.KARATE,
       'RapiDoc': ServiceType.RAPIDOC,
       'Hoppscotch': ServiceType.HOPPSCOTCH,
-      'Locust': ServiceType.LOCUST,
       'K6': ServiceType.K6,
       'Grafana': ServiceType.GRAFANA,
       'Loki': ServiceType.LOKI,
@@ -690,7 +699,6 @@ export class ServiceFactory {
       'Vault': ServiceType.VAULT,
       'Consul': ServiceType.CONSUL,
       'Vaultwarden': ServiceType.VAULTWARDEN,
-      'BackVault': ServiceType.BACKVAULT,
       'Linkwarden': ServiceType.LINKWARDEN,
       'PsiTransfer': ServiceType.PSITRANSFER,
       'Filestash': ServiceType.FILESTASH,

@@ -12,7 +12,7 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 3101:3000 \
           -v linkwarden_data:/data/data \
-          -e DATABASE_URL=postgresql://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/linkwarden \
+          -e DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/linkwarden \
           -e NEXTAUTH_SECRET={{STORAGE_PASSWORD}} \
           -e NEXTAUTH_URL=https://linkwarden.{{DOMAIN}} \
           --restart unless-stopped \

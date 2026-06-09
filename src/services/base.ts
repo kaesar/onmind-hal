@@ -3,6 +3,7 @@ import { ServiceInstallationError } from '../utils/errors.js';
 import { TemplateEngine } from '../templates/engine.js';
 import { ContainerRuntimeUtils } from '../utils/container.js';
 import { $ } from 'bun';
+import { join } from 'path';
 
 /**
  * Abstract base class for all HomeLab services
@@ -62,7 +63,9 @@ export abstract class BaseService implements Service {
       STORAGE_PASSWORD: this.config.storagePassword || '',
       ADMIN_TOKEN: this.generateAdminToken(),
       CONFIG_PATH: this.config.configPath,
-      DATA_PATH: this.config.dataPath
+      DATA_PATH: this.config.dataPath,
+      MAIL_USER: `admin@${this.config.domain}`,
+      MAIL_PASSWORD: this.config.storagePassword || ''
     };
   }
 
@@ -263,7 +266,7 @@ export abstract class BaseService implements Service {
       console.log(`Configuring ${this.name}...`);
       
       // Generate configuration files if needed
-      await this.generateConfigFiles();
+      await this.generateConfigFilesWithRetry();
       
       // Execute run command to start the service
       if (this.serviceTemplate.commands?.run) {
@@ -445,6 +448,39 @@ export abstract class BaseService implements Service {
       }
     } catch (error) {
       // Silently continue if disk space check fails
+    }
+  }
+
+  /**
+   * Generate config files with automatic EACCES recovery.
+   * If permission denied, attempts sudo chown and retries once.
+   */
+  private async generateConfigFilesWithRetry(): Promise<void> {
+    try {
+      await this.generateConfigFiles();
+    } catch (err: any) {
+      const isEACCES = err?.message?.includes('EACCES') || err?.cause?.code === 'EACCES';
+      if (!isEACCES) throw err;
+
+      console.log(`⚠️  Permission denied writing config files for ${this.name}`);
+      console.log('🔧 Attempting to fix directory permissions...');
+      try {
+        const homeDir = process.env.HOME || process.env.USERPROFILE || '~';
+        const dirs = [
+          join(homeDir, this.config.dataPath),
+          join(homeDir, this.config.configPath),
+        ];
+        const user = process.env.USER || 'unknown';
+        for (const dir of [...new Set(dirs)]) {
+          await $`sudo chown -R ${user}:${user} ${dir}`.quiet();
+        }
+        console.log('✅ Permissions fixed, retrying...');
+        await this.generateConfigFiles();
+      } catch (sudoErr) {
+        console.log('❌ Failed to fix permissions automatically');
+        console.log(`💡 Try manually: sudo chown -R $USER:$USER ~/${this.config.dataPath} ~/${this.config.configPath}`);
+        throw err;
+      }
     }
   }
 

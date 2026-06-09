@@ -14,7 +14,7 @@ commands:
           -p 8096:8080 \
           -e ENCRYPTION_KEY={{ADMIN_TOKEN}} \
           -e AUTH_SECRET={{ADMIN_TOKEN}} \
-          -e DB_CONNECTION_URI=postgresql://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/infisical \
+          -e DB_CONNECTION_URI=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/infisical \
           -e REDIS_URL=redis://redis:6379 \
           -e SITE_URL=https://infisical.{{DOMAIN}} \
           -e PORT=8080 \
@@ -32,7 +32,7 @@ volumes:
 environment:
   ENCRYPTION_KEY: "{{ADMIN_TOKEN}}"
   AUTH_SECRET: "{{ADMIN_TOKEN}}"
-  DB_CONNECTION_URI: "postgresql://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/infisical"
+  DB_CONNECTION_URI: "postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/infisical"
   REDIS_URL: "redis://redis:6379"
   SITE_URL: "https://infisical.{{DOMAIN}}"
   PORT: "8080"

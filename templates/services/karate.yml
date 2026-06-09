@@ -1,0 +1,20 @@
+name: Karate
+description: API, UI & performance test automation framework (can also be used as standalone JAR)
+commands:
+  install:
+    - docker pull karatelabs/karate-chrome:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/karate/tests
+    - mkdir -p ~/{{DATA_PATH}}/karate/reports
+  run: |-
+    docker run \
+          -d \
+          --name karate \
+          --network {{NETWORK_NAME}} \
+          -p 5901:5900 \
+          -v ~/{{DATA_PATH}}/karate/tests:/home/seluser/karate/tests \
+          -v ~/{{DATA_PATH}}/karate/reports:/home/seluser/karate/reports \
+          karatelabs/karate-chrome:latest
+variables:
+  - NETWORK_NAME
+dependencies: []

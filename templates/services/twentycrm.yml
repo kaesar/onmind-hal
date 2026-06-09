@@ -13,7 +13,7 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 3021:3000 \
           --restart unless-stopped \
-          -e PG_DATABASE_URL=postgres://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/twenty \
+          -e PG_DATABASE_URL=postgres://root:{{STORAGE_PASSWORD}}@postgresql:5432/twenty \
           -e REDIS_URL=redis://redis:6379 \
           -e SERVER_URL=https://crm.{{DOMAIN}} \
           -e FRONT_BASE_URL=https://crm.{{DOMAIN}} \

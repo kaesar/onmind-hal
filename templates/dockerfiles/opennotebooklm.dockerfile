@@ -28,4 +28,4 @@ COPY --from=frontend /app/frontend/start-server.js /app/frontend/start-server.js
 ENV UV_NO_SYNC=1 VIRTUAL_ENV=/app/.venv TIKTOKEN_CACHE_DIR=/app/tiktoken-cache HOSTNAME=0.0.0.0
 RUN mkdir -p /app/data /var/log/supervisor
 EXPOSE 8502 5055
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/app/supervisord.conf"]

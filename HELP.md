@@ -158,15 +158,15 @@ tests/                      # Test suite
 
 Core services are automatically included in every setup, while optional services are presented to the user for selection during the interactive prompts. It's good to consider some aspects or steps:
 
-- Include Enum for the new service in `types.ts`
-- Create an implementation file for the new service
-- Register the new service in `factory.ts`
-- Create template in `.yml` (YAML)
-- Update CLI prompts in `interface.ts`
-- Update Cadddy configuration
-- Add validation if need it
-- Consider include new test
-- Check `README.md` to update documentation
+- Include Enum for the new service in `src/core/types.ts`
+- Create an implementation class for the new service, e.g. `src/services/optional/karate.ts`
+- Register the new service in `src/services/factory.ts`
+- Create template in `.yml` (YAML), e.g. `templates/services/myservice.yml`
+- Update CLI prompts or display name in `src/cli/interface.ts`
+- Update Cadddy configuration (subdomain/container/port) in `src/services/core/caddy.ts`
+- Add validation if need it and include service in the list for `src/core/application.ts`
+- Consider include new test, e.g. `tests/unit/services/myservice.test.ts`
+- Consider check `README.md` to update documentation
 
 For example, to add a new service like **MongoDB**, follow these steps...
 
@@ -368,7 +368,7 @@ If you need to remove all HAL services and start fresh:
 
 ```bash
 # Stop and remove all HAL containers
-docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|ignite|kafka|rabbitmq|ollama|openwebui|n8n|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|floci|localstack|onedev|semaphore|sonarqube|trivy|rapidoc|hoppscotch|locust|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|linkwarden|psitransfer|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|twentycrm|keystonejs|calcom|huly|mattermost|jasperreports|stirlingpdf|libretranslate|litellm|hermes|openclaw|openhuman|firecrawl|searxng|mailserver|cloudflared|wetty" --format "{{.Names}}" | xargs -r docker rm -f
+docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|ignite|kafka|rabbitmq|ollama|openwebui|n8n|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|onedev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|linkwarden|psitransfer|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|twentycrm|keystonejs|calcom|huly|mattermost|jasperreports|stirlingpdf|libretranslate|orcarouter|litellm|anythingllm|opennotebooklm|hermes|openclaw|openhuman|firecrawl|searxng|mailserver|cloudflared|wetty" --format "{{.Names}}" | xargs -r docker rm -f
 
 # Remove HAL network
 docker network rm homelab-network 2>/dev/null || true
@@ -378,9 +378,6 @@ rm -rf ~/ws/data
 
 # Remove Docker volumes (optional)
 docker volume ls --filter "name=postgres_data|redis_data|rabbitmq_data|grafana_data" --format "{{.Name}}" | xargs -r docker volume rm
-
-# Set priviledges in files
-sudo chown -R $USER:$USER /home/andrey/ws/data
 ```
 
 ## Platform-Specific Notes
@@ -1070,6 +1067,8 @@ Las variables son proporcionadas por el usuario durante la configuración intera
 - **`IP`**: Detectado automáticamente o prompt `Enter server IP address`
 - **`ADMIN_TOKEN`**: Generado automáticamente (32 caracteres alfanuméricos)
 - **`SECRET_KEY`**, **`UTILS_SECRET`**: Generados automáticamente para servicio de Outline
+- **`MAIL_USER`**: Prompt `Enter mail user` para Docker Mailserver (ej. `admin@mini.lan`)
+- **`MAIL_PASSWORD`**: Prompt `Enter mail password` para Docker Mailserver
 
 ### Ejemplo de Template
 

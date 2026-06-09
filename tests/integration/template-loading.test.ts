@@ -40,7 +40,7 @@ describe('Template Loading Integration', () => {
 
   describe('Service Templates', () => {
     const coreServices = ['caddy', 'portainer', 'copyparty', 'duckdb'];
-    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'scylladb', 'kafka', 'kafkaui', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'keycloak', 'authelia', 'localstack', 'k3d', 'onedev', 'semaphore', 'liquibase', 'sonarqube', 'trivy', 'rapidoc', 'hoppscotch', 'grafana', 'loki', 'fluentbit', 'uptimekuma', 'registry', 'nexus', 'vault', 'vaultwarden', 'psitransfer', 'filestash', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'jasperreports', 'stirlingpdf', 'libretranslate', 'mailserver', 'frp', 'searxng'];
+    const optionalServices = ['postgresql', 'redis', 'mongodb', 'mariadb', 'scylladb', 'kafka', 'kafkaui', 'rabbitmq', 'ollama', 'n8n', 'kestra', 'keystonejs', 'keycloak', 'authelia', 'k3d', 'codeserver', 'jupyterlab', 'onedev', 'semaphore', 'liquibase', 'sonarqube', 'trivy', 'rapidoc', 'hoppscotch', 'grafana', 'loki', 'fluentbit', 'uptimekuma', 'registry', 'nexus', 'vault', 'vaultwarden', 'psitransfer', 'filestash', 'excalidraw', 'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'jasperreports', 'stirlingpdf', 'libretranslate', 'mailserver', 'frp', 'searxng'];
     const allServices = [...coreServices, ...optionalServices];
 
     allServices.forEach(service => {

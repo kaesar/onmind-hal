@@ -1,0 +1,25 @@
+name: Code Server
+description: Web-based VS Code IDE (code-server)
+
+commands:
+  install:
+    - docker pull codercom/code-server:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/codeserver
+  run: |
+    docker run -d \
+      --name codeserver \
+      --network {{NETWORK_NAME}} \
+      -p 3081:8080 \
+      -e PASSWORD={{ADMIN_TOKEN}} \
+      -e DEFAULT_WORKSPACE=/home/coder/project \
+      -v ~/{{DATA_PATH}}/codeserver:/home/coder/.config \
+      --restart=always \
+      codercom/code-server:latest
+
+variables:
+  - NETWORK_NAME
+  - ADMIN_TOKEN
+  - DATA_PATH
+
+dependencies: []

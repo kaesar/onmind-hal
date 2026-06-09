@@ -8,6 +8,7 @@ commands:
     - mkdir -p ~/{{DATA_PATH}}/mailserver/state
     - mkdir -p ~/{{DATA_PATH}}/mailserver/logs
     - mkdir -p ~/{{DATA_PATH}}/mailserver/config
+    - printf "%s\n%s\n" "{{MAIL_PASSWORD}}" "{{MAIL_PASSWORD}}" | docker run --rm -i -v ~/{{DATA_PATH}}/mailserver/config:/tmp/docker-mailserver docker.io/mailserver/docker-mailserver:latest setup email add {{MAIL_USER}}
   run: |-
     docker run \
           -d \
@@ -29,4 +30,6 @@ commands:
 variables:
   - NETWORK_NAME
   - DOMAIN
+  - MAIL_USER
+  - MAIL_PASSWORD
 dependencies: []

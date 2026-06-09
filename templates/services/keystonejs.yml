@@ -18,7 +18,7 @@ commands:
           --name keystonejs \
           --network {{NETWORK_NAME}} \
           -p 3090:3000 \
-          -e DATABASE_URL=postgresql://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/keystonejs \
+          -e DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/keystonejs \
           -v ~/{{DATA_PATH}}/keystonejs:/app/data keystonejs:latest
 variables:
   - NETWORK_NAME

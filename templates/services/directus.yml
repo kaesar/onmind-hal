@@ -28,7 +28,7 @@ commands:
           -e DB_PASSWORD={{STORAGE_PASSWORD}} \
           -e CACHE_ENABLED=true \
           -e CACHE_STORE=redis \
-          -e CACHE_REDIS=redis://redis:6379 \
+          -e REDIS=redis://redis:6379 \
           -e STORAGE_LOCATIONS=local \
           -e STORAGE_LOCAL_ROOT=/directus/uploads \
           -e RATE_LIMITER_ENABLED=true \
@@ -60,11 +60,11 @@ environment:
   DB_PASSWORD: "{{STORAGE_PASSWORD}}"
   CACHE_ENABLED: "true"
   CACHE_STORE: "redis"
-  CACHE_REDIS: "redis://redis:6379"
+  REDIS: "redis://redis:6379"
   STORAGE_LOCATIONS: "local"
   STORAGE_LOCAL_ROOT: "/directus/uploads"
-  RATE_LIMITER_ENABLED: "true"
-  RATE_LIMITER_STORE: "redis"
+  RATE_LIMITER_ENABLED: "false"
+  RATE_LIMITER_STORE: "memory"
 accessUrl: https://directus.{{DOMAIN}}
 dependencies:
   - PostgreSQL

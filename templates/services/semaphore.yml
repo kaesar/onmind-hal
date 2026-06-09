@@ -12,7 +12,12 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 3002:3000 \
           -v semaphore_data:/etc/semaphore \
-          -e SEMAPHORE_DB_DIALECT=bolt \
+          -e SEMAPHORE_DB_DIALECT=postgres \
+          -e SEMAPHORE_DB_HOST=postgresql \
+          -e SEMAPHORE_DB_PORT=5432 \
+          -e SEMAPHORE_DB_USER=root \
+          -e SEMAPHORE_DB_PASS={{STORAGE_PASSWORD}} \
+          -e SEMAPHORE_DB=semaphore \
           -e SEMAPHORE_ADMIN_PASSWORD=admin \
           -e SEMAPHORE_ADMIN_NAME=admin \
           -e SEMAPHORE_ADMIN_EMAIL=admin@localhost \
@@ -21,4 +26,6 @@ commands:
           semaphoreui/semaphore:latest
 variables:
   - NETWORK_NAME
-dependencies: []
+  - STORAGE_PASSWORD
+dependencies:
+  - postgresql

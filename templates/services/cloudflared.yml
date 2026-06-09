@@ -5,8 +5,13 @@ commands:
     - docker pull cloudflare/cloudflared:latest
   setup:
     - mkdir -p ~/.cloudflared
-    - echo "Cloudflare Tunnel requires manual configuration"
-    - echo "Follow the instructions displayed after installation"
+    - echo ""
+    - echo "==================================="
+    - echo " Cloudflare Tunnel Setup Required"
+    - echo "==================================="
+    - echo "Run the setup script to configure the tunnel:"
+    - echo "  cd hal && bash scripts/setup-cloudflared.sh"
+    - echo ""
   run: |-
     docker run \
           -d \

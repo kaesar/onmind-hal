@@ -595,11 +595,11 @@ export class HomelabApplication {
         'grafana',
         'loki',
         'trivy',
+        'karate',
         'sonarqube',
         'nexus',
         'vault',
         'vaultwarden',
-        'backvault',
         'linkwarden',
         'rapidoc',
         'hoppscotch',
@@ -618,6 +618,8 @@ export class HomelabApplication {
         'jasperreports',
         'stirlingpdf',
         'onedev',
+        'codeserver',
+        'jupyterlab',
         'registry',
         'localstack',
         'libretranslate',
@@ -675,6 +677,8 @@ export class HomelabApplication {
           dozzle: 'dozzle',
           zrok: 'zrok',
           redash: 'redash',
+          codeserver: 'codeserver',
+          jupyterlab: 'jupyterlab',
         };
 
         for (const service of this.installedServices) {

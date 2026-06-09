@@ -5,6 +5,7 @@ commands:
     - docker pull mattermost/mattermost-team-edition:latest
   setup:
     - mkdir -p ~/{{CONFIG_PATH}}/mattermost
+    - chmod 777 ~/{{CONFIG_PATH}}/mattermost
     - docker volume create mattermost_data
     - docker volume create mattermost_logs
     - docker volume create mattermost_plugins
@@ -19,7 +20,7 @@ commands:
           -v mattermost_logs:/mattermost/logs \
           -v mattermost_plugins:/mattermost/plugins \
           -e MM_SQLSETTINGS_DRIVERNAME=postgres \
-          -e MM_SQLSETTINGS_DATASOURCE=postgres://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/mattermost?sslmode=disable \
+          -e MM_SQLSETTINGS_DATASOURCE=postgres://root:{{STORAGE_PASSWORD}}@postgresql:5432/mattermost?sslmode=disable \
           -e MM_SERVICESETTINGS_SITEURL=https://mattermost.{{DOMAIN}} \
           --restart unless-stopped \
           mattermost/mattermost-team-edition:latest

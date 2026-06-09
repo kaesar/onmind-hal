@@ -3,11 +3,9 @@ description: Zero-trust tunneling platform (NGROK alternative) with OpenZiti
 commands:
   install:
     - docker pull openziti/zrok2:latest
-    - docker pull openziti/zrok2-controller:latest
-    - docker pull openziti/zrok2-frontend:latest
-    - docker pull postgres:16-alpine
     - docker pull openziti/ziti-controller:latest
     - docker pull openziti/ziti-router:latest
+    - docker pull postgres:16-alpine
     - docker pull caddy:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/zrok/data
@@ -65,7 +63,7 @@ commands:
           -e ZROK2_FRONTEND_PORT=8080 \
           -e ZROK2_INSECURE_INTERFACE=0.0.0.0 \
           -v zrok_controller_data:/var/lib/zrok2-controller \
-          openziti/zrok2-controller:latest
+          openziti/zrok2:latest controller start
 
     docker run \
           -d \
@@ -77,14 +75,14 @@ commands:
           -e ZROK2_FRONTEND_PORT=8080 \
           -e ZROK2_DNS_ZONE={{DOMAIN}} \
           -v zrok_frontend_data:/var/lib/zrok2-frontend \
-          openziti/zrok2-frontend:latest
+          openziti/zrok2:latest frontend start
 
     docker run \
           -d \
           --name zrok-caddy \
           --network {{NETWORK_NAME}} \
-          -p 443:443 \
-          -p 80:80 \
+          -p 8082:443 \
+          -p 8081:80 \
           -v ~/{{CONFIG_PATH}}/zrok/Caddyfile:/etc/caddy/Caddyfile \
           -v ~/{{DATA_PATH}}/zrok/caddy:/data \
           caddy:latest
@@ -98,8 +96,8 @@ ports:
   - "3022:3022"
   - "18080:18080"
   - "8080:8080"
-  - "443:443"
-  - "80:80"
+  - "8081:80"
+  - "8082:443"
 volumes:
   - zrok_postgres_data:/var/lib/postgresql/data
   - zrok_controller_data:/var/lib/zrok2-controller

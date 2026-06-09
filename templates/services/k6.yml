@@ -16,6 +16,7 @@ commands:
           --restart unless-stopped \
           grafana/k6:latest run \
           --address 0.0.0.0:6565 \
+          --linger \
           --duration 10s \
           /scripts/test.js
 variables:

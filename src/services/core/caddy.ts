@@ -153,6 +153,7 @@ export class CaddyService extends BaseService {
       [ServiceType.LIQUIBASE]: { subdomain: 'liquibase', port: 8091, container: 'liquibase' },
       [ServiceType.SONARQUBE]: { subdomain: 'sonarqube', port: 9000, container: 'sonarqube' },
       [ServiceType.TRIVY]: { subdomain: 'trivy', port: 8080, container: 'trivy' },
+      [ServiceType.KARATE]: null, // VNC-based (port 5901), no HTTP UI
       [ServiceType.RAPIDOC]: { subdomain: 'rapidoc', port: 80, container: 'rapidoc' },
       [ServiceType.HOPPSCOTCH]: { subdomain: 'hoppscotch', port: 3000, container: 'hoppscotch' },
       [ServiceType.LOCUST]: { subdomain: 'locust', port: 8089, container: 'locust' },
@@ -168,7 +169,6 @@ export class CaddyService extends BaseService {
       [ServiceType.INFISCAL]: { subdomain: 'infisical', port: 8080, container: 'infisical' },
       [ServiceType.VAULT]: { subdomain: 'vault', port: 8200, container: 'vault' },
       [ServiceType.VAULTWARDEN]: { subdomain: 'vaultwarden', port: 8222, container: 'vaultwarden' },
-      [ServiceType.BACKVAULT]: { subdomain: 'backvault', port: 8080, container: 'backvault' },
       [ServiceType.LINKWARDEN]: { subdomain: 'linkwarden', port: 3000, container: 'linkwarden' },
       [ServiceType.PSITRANSFER]: { subdomain: 'psitransfer', port: 3005, container: 'psitransfer' },
       [ServiceType.FILESTASH]: { subdomain: 'filestash', port: 8334, container: 'filestash' },

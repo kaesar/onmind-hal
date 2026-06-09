@@ -1,0 +1,24 @@
+name: JupyterLab
+description: Web-based interactive development environment for notebooks and code
+
+commands:
+  install:
+    - docker pull jupyter/base-notebook:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/jupyterlab
+  run: |
+    docker run -d \
+      --name jupyterlab \
+      --network {{NETWORK_NAME}} \
+      -p 3082:8888 \
+      -e JUPYTER_TOKEN={{ADMIN_TOKEN}} \
+      -v ~/{{DATA_PATH}}/jupyterlab:/home/jovyan/work \
+      --restart=always \
+      jupyter/base-notebook:latest
+
+variables:
+  - NETWORK_NAME
+  - ADMIN_TOKEN
+  - DATA_PATH
+
+dependencies: []

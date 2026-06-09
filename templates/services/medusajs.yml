@@ -17,7 +17,7 @@ commands:
           -p 9003:9000 \
           --restart unless-stopped \
           -e DATABASE_TYPE=postgres \
-          -e DATABASE_URL=postgresql://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/medusa \
+          -e DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/medusa \
           -e REDIS_URL=redis://redis:6379 \
           -e JWT_SECRET={{ADMIN_TOKEN}} \
           -e COOKIE_SECRET={{ADMIN_TOKEN}} \
