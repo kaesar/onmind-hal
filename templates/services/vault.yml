@@ -4,16 +4,16 @@ commands:
   install:
     - docker pull hashicorp/vault:latest
   setup:
-    - mkdir -p ~/wsdata/vault/data
-    - mkdir -p ~/wsdata/vault/config
+    - mkdir -p ~/{{DATA_PATH}}/vault/data
+    - mkdir -p ~/{{DATA_PATH}}/vault/config
   run: |-
     docker run \
           -d \
           --name vault \
           --network {{NETWORK_NAME}} \
           -p 8200:8200 \
-          -v ~/wsdata/vault/data:/vault/data \
-          -v ~/wsdata/vault/config:/vault/config \
+          -v ~/{{DATA_PATH}}/vault/data:/vault/data \
+          -v ~/{{DATA_PATH}}/vault/config:/vault/config \
           -e VAULT_DEV_ROOT_TOKEN_ID=homelab-root-token \
           -e VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200 \
           --cap-add=IPC_LOCK hashicorp/vault:latest server \

@@ -1,0 +1,24 @@
+name: K6 OSS
+description: Open-source load testing tool (Grafana)
+commands:
+  install:
+    - docker pull grafana/k6:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/k6/scripts
+    - echo 'import http from "k6/http"; import { sleep } from "k6"; export default function() { http.get("http://caddy:80"); sleep(1); }' > ~/{{DATA_PATH}}/k6/scripts/test.js
+  run: |-
+    docker run \
+          -d \
+          --name k6 \
+          --network {{NETWORK_NAME}} \
+          -p 6565:6565 \
+          -v ~/{{DATA_PATH}}/k6/scripts:/scripts \
+          --restart unless-stopped \
+          grafana/k6:latest run \
+          --address 0.0.0.0:6565 \
+          --duration 10s \
+          /scripts/test.js
+variables:
+  - NETWORK_NAME
+  - DATA_PATH
+dependencies: []

@@ -4,14 +4,14 @@ commands:
   install:
     - docker pull spotify/backstage:latest
   setup:
-    - mkdir -p ~/wsconf/backstage
+    - mkdir -p ~/{{CONFIG_PATH}}/backstage
   run: |-
     docker run \
           -d \
           --name backstage \
           --network {{NETWORK_NAME}} \
           -p 7007:7007 \
-          -v ~/wsconf/backstage:/app/config \
+          -v ~/{{CONFIG_PATH}}/backstage:/app/config \
           -e POSTGRES_HOST=postgresql \
           -e POSTGRES_PORT=5432 \
           -e POSTGRES_USER=postgres \

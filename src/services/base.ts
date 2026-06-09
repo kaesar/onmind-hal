@@ -60,7 +60,9 @@ export abstract class BaseService implements Service {
       DOMAIN: this.config.domain,
       IP: this.config.ip,
       STORAGE_PASSWORD: this.config.storagePassword || '',
-      ADMIN_TOKEN: this.generateAdminToken()
+      ADMIN_TOKEN: this.generateAdminToken(),
+      CONFIG_PATH: this.config.configPath,
+      DATA_PATH: this.config.dataPath
     };
   }
 

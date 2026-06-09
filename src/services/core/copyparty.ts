@@ -26,8 +26,8 @@ export class CopypartyService extends BaseService {
   protected async generateConfigFiles(): Promise<void> {
     try {
       const homeDir = process.env.HOME || process.env.USERPROFILE || '~';
-      const configDir = join(homeDir, 'wsconf');
-      const dataDir = join(homeDir, 'wsdata', 'copyparty');
+      const configDir = join(homeDir, this.config.configPath);
+      const dataDir = join(homeDir, this.config.dataPath, 'copyparty');
       
       // Create config and data directories
       await mkdir(configDir, { recursive: true });

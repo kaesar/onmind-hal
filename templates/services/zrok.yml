@@ -10,9 +10,9 @@ commands:
     - docker pull openziti/ziti-router:latest
     - docker pull caddy:latest
   setup:
-    - mkdir -p ~/wsdata/zrok/data
-    - mkdir -p ~/wsdata/zrok/caddy
-    - mkdir -p ~/wsconf/zrok
+    - mkdir -p ~/{{DATA_PATH}}/zrok/data
+    - mkdir -p ~/{{DATA_PATH}}/zrok/caddy
+    - mkdir -p ~/{{CONFIG_PATH}}/zrok
     - docker volume create zrok_postgres_data
     - docker volume create zrok_controller_data
     - docker volume create zrok_frontend_data
@@ -85,8 +85,8 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 443:443 \
           -p 80:80 \
-          -v ~/wsconf/zrok/Caddyfile:/etc/caddy/Caddyfile \
-          -v ~/wsdata/zrok/caddy:/data \
+          -v ~/{{CONFIG_PATH}}/zrok/Caddyfile:/etc/caddy/Caddyfile \
+          -v ~/{{DATA_PATH}}/zrok/caddy:/data \
           caddy:latest
 variables:
   - NETWORK_NAME
@@ -106,8 +106,8 @@ volumes:
   - zrok_frontend_data:/var/lib/zrok2-frontend
   - ziti_controller_data:/var/lib/ziti-controller
   - ziti_router_data:/var/lib/ziti-router
-  - ~/wsconf/zrok/Caddyfile:/etc/caddy/Caddyfile
-  - ~/wsdata/zrok/caddy:/data
+  - ~/{{CONFIG_PATH}}/zrok/Caddyfile:/etc/caddy/Caddyfile
+  - ~/{{DATA_PATH}}/zrok/caddy:/data
 environment:
   POSTGRES_DB: "zrok2"
   POSTGRES_USER: "zrok2"

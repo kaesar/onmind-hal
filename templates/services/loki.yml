@@ -4,14 +4,15 @@ commands:
   install:
     - docker pull grafana/loki:latest
   setup:
-    - mkdir -p ~/wsdata/loki/data
+    - mkdir -p ~/{{DATA_PATH}}/loki/data
   run: |-
     docker run \
           -d \
           --name loki \
           --network {{NETWORK_NAME}} \
           -p 3100:3100 \
-          -v ~/wsdata/loki/data:/loki \
+          -v ~/{{DATA_PATH}}/loki/data:/loki \
+          --user root \
           --restart unless-stopped grafana/loki:latest \
           -config.file=/etc/loki/local-config.yaml
 variables:

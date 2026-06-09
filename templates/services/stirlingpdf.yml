@@ -4,14 +4,14 @@ commands:
   install:
     - docker pull frooodle/s-pdf:latest
   setup:
-    - mkdir -p ~/wsdata/stirlingpdf/data
+    - mkdir -p ~/{{DATA_PATH}}/stirlingpdf/data
   run: |-
     docker run \
           -d \
           --name stirlingpdf \
           --network {{NETWORK_NAME}} \
           -p 8090:8080 \
-          -v ~/wsdata/stirlingpdf/data:/usr/share/tessdata \
+          -v ~/{{DATA_PATH}}/stirlingpdf/data:/usr/share/tessdata \
           frooodle/s-pdf:latest
 variables:
   - NETWORK_NAME

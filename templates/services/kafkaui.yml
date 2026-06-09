@@ -1,0 +1,25 @@
+name: Kafka UI
+description: Web UI for managing Apache Kafka clusters
+commands:
+  install:
+    - docker pull provectuslabs/kafka-ui:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/kafkaui
+  run: |-
+    docker run \
+          -d \
+          --name kafkaui \
+          --network {{NETWORK_NAME}} \
+          -p 8080:8080 \
+          -e DYNAMIC_CONFIG_ENABLED=true \
+          -e KAFKA_CLUSTERS_0_NAME=homelab \
+          -e KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092 \
+          provectuslabs/kafka-ui:latest
+variables:
+  - NETWORK_NAME
+ports:
+  - "8080:8080"
+accessUrl: https://kafkaui.{{DOMAIN}}
+dependencies:
+  - Kafka
+isCore: false

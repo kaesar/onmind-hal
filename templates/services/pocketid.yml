@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull node:20-alpine
   setup:
-    - mkdir -p ~/wsdata/pocketid
+    - mkdir -p ~/{{DATA_PATH}}/pocketid
     - docker build -f templates/dockerfiles/pocketid.dockerfile -t pocketid:latest .
   run: |-
     docker run \
@@ -13,7 +13,8 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 8093:80 \
           -e PUBLIC_APP_URL=https://auth.{{DOMAIN}} \
-          -v ~/wsdata/pocketid:/app/backend/data \
+          -e ENCRYPTION_KEY=CHANGEME_REPLACE_WITH_32_CHAR_HEX_KEY \
+          -v ~/{{DATA_PATH}}/pocketid:/app/backend/data \
           pocketid:latest
 variables:
   - NETWORK_NAME
@@ -21,7 +22,7 @@ variables:
 ports:
   - "8093:80"
 volumes:
-  - ~/wsdata/pocketid:/app/backend/data
+  - ~/{{DATA_PATH}}/pocketid:/app/backend/data
 accessUrl: https://auth.{{DOMAIN}}
 dependencies: []
 isCore: false

@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull 1dev/server:latest
   setup:
-    - mkdir -p ~/wsdata/onedev/data
+    - mkdir -p ~/{{DATA_PATH}}/onedev/data
   run: |-
     docker run \
           -d \
@@ -12,7 +12,7 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 6610:6610 \
           -p 6611:6611 \
-          -v ~/wsdata/onedev/data:/opt/onedev \
+          -v ~/{{DATA_PATH}}/onedev/data:/opt/onedev \
           -v /var/run/docker.sock:/var/run/docker.sock \
           1dev/server:latest
 variables:

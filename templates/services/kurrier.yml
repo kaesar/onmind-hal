@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull ghcr.io/kurrier/kurrier:latest
   setup:
-    - mkdir -p ~/wsconf/kurrier
+    - mkdir -p ~/{{CONFIG_PATH}}/kurrier
     - docker volume create kurrier_data
   run: |-
     docker run \
@@ -12,7 +12,7 @@ commands:
           --name kurrier \
           --network {{NETWORK_NAME}} \
           -p 3031:3000 \
-          -v ~/wsconf/kurrier:/app/config \
+          -v ~/{{CONFIG_PATH}}/kurrier:/app/config \
           -v kurrier_data:/app/data \
           -e DATABASE_URL=sqlite:///app/data/kurrier.db \
           -e NODE_ENV=production \

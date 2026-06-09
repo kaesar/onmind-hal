@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull dunglas/frankenphp:latest
   setup:
-    - mkdir -p ~/wsdata/duckdb/data
+    - mkdir -p ~/{{DATA_PATH}}/duckdb/data
     - docker build -f templates/dockerfiles/duckdb.dockerfile -t duckdb-frankenphp .
   run: |-
     docker run \
@@ -12,7 +12,7 @@ commands:
           --name duckdb \
           --network {{NETWORK_NAME}} \
           -p 4214:80 \
-          -v ~/wsdata/duckdb/data:/app/data duckdb-frankenphp
+          -v ~/{{DATA_PATH}}/duckdb/data:/app/data duckdb-frankenphp
 variables:
   - NETWORK_NAME
 dependencies: []

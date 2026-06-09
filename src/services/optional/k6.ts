@@ -2,14 +2,11 @@ import { ServiceType, HomelabConfig } from '../../core/types.js';
 import { TemplateEngine } from '../../templates/engine.js';
 import { BaseService } from '../base.js';
 
-/**
- * Dockhand Docker management UI service implementation
- */
-export class DockhandService extends BaseService {
+export class K6Service extends BaseService {
   constructor(config: HomelabConfig, templateEngine: TemplateEngine) {
     super(
-      'Dockhand',
-      ServiceType.DOCKHAND,
+      'K6',
+      ServiceType.K6,
       false,
       [],
       config,
@@ -18,6 +15,6 @@ export class DockhandService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `https://dockhand.${this.config.domain}`;
+    return `https://k6.${this.config.domain}`;
   }
 }

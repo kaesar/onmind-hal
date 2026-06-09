@@ -4,8 +4,8 @@ commands:
   install:
     - docker pull ghcr.io/openclaw/openclaw:latest
   setup:
-    - mkdir -p ~/wsdata/openclaw/config
-    - mkdir -p ~/wsdata/openclaw/workspace
+    - mkdir -p ~/{{DATA_PATH}}/openclaw/config
+    - mkdir -p ~/{{DATA_PATH}}/openclaw/workspace
     - docker volume create openclaw_config
     - docker volume create openclaw_workspace
   run: |-
@@ -22,7 +22,7 @@ commands:
           -v openclaw_config:/home/node/.openclaw \
           -v openclaw_workspace:/home/node/.openclaw/workspace \
           ghcr.io/openclaw/openclaw:latest \
-          node dist/index.js gateway --bind lan --port 18789
+          node dist/index.js gateway --bind lan --port 18789 --allow-unconfigured
 variables:
   - NETWORK_NAME
   - ADMIN_TOKEN

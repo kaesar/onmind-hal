@@ -22,7 +22,7 @@ export class AutheliaService extends BaseService {
       const { writeFile, mkdir } = await import('fs/promises');
       const { join } = await import('path');
       const homeDir = process.env.HOME || process.env.USERPROFILE || '~';
-      const configDir = join(homeDir, 'wsdata', 'authelia', 'config');
+      const configDir = join(homeDir, this.config.dataPath, 'authelia', 'config');
       
       await mkdir(configDir, { recursive: true });
       

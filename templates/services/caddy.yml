@@ -5,8 +5,8 @@ commands:
     - docker pull caddy:latest
   setup:
     - docker network create {{NETWORK_NAME}} || true
-    - mkdir -p ~/wsconf
-    - mkdir -p ~/wsdata/caddy
+    - mkdir -p ~/{{CONFIG_PATH}}
+    - mkdir -p ~/{{DATA_PATH}}/caddy
   run: |-
     docker run \
           -d \
@@ -14,16 +14,16 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 80:80 \
           -p 443:443 \
-          -v ~/wsconf/Caddyfile:/etc/caddy/Caddyfile \
-          -v ~/wsdata/caddy:/data caddy:latest
+          -v ~/{{CONFIG_PATH}}/Caddyfile:/etc/caddy/Caddyfile \
+          -v ~/{{DATA_PATH}}/caddy:/data caddy:latest
 variables:
   - NETWORK_NAME
 ports:
   - "80:80"
   - "443:443"
 volumes:
-  - ~/wsconf/Caddyfile:/etc/caddy/Caddyfile
-  - ~/wsdata/caddy:/data
+  - ~/{{CONFIG_PATH}}/Caddyfile:/etc/caddy/Caddyfile
+  - ~/{{DATA_PATH}}/caddy:/data
 configFiles:
   - Caddyfile
 accessUrl: https://{{DOMAIN}}

@@ -56,14 +56,17 @@ export class CLIInterface {
     console.log(`🌐 Server IP: ${this.config.ip}`);
     console.log(`🏷️  Domain: ${this.config.domain}`);
     console.log(`🔗 Network: ${this.config.networkName}`);
+    console.log(`📁 Config path: ~/${this.config.configPath || 'ws/init'}`);
+    console.log(`💾 Data path: ~/${this.config.dataPath || 'ws/data'}`);
     
     if (this.config.selectedServices) {
       console.log('\n📦 Services to install:');
+      const coreServiceTypes = ['caddy', 'dockhand', 'portainer', 'copyparty'];
       const coreServices = this.config.selectedServices.filter(s => 
-        ['caddy', 'portainer', 'copyparty', 'duckdb'].includes(s)
+        coreServiceTypes.includes(s)
       );
       const optionalServices = this.config.selectedServices.filter(s =>
-        !['caddy', 'portainer', 'copyparty', 'duckdb'].includes(s)
+        !coreServiceTypes.includes(s)
       );
 
       console.log('   Core services:');
@@ -102,6 +105,7 @@ export class CLIInterface {
       ignite: 'Apache Ignite (In-Memory SQL Database)',
       minio: 'Minio (Object Storage)',
       kafka: 'Kafka (Streaming Platform)',
+      kafkaui: 'Kafka UI (Web Management)',
       rabbitmq: 'RabbitMQ (Message Broker)',
       ollama: 'Ollama (LLM Server)',
       openwebui: 'Open WebUI (Ollama Web Interface)',
@@ -124,27 +128,31 @@ export class CLIInterface {
       rapidoc: 'RapiDoc (OpenAPI Viewer)',
       hoppscotch: 'Hoppscotch (API Client)',
       locust: 'Locust (Load Testing)',
+      k6: 'K6 OSS (Load Testing)',
       grafana: 'Grafana (Monitoring)',
       loki: 'Loki (Log Aggregation)',
       opensearch: 'OpenSearch (Search & Analytics)',
+      coroot: 'Coroot (Observability)',
       fluentbit: 'Fluent Bit (Log Collector)',
       uptimekuma: 'Uptime Kuma (Uptime Monitoring)',
       registry: 'Registry (Docker Registry)',
       nexus: 'Nexus Repository (Artifact Manager)',
       vault: 'Vault (Secrets Management)',
+      consul: 'Consul (Service Discovery)',
       vaultwarden: 'Vaultwarden (Password Manager)',
       backvault: 'BackVault (Vaultwarden Backup)',
       linkwarden: 'Linkwarden (Bookmark Manager)',
       psitransfer: 'PsiTransfer (File Sharing)',
+      filestash: 'Filestash (Web File Manager)',
       excalidraw: 'Excalidraw (Whiteboard)',
       drawio: 'Draw.io (Diagramming)',
+      wisemapping: 'WiseMapping (Mind Mapping)',
       kroki: 'Kroki (Diagram API)',
       outline: 'Outline (Wiki)',
       grist: 'Grist (Spreadsheet)',
       nocodb: 'NocoDB (Airtable Alternative)',
       twentycrm: 'TwentyCRM (CRM Platform)',
       medusajs: 'MedusaJS (E-commerce)',
-      plane: 'Plane (Jira-like)',
       mattermost: 'Mattermost (Team Chat)',
       calcom: 'Cal.com (Scheduling Platform)',
       jasperreports: 'JasperReports (Business Intelligence)',
@@ -163,10 +171,12 @@ export class CLIInterface {
       infisical: 'Infisical (Secret Management)',
       floci: 'Floci (AWS Emulator)',
       litellm: 'LiteLLM (LLM Proxy)',
+      hermes: 'Hermes Agent (AI Agent)',
       openclaw: 'OpenClaw (AI Agent Gateway)',
       openjarvis: 'OpenJarvis (AI Assistant Platform)',
       firecrawl: 'Firecrawl (Web Scraper)',
-      redash: 'Redash (SQL Query & Visualization)',
+      searxng: 'SearXNG (Metasearch Engine)',
+      redash: 'ReDash (SQL Query & Visualization)',
       dockhand: 'Dockhand (Docker Management UI)',
       portainer: 'Portainer (Docker Management UI)',
     };
@@ -204,6 +214,8 @@ export class CLIInterface {
       ip: this.config.ip!,
       domain: this.config.domain!,
       networkName: this.config.networkName!,
+      configPath: this.config.configPath || 'ws/init',
+      dataPath: this.config.dataPath || 'ws/data',
       selectedServices: this.config.selectedServices!,
       storagePassword: this.config.storagePassword,
       distribution: DistributionType.UBUNTU // Will be overridden by detection

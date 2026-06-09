@@ -4,18 +4,18 @@ commands:
   install:
     - docker pull sonarqube:community
   setup:
-    - mkdir -p ~/wsdata/sonarqube/data
-    - mkdir -p ~/wsdata/sonarqube/extensions
-    - mkdir -p ~/wsdata/sonarqube/logs
+    - mkdir -p ~/{{DATA_PATH}}/sonarqube/data
+    - mkdir -p ~/{{DATA_PATH}}/sonarqube/extensions
+    - mkdir -p ~/{{DATA_PATH}}/sonarqube/logs
   run: |-
     docker run \
           -d \
           --name sonarqube \
           --network {{NETWORK_NAME}} \
           -p 9002:9000 \
-          -v ~/wsdata/sonarqube/data:/opt/sonarqube/data \
-          -v ~/wsdata/sonarqube/extensions:/opt/sonarqube/extensions \
-          -v ~/wsdata/sonarqube/logs:/opt/sonarqube/logs \
+          -v ~/{{DATA_PATH}}/sonarqube/data:/opt/sonarqube/data \
+          -v ~/{{DATA_PATH}}/sonarqube/extensions:/opt/sonarqube/extensions \
+          -v ~/{{DATA_PATH}}/sonarqube/logs:/opt/sonarqube/logs \
           -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true sonarqube:community
 variables:
   - NETWORK_NAME

@@ -1,0 +1,21 @@
+name: Hermes Agent
+description: Self-improving AI agent with persistent memory (Nous Research)
+commands:
+  install:
+    - docker pull nousresearch/hermes-agent:latest
+  setup:
+    - mkdir -p ~/.hermes
+  run: |-
+    docker run \
+          -d \
+          --name hermes \
+          --network {{NETWORK_NAME}} \
+          -p 8642:8642 \
+          -p 9119:9119 \
+          -v ~/.hermes:/opt/data \
+          -e HERMES_DASHBOARD=1 \
+          --restart unless-stopped \
+          nousresearch/hermes-agent:latest gateway run
+variables:
+  - NETWORK_NAME
+dependencies: []

@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull postgres:15-alpine
   setup:
-    - mkdir -p ~/wsdata/postgresql/data
+    - mkdir -p ~/{{DATA_PATH}}/postgresql/data
     - docker volume create postgres_data
   run: |-
     docker run \

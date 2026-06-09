@@ -4,22 +4,23 @@ commands:
   install:
     - docker pull locustio/locust:latest
   setup:
-    - mkdir -p ~/wsdata/locust
+    - mkdir -p ~/{{DATA_PATH}}/locust
   run: |-
     docker run \
           -d \
           --name locust \
           --network {{NETWORK_NAME}} \
-          -p 8089:8089 \
-          -v ~/wsdata/locust:/home/locust \
-          locustio/locust:latest
+          -p 8099:8089 \
+          -v ~/{{DATA_PATH}}/locust:/mnt/locust \
+          locustio/locust:latest \
+          -f /mnt/locust/locustfile.py --web-host 0.0.0.0
 variables:
   - NETWORK_NAME
   - DOMAIN
 ports:
-  - "8089:8089"
+  - "8099:8089"
 volumes:
-  - ~/wsdata/locust:/home/locust
+  - ~/{{DATA_PATH}}/locust:/home/locust
 accessUrl: https://locust.{{DOMAIN}}
 dependencies: []
 isCore: false

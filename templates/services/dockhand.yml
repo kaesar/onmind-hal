@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull fnsys/dockhand:latest
   setup:
-    - mkdir -p ~/wsdata/dockhand/data
+    - mkdir -p ~/{{DATA_PATH}}/dockhand/data
     - docker volume create dockhand_data
   run: |-
     docker run \

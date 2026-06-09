@@ -1,0 +1,18 @@
+name: Filestash
+description: Web-based file manager for any storage backend
+commands:
+  install:
+    - docker pull machines/filestash:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/filestash/data
+  run: |-
+    docker run \
+          -d \
+          --name filestash \
+          --network {{NETWORK_NAME}} \
+          -p 8334:8334 \
+          -v ~/{{DATA_PATH}}/filestash/data:/app/data/state \
+          machines/filestash:latest
+variables:
+  - NETWORK_NAME
+dependencies: []

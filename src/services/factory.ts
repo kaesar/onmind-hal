@@ -17,6 +17,7 @@ import { ScyllaDBService } from './optional/scylladb.js';
 import { IgniteService } from './optional/ignite.js';
 import { OpenJarvisService } from './optional/openjarvis.js';
 import { KafkaService } from './optional/kafka.js';
+import { KafkauiService } from './optional/kafkaui.js';
 import { RabbitMQService } from './optional/rabbitmq.js';
 import { OllamaService } from './optional/ollama.js';
 import { OpenWebUIService } from './optional/openwebui.js';
@@ -38,27 +39,31 @@ import { TrivyService } from './optional/trivy.js';
 import { RapiDocService } from './optional/rapidoc.js';
 import { HoppscotchService } from './optional/hoppscotch.js';
 import { LocustService } from './optional/locust.js';
+import { K6Service } from './optional/k6.js';
 import { GrafanaService } from './optional/grafana.js';
 import { LokiService } from './optional/loki.js';
 import { OpenSearchService } from './optional/opensearch.js';
+import { CorootService } from './optional/coroot.js';
 import { RedashService } from './optional/redash.js';
 import { FluentBitService } from './optional/fluentbit.js';
 import { RegistryService } from './optional/registry.js';
 import { NexusService } from './optional/nexus.js';
 import { VaultService } from './optional/vault.js';
+import { ConsulService } from './optional/consul.js';
 import { VaultwardenService } from './optional/vaultwarden.js';
 import { BackVaultService } from './optional/backvault.js';
 import { LinkwardenService } from './optional/linkwarden.js';
 import { PsiTransferService } from './optional/psitransfer.js';
+import { FilestashService } from './optional/filestash.js';
 import { ExcalidrawService } from './optional/excalidraw.js';
 import { DrawIOService } from './optional/drawio.js';
+import { WiseMappingService } from './optional/wisemapping.js';
 import { KrokiService } from './optional/kroki.js';
 import { OutlineService } from './optional/outline.js';
 import { GristService } from './optional/grist.js';
 import { NocoDBService } from './optional/nocodb.js';
 import { TwentyCRMService } from './optional/twentycrm.js';
 import { MedusaJSService } from './optional/medusajs.js';
-import { PlaneService } from './optional/plane.js';
 import { MattermostService } from './optional/mattermost.js';
 import { CalcomService } from './optional/calcom.js';
 import { JasperReportsService } from './optional/jasperreports.js';
@@ -66,7 +71,6 @@ import { StirlingPDFService } from './optional/stirlingpdf.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
 import { MailserverService } from './optional/mailserver.js';
 import { KurrierService } from './optional/kurrier.js';
-import { FrpService } from './optional/frp.js';
 import { CloudflaredService } from './optional/cloudflared.js';
 import { WettyService } from './optional/wetty.js';
 import { UptimeKumaService } from './optional/uptimekuma.js';
@@ -78,11 +82,13 @@ import { FlociService } from './optional/floci.js';
 import { LiteLLMService } from './optional/litellm.js';
 import { AnythingLLMService } from './optional/anythingllm.js';
 import { OpenClawService } from './optional/openclaw.js';
+import { HermesService } from './optional/hermes.js';
 import { OpenHumanService } from './optional/openhuman.js';
 import { FirecrawlService } from './optional/firecrawl.js';
+import { SearXNGService } from './optional/searxng.js';
 import { DirectusService } from './optional/directus.js';
 import { OrcaRouterLiteService } from './optional/orcarouter-lite.js';
-import { DockhandService } from './optional/dockhand.js';
+import { DockhandService } from './core/dockhand.js';
 import { ZrokService } from './optional/zrok.js';
 import { OpenHumanService } from './optional/openhuman.js';
 import { RustDeskService } from './optional/rustdesk.js';
@@ -123,10 +129,12 @@ export class ServiceFactory {
       case ServiceType.COPYPARTY:
         service = new CopypartyService(config, this.templateEngine);
         break;
+      case ServiceType.RUSTFS:
+        service = new RustFSService(config, this.templateEngine);
+        break;
       case ServiceType.DUCKDB:
         service = new DuckDBService(config, this.templateEngine);
         break;
-
       case ServiceType.POSTGRESQL:
         service = new PostgreSQLService(config, this.templateEngine);
         break;
@@ -145,11 +153,11 @@ export class ServiceFactory {
       case ServiceType.IGNITE:
         service = new IgniteService(config, this.templateEngine);
         break;
-      case ServiceType.OPENJARVIS:
-        service = new OpenJarvisService(config, this.templateEngine);
-        break;
       case ServiceType.KAFKA:
         service = new KafkaService(config, this.templateEngine);
+        break;
+      case ServiceType.KAFKAUI:
+        service = new KafkauiService(config, this.templateEngine);
         break;
       case ServiceType.RABBITMQ:
         service = new RabbitMQService(config, this.templateEngine);
@@ -163,7 +171,6 @@ export class ServiceFactory {
       case ServiceType.OPENNOTEBOOKLM:
         service = new OpenNotebookLMService(config, this.templateEngine);
         break;
-
       case ServiceType.N8N:
         service = new N8nService(config, this.templateEngine);
         break;
@@ -215,6 +222,9 @@ export class ServiceFactory {
       case ServiceType.LOCUST:
         service = new LocustService(config, this.templateEngine);
         break;
+      case ServiceType.K6:
+        service = new K6Service(config, this.templateEngine);
+        break;
       case ServiceType.GRAFANA:
         service = new GrafanaService(config, this.templateEngine);
         break;
@@ -223,6 +233,9 @@ export class ServiceFactory {
         break;
       case ServiceType.OPENSEARCH:
         service = new OpenSearchService(config, this.templateEngine);
+        break;
+      case ServiceType.COROOT:
+        service = new CorootService(config, this.templateEngine);
         break;
       case ServiceType.REDASH:
         service = new RedashService(config, this.templateEngine);
@@ -239,6 +252,9 @@ export class ServiceFactory {
       case ServiceType.VAULT:
         service = new VaultService(config, this.templateEngine);
         break;
+      case ServiceType.CONSUL:
+        service = new ConsulService(config, this.templateEngine);
+        break;
       case ServiceType.VAULTWARDEN:
         service = new VaultwardenService(config, this.templateEngine);
         break;
@@ -251,11 +267,17 @@ export class ServiceFactory {
       case ServiceType.PSITRANSFER:
         service = new PsiTransferService(config, this.templateEngine);
         break;
+      case ServiceType.FILESTASH:
+        service = new FilestashService(config, this.templateEngine);
+        break;
       case ServiceType.EXCALIDRAW:
         service = new ExcalidrawService(config, this.templateEngine);
         break;
       case ServiceType.DRAWIO:
         service = new DrawIOService(config, this.templateEngine);
+        break;
+      case ServiceType.WISEMAPPING:
+        service = new WiseMappingService(config, this.templateEngine);
         break;
       case ServiceType.KROKI:
         service = new KrokiService(config, this.templateEngine);
@@ -274,9 +296,6 @@ export class ServiceFactory {
         break;
       case ServiceType.MEDUSAJS:
         service = new MedusaJSService(config, this.templateEngine);
-        break;
-      case ServiceType.PLANE:
-        service = new PlaneService(config, this.templateEngine);
         break;
       case ServiceType.MATTERMOST:
         service = new MattermostService(config, this.templateEngine);
@@ -299,9 +318,6 @@ export class ServiceFactory {
       case ServiceType.KURRIER:
         service = new KurrierService(config, this.templateEngine);
         break;
-      case ServiceType.FRP:
-        service = new FrpService(config, this.templateEngine);
-        break;
       case ServiceType.CLOUDFLARED:
         service = new CloudflaredService(config, this.templateEngine);
         break;
@@ -317,9 +333,6 @@ export class ServiceFactory {
       case ServiceType.HULY:
         service = new HulyService(config, this.templateEngine);
         break;
-      case ServiceType.RUSTFS:
-        service = new RustFSService(config, this.templateEngine);
-        break;
       case ServiceType.INFISCAL:
         service = new InfisicalService(config, this.templateEngine);
         break;
@@ -332,14 +345,23 @@ export class ServiceFactory {
       case ServiceType.ANYTHINGLLM:
         service = new AnythingLLMService(config, this.templateEngine);
         break;
+      case ServiceType.HERMES:
+        service = new HermesService(config, this.templateEngine);
+        break;
       case ServiceType.OPENCLAW:
         service = new OpenClawService(config, this.templateEngine);
         break;
       case ServiceType.OPENHUMAN:
         service = new OpenHumanService(config, this.templateEngine);
         break;
+      case ServiceType.OPENJARVIS:
+        service = new OpenJarvisService(config, this.templateEngine);
+        break;
       case ServiceType.FIRECRAWL:
         service = new FirecrawlService(config, this.templateEngine);
+        break;
+      case ServiceType.SEARXNG:
+        service = new SearXNGService(config, this.templateEngine);
         break;
       case ServiceType.DIRECTUS:
         service = new DirectusService(config, this.templateEngine);
@@ -484,6 +506,7 @@ export class ServiceFactory {
    */
   getOptionalServices(): ServiceType[] {
     return [
+      ServiceType.RUSTFS,
       ServiceType.DUCKDB,
       ServiceType.POSTGRESQL,
       ServiceType.REDIS,
@@ -491,8 +514,8 @@ export class ServiceFactory {
       ServiceType.MARIADB,
       ServiceType.SCYLLADB,
       ServiceType.IGNITE,
-      ServiceType.OPENJARVIS,
       ServiceType.KAFKA,
+      ServiceType.KAFKAUI,
       ServiceType.RABBITMQ,
       ServiceType.OLLAMA,
       ServiceType.OPENWEBUI,
@@ -514,39 +537,45 @@ export class ServiceFactory {
       ServiceType.RAPIDOC,
       ServiceType.HOPPSCOTCH,
       ServiceType.LOCUST,
+      ServiceType.K6,
       ServiceType.GRAFANA,
       ServiceType.LOKI,
       ServiceType.OPENSEARCH,
+      ServiceType.COROOT,
       ServiceType.REDASH,
       ServiceType.FLUENTBIT,
       ServiceType.UPTIMEKUMA,
       ServiceType.DOZZLE,
       ServiceType.HULY,
-      ServiceType.RUSTFS,
       ServiceType.INFISCAL,
       ServiceType.FLOCI,
       ServiceType.LITELLM,
       ServiceType.ANYTHINGLLM,
+      ServiceType.HERMES,
       ServiceType.OPENCLAW,
       ServiceType.OPENHUMAN,
+      ServiceType.OPENJARVIS,
       ServiceType.FIRECRAWL,
+      ServiceType.SEARXNG,
       ServiceType.DOCKHAND,
       ServiceType.REGISTRY,
       ServiceType.NEXUS,
       ServiceType.VAULT,
+      ServiceType.CONSUL,
       ServiceType.VAULTWARDEN,
       ServiceType.BACKVAULT,
       ServiceType.LINKWARDEN,
       ServiceType.PSITRANSFER,
+      ServiceType.FILESTASH,
       ServiceType.EXCALIDRAW,
       ServiceType.DRAWIO,
+      ServiceType.WISEMAPPING,
       ServiceType.KROKI,
       ServiceType.OUTLINE,
       ServiceType.GRIST,
       ServiceType.NOCODB,
       ServiceType.TWENTYCRM,
       ServiceType.MEDUSAJS,
-      ServiceType.PLANE,
       ServiceType.MATTERMOST,
       ServiceType.CALCOM,
       ServiceType.JASPERREPORTS,
@@ -627,6 +656,7 @@ export class ServiceFactory {
       'Apache Ignite': ServiceType.IGNITE,
       'OpenJarvis': ServiceType.OPENJARVIS,
       'Kafka': ServiceType.KAFKA,
+      'Kafka UI': ServiceType.KAFKAUI,
       'RabbitMQ': ServiceType.RABBITMQ,
       'Ollama': ServiceType.OLLAMA,
       'Open WebUI': ServiceType.OPENWEBUI,
@@ -648,27 +678,31 @@ export class ServiceFactory {
       'RapiDoc': ServiceType.RAPIDOC,
       'Hoppscotch': ServiceType.HOPPSCOTCH,
       'Locust': ServiceType.LOCUST,
+      'K6': ServiceType.K6,
       'Grafana': ServiceType.GRAFANA,
       'Loki': ServiceType.LOKI,
       'OpenSearch': ServiceType.OPENSEARCH,
-      'Redash': ServiceType.REDASH,
+      'Coroot': ServiceType.COROOT,
+      'ReDash': ServiceType.REDASH,
       'Fluent Bit': ServiceType.FLUENTBIT,
       'Registry': ServiceType.REGISTRY,
       'Nexus Repository': ServiceType.NEXUS,
       'Vault': ServiceType.VAULT,
+      'Consul': ServiceType.CONSUL,
       'Vaultwarden': ServiceType.VAULTWARDEN,
       'BackVault': ServiceType.BACKVAULT,
       'Linkwarden': ServiceType.LINKWARDEN,
       'PsiTransfer': ServiceType.PSITRANSFER,
+      'Filestash': ServiceType.FILESTASH,
       'Excalidraw': ServiceType.EXCALIDRAW,
       'Draw.io': ServiceType.DRAWIO,
+      'WiseMapping': ServiceType.WISEMAPPING,
       'Kroki': ServiceType.KROKI,
       'Outline': ServiceType.OUTLINE,
       'Grist': ServiceType.GRIST,
       'NocoDB': ServiceType.NOCODB,
       'TwentyCRM': ServiceType.TWENTYCRM,
       'MedusaJS': ServiceType.MEDUSAJS,
-      'Plane': ServiceType.PLANE,
       'Mattermost': ServiceType.MATTERMOST,
       'Cal.com': ServiceType.CALCOM,
       'JasperReports Server': ServiceType.JASPERREPORTS,
@@ -689,9 +723,11 @@ export class ServiceFactory {
       'Floci': ServiceType.FLOCI,
       'LiteLLM': ServiceType.LITELLM,
       'AnythingLLM': ServiceType.ANYTHINGLLM,
+      'Hermes Agent': ServiceType.HERMES,
       'OpenClaw': ServiceType.OPENCLAW,
       'OpenHuman': ServiceType.OPENHUMAN,
       'Firecrawl': ServiceType.FIRECRAWL,
+      'SearXNG': ServiceType.SEARXNG,
       'Dockhand': ServiceType.DOCKHAND,
       'RustDesk': ServiceType.RUSTDESK,
       'Portainer': ServiceType.PORTAINER,

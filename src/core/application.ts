@@ -3,12 +3,21 @@
  * Orchestrates distribution detection, user input, and service installation
  */
 
-import { HomelabConfig, DistributionStrategy, Service, DistributionType } from './types.js';
+import {
+  HomelabConfig,
+  DistributionStrategy,
+  Service,
+  ServiceType,
+  DistributionType,
+} from './types.js';
 import { HomelabError, ServiceInstallationError } from '../utils/errors.js';
 import { CLIInterface } from '../cli/interface.js';
 import { ServiceFactory } from '../services/factory.js';
 import { TemplateEngine } from '../templates/engine.js';
-import { DistributionDetector, BaseDistributionStrategy } from '../distribution/strategy.js';
+import {
+  DistributionDetector,
+  BaseDistributionStrategy,
+} from '../distribution/strategy.js';
 import { UbuntuStrategy } from '../distribution/ubuntu.js';
 import { ArchStrategy } from '../distribution/arch.js';
 import { AmazonLinuxStrategy } from '../distribution/amazon.js';
@@ -76,7 +85,6 @@ export class HomelabApplication {
       this.displayCompletionSummary();
 
       this.logger.info('✅ HomeLab installation completed successfully!');
-
     } catch (error) {
       await this.handleError(error);
       throw error;
@@ -89,50 +97,59 @@ export class HomelabApplication {
   private async detectDistribution(): Promise<void> {
     try {
       this.logger.info('🔍 Detecting operating system...');
-      
-      this.distributionStrategy = await this.distributionDetector.detectDistribution();
-      const distributionType = this.distributionDetector.getDistributionType(this.distributionStrategy);
-      
+
+      this.distributionStrategy =
+        await this.distributionDetector.detectDistribution();
+      const distributionType = this.distributionDetector.getDistributionType(
+        this.distributionStrategy,
+      );
+
       this.logger.info(`✅ Detected: ${this.distributionStrategy.name}`);
-      
+
       // Update config with detected distribution if config exists
       if (this.config) {
         this.config.distribution = distributionType;
-        
+
         // For macOS, store container runtime
-        if (distributionType === DistributionType.MACOS && this.distributionStrategy instanceof MacOSStrategy) {
-          this.config.containerRuntime = this.distributionStrategy.getContainerRuntime();
+        if (
+          distributionType === DistributionType.MACOS &&
+          this.distributionStrategy instanceof MacOSStrategy
+        ) {
+          this.config.containerRuntime =
+            this.distributionStrategy.getContainerRuntime();
         }
       }
-
     } catch (error) {
       this.logger.error('❌ Failed to detect operating system');
       throw error;
     }
   }
 
-
-
   /**
    * Validate the collected configuration
    */
   private validateConfiguration(): void {
     if (!this.config) {
-      throw new HomelabError('Configuration is not available', 'CONFIG_NOT_AVAILABLE');
+      throw new HomelabError(
+        'Configuration is not available',
+        'CONFIG_NOT_AVAILABLE',
+      );
     }
 
     if (!this.distributionStrategy) {
-      throw new HomelabError('Distribution strategy is not available', 'DISTRIBUTION_NOT_DETECTED');
+      throw new HomelabError(
+        'Distribution strategy is not available',
+        'DISTRIBUTION_NOT_DETECTED',
+      );
     }
 
     try {
       this.logger.info('🔍 Validating configuration...');
-      
+
       // Validate service factory configuration
       this.serviceFactory.validateConfiguration(this.config);
-      
-      this.logger.info('✅ Configuration validation passed');
 
+      this.logger.info('✅ Configuration validation passed');
     } catch (error) {
       this.logger.error('❌ Configuration validation failed');
       throw error;
@@ -144,25 +161,30 @@ export class HomelabApplication {
    */
   private async installDocker(): Promise<void> {
     if (!this.distributionStrategy) {
-      throw new HomelabError('Distribution strategy is not available', 'DISTRIBUTION_NOT_DETECTED');
+      throw new HomelabError(
+        'Distribution strategy is not available',
+        'DISTRIBUTION_NOT_DETECTED',
+      );
     }
 
     try {
       this.logger.info('🐳 Installing Docker...');
-      
-      await this.distributionStrategy.installDocker();
-      
-      this.logger.info('✅ Docker installation completed');
 
+      await this.distributionStrategy.installDocker();
+
+      this.logger.info('✅ Docker installation completed');
     } catch (error) {
       this.logger.error('❌ Docker installation failed');
-      throw new ServiceInstallationError('Docker', error instanceof Error ? error.message : String(error));
+      throw new ServiceInstallationError(
+        'Docker',
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 
   /**
-   * Determine and configure Docker management UI (Dockhand vs Portainer)
-   * Dockhand is the default for Docker, Portainer for Podman or if explicitly chosen
+   * Verify Docker management UI selection is compatible with container runtime
+   * Selection is made at prompt time; this handles edge cases
    */
   private async configureDockerManagementUI(): Promise<void> {
     if (!this.config || !this.distributionStrategy) {
@@ -170,41 +192,26 @@ export class HomelabApplication {
     }
 
     const containerRuntime = await ContainerRuntimeUtils.detectRuntime();
-    const isDocker = containerRuntime === 'docker';
     const isPodman = containerRuntime === 'podman';
 
-    const hasDockhand = this.config.selectedServices.includes(ServiceType.DOCKHAND);
-    const hasPortainer = this.config.selectedServices.includes(ServiceType.PORTAINER);
+    const hasDockhand = this.config.selectedServices.includes(
+      ServiceType.DOCKHAND,
+    );
+    const hasPortainer = this.config.selectedServices.includes(
+      ServiceType.PORTAINER,
+    );
 
-    // If neither is selected, apply defaults based on container runtime
-    if (!hasDockhand && !hasPortainer) {
-      if (isDocker) {
-        this.logger.info('🐳 Docker detected: Adding Dockhand (default Docker management UI)');
-        this.config.selectedServices.push(ServiceType.DOCKHAND);
-      } else if (isPodman) {
-        this.logger.info('🦭 Podman detected: Adding Portainer (default Podman management UI)');
+    // If Dockhand selected but using Podman - switch to Portainer
+    if (hasDockhand && isPodman) {
+      this.logger.warn(
+        '⚠️ Dockhand requires Docker. Switching to Portainer for Podman.',
+      );
+      this.config.selectedServices = this.config.selectedServices.filter(
+        (s) => s !== ServiceType.DOCKHAND,
+      );
+      if (!hasPortainer) {
         this.config.selectedServices.push(ServiceType.PORTAINER);
       }
-    } else if (hasDockhand && hasPortainer) {
-      // Mutually exclusive - keep only one based on runtime
-      this.logger.warn('⚠️ Both Dockhand and Portainer selected. Keeping only one based on container runtime.');
-      if (isDocker) {
-        this.config.selectedServices = this.config.selectedServices.filter(s => s !== ServiceType.PORTAINER);
-        this.logger.info('🐳 Docker detected: Keeping Dockhand, removing Portainer');
-      } else {
-        this.config.selectedServices = this.config.selectedServices.filter(s => s !== ServiceType.DOCKHAND);
-        this.logger.info('🦭 Podman detected: Keeping Portainer, removing Dockhand');
-      }
-    } else if (hasDockhand && isPodman) {
-      // User selected Dockhand but using Podman - switch to Portainer
-      this.logger.warn('⚠️ Dockhand requires Docker. Switching to Portainer for Podman.');
-      this.config.selectedServices = this.config.selectedServices.filter(s => s !== ServiceType.DOCKHAND);
-      if (!this.config.selectedServices.includes(ServiceType.PORTAINER)) {
-        this.config.selectedServices.push(ServiceType.PORTAINER);
-      }
-    } else if (hasPortainer && isDocker) {
-      // User explicitly chose Portainer for Docker - respect their choice
-      this.logger.info('🐳 Docker detected with Portainer (user choice respected)');
     }
   }
 
@@ -213,19 +220,24 @@ export class HomelabApplication {
    */
   private async configureFirewall(): Promise<void> {
     if (!this.distributionStrategy) {
-      throw new HomelabError('Distribution strategy is not available', 'DISTRIBUTION_NOT_DETECTED');
+      throw new HomelabError(
+        'Distribution strategy is not available',
+        'DISTRIBUTION_NOT_DETECTED',
+      );
     }
 
     try {
       this.logger.info('🔥 Configuring firewall...\n');
-      
-      await this.distributionStrategy.configureFirewall();
-      
-      this.logger.info('✅ Firewall configuration completed');
 
+      await this.distributionStrategy.configureFirewall();
+
+      this.logger.info('✅ Firewall configuration completed');
     } catch (error) {
       this.logger.error('❌ Firewall configuration failed');
-      throw new ServiceInstallationError('Firewall', error instanceof Error ? error.message : String(error));
+      throw new ServiceInstallationError(
+        'Firewall',
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 
@@ -238,28 +250,36 @@ export class HomelabApplication {
     }
 
     // Only configure dnsmasq for Linux systems with self-signed certificates
-    const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
+    const isLocalDomain = NetworkUtils.isLocalDomain(
+      this.config.domain,
+      this.config.ip,
+    );
     const isMacOS = this.config.distribution === DistributionType.MACOS;
     const usingSelfSigned = isMacOS || isLocalDomain;
-    
+
     if (!usingSelfSigned || isMacOS) {
       return; // Skip for macOS or public domains
     }
 
     try {
       this.logger.info('🌐 Configuring dnsmasq for local DNS resolution...');
-      
+
       // Configure dnsmasq with basic setup (services will be added later)
       if (this.distributionStrategy.configureDnsmasq) {
-        await this.distributionStrategy.configureDnsmasq(this.config.domain, this.config.ip, []);
+        await this.distributionStrategy.configureDnsmasq(
+          this.config.domain,
+          this.config.ip,
+          [],
+        );
         // Mark that dnsmasq was configured successfully
         (this.config as any).dnsmasqConfigured = true;
       }
-      
-      this.logger.info('✅ dnsmasq configuration completed');
 
+      this.logger.info('✅ dnsmasq configuration completed');
     } catch (error) {
-      this.logger.warn('⚠️  dnsmasq configuration failed, but continuing with /etc/hosts method...');
+      this.logger.warn(
+        '⚠️  dnsmasq configuration failed, but continuing with /etc/hosts method...',
+      );
       this.logger.debug(`dnsmasq error: ${error}`);
       // Mark that dnsmasq configuration failed
       (this.config as any).dnsmasqConfigured = false;
@@ -275,27 +295,33 @@ export class HomelabApplication {
     }
 
     // Only configure dnsmasq for Linux systems with self-signed certificates
-    const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
+    const isLocalDomain = NetworkUtils.isLocalDomain(
+      this.config.domain,
+      this.config.ip,
+    );
     const isMacOS = this.config.distribution === DistributionType.MACOS;
     const usingSelfSigned = isMacOS || isLocalDomain;
-    
+
     if (!usingSelfSigned || isMacOS || this.installedServices.length === 0) {
       return; // Skip for macOS, public domains, or no services
     }
 
     try {
       this.logger.info('🌐 Updating dnsmasq with installed services...');
-      
+
       // Configure dnsmasq with the domain and installed services
       if (this.distributionStrategy.configureDnsmasq) {
-        const serviceTypes = this.installedServices.map(s => s.type);
-        await this.distributionStrategy.configureDnsmasq(this.config.domain, this.config.ip, serviceTypes);
+        const serviceTypes = this.installedServices.map((s) => s.type);
+        await this.distributionStrategy.configureDnsmasq(
+          this.config.domain,
+          this.config.ip,
+          serviceTypes,
+        );
         // Mark that dnsmasq was configured successfully
         (this.config as any).dnsmasqConfigured = true;
       }
-      
-      this.logger.info('✅ dnsmasq updated with installed services');
 
+      this.logger.info('✅ dnsmasq updated with installed services');
     } catch (error) {
       this.logger.warn('⚠️  dnsmasq update failed, but continuing...');
       this.logger.debug(`dnsmasq error: ${error}`);
@@ -309,21 +335,28 @@ export class HomelabApplication {
    */
   private async createDockerNetwork(): Promise<void> {
     if (!this.config) {
-      throw new HomelabError('Configuration is not available', 'CONFIG_NOT_AVAILABLE');
+      throw new HomelabError(
+        'Configuration is not available',
+        'CONFIG_NOT_AVAILABLE',
+      );
     }
 
     try {
-      this.logger.info(`🌐 Creating container network: ${this.config.networkName}...`);
-      
+      this.logger.info(
+        `🌐 Creating container network: ${this.config.networkName}...`,
+      );
+
       const runtime = await ContainerRuntimeUtils.detectRuntime();
       const command = `${runtime} network create ${this.config.networkName} || true`;
       await $`sh -c ${command}`;
-      
-      this.logger.info('✅ Container network ready');
 
+      this.logger.info('✅ Container network ready');
     } catch (error) {
       this.logger.error('❌ Container network creation failed');
-      throw new ServiceInstallationError('Container Network', error instanceof Error ? error.message : String(error));
+      throw new ServiceInstallationError(
+        'Container Network',
+        error instanceof Error ? error.message : String(error),
+      );
     }
   }
 
@@ -332,7 +365,10 @@ export class HomelabApplication {
    */
   private async installServices(): Promise<void> {
     if (!this.config) {
-      throw new HomelabError('Configuration is not available', 'CONFIG_NOT_AVAILABLE');
+      throw new HomelabError(
+        'Configuration is not available',
+        'CONFIG_NOT_AVAILABLE',
+      );
     }
 
     try {
@@ -343,11 +379,14 @@ export class HomelabApplication {
 
       // Create service instances
       const services = this.serviceFactory.createServices(this.config);
-      
+
       // Get installation order based on dependencies
-      const orderedServices = this.serviceFactory.getInstallationOrder(services);
-      
-      this.logger.info(`📋 Installation order: ${orderedServices.map(s => s.name).join(' → ')}`);
+      const orderedServices =
+        this.serviceFactory.getInstallationOrder(services);
+
+      this.logger.info(
+        `📋 Installation order: ${orderedServices.map((s) => s.name).join(' → ')}`,
+      );
 
       // Install services in order
       for (const service of orderedServices) {
@@ -362,13 +401,12 @@ export class HomelabApplication {
       await this.configureDnsmasqPostInstall();
 
       this.logger.info('✅ All services installed and configured successfully');
-
     } catch (error) {
       this.logger.error('❌ Service installation failed');
-      
+
       // Attempt rollback of installed services
       await this.rollbackServices();
-      
+
       throw error;
     }
   }
@@ -379,29 +417,35 @@ export class HomelabApplication {
   private async installService(service: Service): Promise<void> {
     try {
       this.logger.info(`🔧 Installing ${service.name}...`);
-      
+
       // Install the service
       await service.install();
-      
+
       // Configure the service
       await service.configure();
-      
+
       // Check if service was actually installed successfully
-      if ('isInstalled' in service && typeof service.isInstalled === 'function') {
+      if (
+        'isInstalled' in service &&
+        typeof service.isInstalled === 'function'
+      ) {
         if (service.isInstalled()) {
-          this.logger.info(`✅ ${service.name} installed and configured successfully`);
+          this.logger.info(
+            `✅ ${service.name} installed and configured successfully`,
+          );
         } else {
           this.logger.warn(`⚠️  ${service.name} installation was skipped`);
         }
       } else {
-        this.logger.info(`✅ ${service.name} installed and configured successfully`);
+        this.logger.info(
+          `✅ ${service.name} installed and configured successfully`,
+        );
       }
-
     } catch (error) {
       this.logger.error(`❌ Failed to install ${service.name}`);
       throw new ServiceInstallationError(
-        service.name, 
-        error instanceof Error ? error.message : String(error)
+        service.name,
+        error instanceof Error ? error.message : String(error),
       );
     }
   }
@@ -412,15 +456,21 @@ export class HomelabApplication {
   private async restartCoreServices(): Promise<void> {
     try {
       this.logger.info('🔄 Restarting core services...');
-      
-      const runtime = await ContainerRuntimeUtils.detectRuntime();
-      const command = `${runtime} restart caddy portainer || true`;
-      await $`sh -c ${command}`;
-      
-      this.logger.info('✅ Core services restarted successfully');
 
+      const runtime = await ContainerRuntimeUtils.detectRuntime();
+      const managementContainer = this.config!.selectedServices.includes(
+        ServiceType.DOCKHAND,
+      )
+        ? 'dockhand'
+        : 'portainer';
+      const command = `${runtime} restart caddy ${managementContainer} || true`;
+      await $`sh -c ${command}`;
+
+      this.logger.info('✅ Core services restarted successfully');
     } catch (error) {
-      this.logger.warn('⚠️  Failed to restart core services, but continuing...');
+      this.logger.warn(
+        '⚠️  Failed to restart core services, but continuing...',
+      );
       this.logger.debug(`Restart error: ${error}`);
     }
   }
@@ -440,14 +490,15 @@ export class HomelabApplication {
       try {
         // Note: Rollback implementation would depend on service-specific logic
         // For now, we just log the attempt
-        this.logger.warn(`⚠️  Manual cleanup may be required for ${service.name}`);
-        
+        this.logger.warn(
+          `⚠️  Manual cleanup may be required for ${service.name}`,
+        );
       } catch (rollbackError) {
-        this.logger.error(`❌ Failed to rollback ${service.name}: ${rollbackError}`);
+        this.logger.error(
+          `❌ Failed to rollback ${service.name}: ${rollbackError}`,
+        );
       }
     }
-
-
   }
 
   /**
@@ -463,32 +514,37 @@ export class HomelabApplication {
     console.log(`🌐 Server IP: ${this.config.ip}`);
     console.log(`🏷️  Domain: ${this.config.domain}`);
     console.log(`🔗 Network: ${this.config.networkName}`);
-    
+
     // Show container runtime info
     const runtime = ContainerRuntimeUtils.getCurrentRuntime();
     if (runtime) {
       console.log(`🐳 Container Runtime: ${runtime}`);
     }
-    
+
     if (this.config.distribution === DistributionType.MACOS) {
-      console.log(`🐳 Container Runtime: ${this.config.containerRuntime || 'docker'}`);
+      console.log(
+        `🐳 Container Runtime: ${this.config.containerRuntime || 'docker'}`,
+      );
     }
-    
+
     // Check if using self-signed certificates (same logic as Caddy service)
-    const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
+    const isLocalDomain = NetworkUtils.isLocalDomain(
+      this.config.domain,
+      this.config.ip,
+    );
     const isMacOS = this.config.distribution === DistributionType.MACOS;
     const usingSelfSigned = isMacOS || isLocalDomain;
-    
+
     console.log('\n📋 Installed Services:');
 
     for (const service of this.installedServices) {
       let accessUrl = service.getAccessUrl();
-      
+
       // For self-signed certificates, show URLs with appropriate note
       if (usingSelfSigned && accessUrl.includes('https://')) {
         const dnsmasqConfigured = (this.config as any).dnsmasqConfigured;
         const needsHostsFile = isMacOS || dnsmasqConfigured === false;
-        
+
         if (needsHostsFile) {
           const hostsIP = isMacOS ? '127.0.0.1' : this.config.ip;
           accessUrl += ` (requires /etc/hosts: ${hostsIP} + subdomain)`;
@@ -496,114 +552,193 @@ export class HomelabApplication {
           accessUrl += ` (dnsmasq configured)`;
         }
       }
-      
+
       console.log(`   ✓ ${service.name}: ${accessUrl}`);
     }
 
     console.log('\n📚 Next Steps:');
-    
+
     // Show container runtime warnings
     const containerRuntime = ContainerRuntimeUtils.getCurrentRuntime();
     if (containerRuntime) {
-      const warnings = ContainerRuntimeUtils.getRuntimeWarnings(containerRuntime);
+      const warnings =
+        ContainerRuntimeUtils.getRuntimeWarnings(containerRuntime);
       if (warnings.length > 0) {
         console.log('');
-        warnings.forEach(warning => console.log(warning));
+        warnings.forEach((warning) => console.log(warning));
         console.log('');
       }
     }
-    
+
     if (usingSelfSigned) {
       // Check if dnsmasq was configured successfully on Linux
       const dnsmasqConfigured = (this.config as any).dnsmasqConfigured;
       const needsHostsFile = isMacOS || dnsmasqConfigured === false;
-      
+
       // Define web services list (used for both /etc/hosts and non-web services filtering)
-      const webServices = ['copyparty', 'portainer', 'duckdb', 'n8n', 'kestra', 'keystonejs', 
-                           'ollama', 'openwebui', 'opennotebooklm', 'authelia', 'keycloak', 'pocketid', 
-                           'rabbitmq', 'grafana', 'loki', 'trivy', 'sonarqube', 'nexus', 'vault',
-                           'vaultwarden', 'backvault', 'linkwarden', 'rapidoc', 'hoppscotch', 'locust', 'psitransfer', 'excalidraw', 
-                           'drawio', 'kroki', 'outline', 'grist', 'nocodb', 'twentycrm', 'medusajs', 
-                           'plane', 'mattermost', 'calcom', 'jasperreports', 'stirlingpdf', 'onedev', 'registry', 'localstack', 
-                           'libretranslate', 'uptimekuma', 'dozzle', 'k3d', 'semaphore', 'liquibase', 'apisix', 'opensearch', 'redash', 'kurrier', 'wetty',
-                           'huly', 'rustfs', 'infisical', 'floci', 'litellm', 'openclaw', 'openjarvis', 'firecrawl', 'directus', 'orcarouterlite', 'zrok'];
-      
+      const webServices = [
+        'copyparty',
+        'portainer',
+        'dockhand',
+        'rustfs',
+        'duckdb',
+        'n8n',
+        'kestra',
+        'keystonejs',
+        'ollama',
+        'openwebui',
+        'opennotebooklm',
+        'authelia',
+        'keycloak',
+        'pocketid',
+        'rabbitmq',
+        'grafana',
+        'loki',
+        'trivy',
+        'sonarqube',
+        'nexus',
+        'vault',
+        'vaultwarden',
+        'backvault',
+        'linkwarden',
+        'rapidoc',
+        'hoppscotch',
+        'locust',
+        'psitransfer',
+        'excalidraw',
+        'drawio',
+        'kroki',
+        'outline',
+        'grist',
+        'nocodb',
+        'twentycrm',
+        'medusajs',
+        'mattermost',
+        'calcom',
+        'jasperreports',
+        'stirlingpdf',
+        'onedev',
+        'registry',
+        'localstack',
+        'libretranslate',
+        'uptimekuma',
+        'dozzle',
+        'k3d',
+        'semaphore',
+        'liquibase',
+        'apisix',
+        'opensearch',
+        'redash',
+        'kurrier',
+        'wetty',
+        'huly',
+        'infisical',
+        'floci',
+        'litellm',
+        'openclaw',
+        'openjarvis',
+        'firecrawl',
+        'directus',
+        'orcarouterlite',
+        'zrok',
+      ];
+
       if (needsHostsFile) {
-        console.log('   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:');
+        console.log(
+          '   ⚠️  IMPORTANT: Configure DNS by adding these lines to /etc/hosts:',
+        );
         console.log('\n   Run: sudo nano /etc/hosts');
         console.log('\n   Then copy and paste these lines:\n');
-        
+
         // Use 127.0.0.1 for macOS, server IP for Linux with self-signed certs
         const hostsIP = isMacOS ? '127.0.0.1' : this.config.ip;
         console.log(`   ${hostsIP} ${this.config.domain}`);
-        
+
         // Map service types to their subdomain names
         const subdomainMap: Record<string, string> = {
-          'copyparty': 'files',
-          'portainer': 'portainer',
-          'jasperreports': 'jasper',
-          'stirlingpdf': 'pdf',
-          'libretranslate': 'translate',
-          'huly': 'huly',
-          'rustfs': 'rustfs',
-          'infisical': 'infisical',
-          'floci': 'floci',
-          'litellm': 'litellm',
-          'openclaw': 'openclaw',
-          'openjarvis': 'openjarvis',
-          'firecrawl': 'firecrawl',
-          'directus': 'directus',
-          'orcarouterlite': 'orcarouter',
-          'dozzle': 'dozzle',
-          'zrok': 'zrok',
-          'redash': 'redash'
+          copyparty: 'files',
+          dockhand: 'dockhand',
+          portainer: 'portainer',
+          rustfs: 'rustfs',
+          jasperreports: 'jasper',
+          stirlingpdf: 'pdf',
+          libretranslate: 'translate',
+          huly: 'huly',
+          infisical: 'infisical',
+          floci: 'floci',
+          litellm: 'litellm',
+          openclaw: 'openclaw',
+          openjarvis: 'openjarvis',
+          firecrawl: 'firecrawl',
+          directus: 'directus',
+          orcarouterlite: 'orcarouter',
+          dozzle: 'dozzle',
+          zrok: 'zrok',
+          redash: 'redash',
         };
-        
+
         for (const service of this.installedServices) {
-          // Only add entries for web services (skip mailserver, frp, databases without web UI)
+          // Only add entries for web services (skip mailserver, databases without web UI)
           if (webServices.includes(service.type)) {
             const subdomain = subdomainMap[service.type] || service.type;
             console.log(`   ${hostsIP} ${subdomain}.${this.config.domain}`);
           }
         }
-        
-        console.log('\n   After saving, your services will be accessible at the URLs above.');
+
+        console.log(
+          '\n   After saving, your services will be accessible at the URLs above.',
+        );
       } else {
-        console.log('   ✅ dnsmasq has been configured for automatic DNS resolution.');
-        console.log('   🌐 Your services should be accessible directly at the URLs above.');
-        console.log('   📱 Other devices on your network can also access these services.');
+        console.log(
+          '   ✅ dnsmasq has been configured for automatic DNS resolution.',
+        );
+        console.log(
+          '   🌐 Your services should be accessible directly at the URLs above.',
+        );
+        console.log(
+          '   📱 Other devices on your network can also access these services.',
+        );
       }
-      
+
       // Show special instructions for non-web services
-      const nonWebServices = this.installedServices.filter(s => !webServices.includes(s.type));
+      const nonWebServices = this.installedServices.filter(
+        (s) => !webServices.includes(s.type),
+      );
       if (nonWebServices.length > 0) {
         console.log('\n   📧 Non-web services (no DNS configuration needed):');
         for (const service of nonWebServices) {
+          const cfgPath = this.config!.configPath;
           const descriptions: Record<string, string> = {
-            'mailserver': 'Mail server - configure email client with SMTP/IMAP ports',
-            'frp': 'Tunnel client - check ~/wsconf/frpc.ini for configuration',
-            'cloudflared': 'Cloudflare Tunnel - managed via Cloudflare Dashboard',
-            'kafka': 'Streaming platform - connect via localhost:9092',
-            'postgresql': 'Database server - connect via localhost:5432',
-            'redis': 'Cache server - connect via localhost:6379',
-            'mongodb': 'Database server - connect via localhost:27017',
-            'mariadb': 'Database server - connect via localhost:3306',
-            'scylladb': 'Database server - connect via localhost:9042',
-            'ignite': 'In-memory database - JDBC via localhost:10800',
-            'fluentbit': 'Log processor - no direct connection needed'
+            mailserver:
+              'Mail server - configure email client with SMTP/IMAP ports',
+            cloudflared: 'Cloudflare Tunnel - managed via Cloudflare Dashboard',
+            kafka: 'Streaming platform - connect via localhost:9092',
+            postgresql: 'Database server - connect via localhost:5432',
+            redis: 'Cache server - connect via localhost:6379',
+            mongodb: 'Database server - connect via localhost:27017',
+            mariadb: 'Database server - connect via localhost:3306',
+            scylladb: 'Database server - connect via localhost:9042',
+            ignite: 'In-memory database - JDBC via localhost:10800',
+            fluentbit: 'Log processor - no direct connection needed',
           };
-          
-          const desc = descriptions[service.type] || 'Service - check documentation for connection details';
+
+          const desc =
+            descriptions[service.type] ||
+            'Service - check documentation for connection details';
           console.log(`   • ${service.name}: ${desc}`);
         }
       }
     } else {
-      console.log('   1. Ensure your DNS is configured to point to your server IP');
-      console.log('   2. Firewall has been configured to allow ports 22 (SSH), 80 (HTTP), and 443 (HTTPS)');
+      console.log(
+        '   1. Ensure your DNS is configured to point to your server IP',
+      );
+      console.log(
+        '   2. Firewall has been configured to allow ports 22 (SSH), 80 (HTTP), and 443 (HTTPS)',
+      );
       console.log('   3. Access your services using the URLs above');
       console.log('   4. Check service logs if you encounter any issues');
     }
-    
+
     console.log('═'.repeat(60));
   }
 

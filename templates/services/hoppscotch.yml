@@ -10,7 +10,16 @@ commands:
           --name hoppscotch \
           --network {{NETWORK_NAME}} \
           -p 3080:3000 \
+          -e DATABASE_URL=postgresql://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/hoppscotch \
+          -e PGSSLMODE=disable \
+          -e VITE_BASE_URL=https://hoppscotch.{{DOMAIN}} \
+          -e VITE_BACKEND_API_URL=https://hoppscotch.{{DOMAIN}} \
+          -e WHITELISTED_ORIGINS=https://hoppscotch.{{DOMAIN}} \
+          -e DATA_ENCRYPTION_KEY={{ADMIN_TOKEN}} \
           hoppscotch/hoppscotch:latest
 variables:
   - NETWORK_NAME
-dependencies: []
+  - DOMAIN
+  - STORAGE_PASSWORD
+dependencies:
+  - PostgreSQL

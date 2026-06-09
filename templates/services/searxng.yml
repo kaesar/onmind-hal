@@ -1,0 +1,23 @@
+name: SearXNG
+description: Privacy-respecting metasearch engine
+commands:
+  install:
+    - docker pull searxng/searxng:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/searxng
+  run: |-
+    docker run \
+          -d \
+          --name searxng \
+          --network {{NETWORK_NAME}} \
+          -p 8080:8080 \
+          -v ~/{{DATA_PATH}}/searxng:/etc/searxng:rw \
+          -e SEARXNG_BASE_URL=https://searxng.{{DOMAIN}} \
+          searxng/searxng:latest
+variables:
+  - NETWORK_NAME
+ports:
+  - "8080:8080"
+accessUrl: https://searxng.{{DOMAIN}}
+dependencies: []
+isCore: false

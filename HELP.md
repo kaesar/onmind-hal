@@ -158,7 +158,7 @@ tests/                      # Test suite
 
 Core services are automatically included in every setup, while optional services are presented to the user for selection during the interactive prompts. It's good to consider some aspects or steps:
 
-- Include ServiceType Enum for the new service
+- Include Enum for the new service in `types.ts`
 - Create an implementation file for the new service
 - Register the new service in `factory.ts`
 - Create template in `.yml` (YAML)
@@ -368,16 +368,19 @@ If you need to remove all HAL services and start fresh:
 
 ```bash
 # Stop and remove all HAL containers
-docker ps -a --filter "name=caddy|portainer|copyparty|postgresql|redis|mongodb|mariadb|minio|kafka|rabbitmq|ollama|n8n|kestra|authelia|localstack|onedev|sonarqube|trivy|rapidoc|grafana|loki|fluentbit|registry|nexus|vault|psitransfer|excalidraw|kroki|outline|grist|nocodb|mailserver" --format "{{.Names}}" | xargs -r docker rm -f
+docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|ignite|kafka|rabbitmq|ollama|openwebui|n8n|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|floci|localstack|onedev|semaphore|sonarqube|trivy|rapidoc|hoppscotch|locust|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|linkwarden|psitransfer|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|twentycrm|keystonejs|calcom|huly|mattermost|jasperreports|stirlingpdf|libretranslate|litellm|hermes|openclaw|openhuman|firecrawl|searxng|mailserver|cloudflared|wetty" --format "{{.Names}}" | xargs -r docker rm -f
 
 # Remove HAL network
 docker network rm homelab-network 2>/dev/null || true
 
 # Remove data directories (optional)
-rm -rf ~/wsdata
+rm -rf ~/ws/data
 
 # Remove Docker volumes (optional)
 docker volume ls --filter "name=postgres_data|redis_data|rabbitmq_data|grafana_data" --format "{{.Name}}" | xargs -r docker volume rm
+
+# Set priviledges in files
+sudo chown -R $USER:$USER /home/andrey/ws/data
 ```
 
 ## Platform-Specific Notes
@@ -493,7 +496,7 @@ When running HAL setup, select **FRP** from the optional services list.
 After HAL installation completes, edit the FRP client configuration:
 
 ```bash
-nano ~/wsconf/frpc.ini
+nano ~/ws/init/frpc.ini
 ```
 
 Replace the placeholder configuration with:
@@ -552,7 +555,7 @@ A    grafana        YOUR_VPS_IP
 Edit your Caddyfile to use your public domain:
 
 ```bash
-nano ~/wsconf/Caddyfile
+nano ~/ws/init/Caddyfile
 ```
 
 Change from `.local` or `.lan` to your actual domain:
@@ -766,8 +769,8 @@ docker run -d \
   --network homelab-network \
   -p 80:80 \
   -p 443:443 \
-  -v "C:\Users\youruser\wsconf\Caddyfile:/etc/caddy/Caddyfile" \
-  -v "C:\Users\youruser\wsdata\caddy:/data" \
+  -v "C:\Users\youruser\ws\init\Caddyfile:/etc/caddy/Caddyfile" \
+  -v "C:\Users\youruser\ws\data\caddy:/data" \
   caddy:latest
 ```
 
@@ -779,8 +782,8 @@ docker run \
       --name copyparty \
       --network homelab-network \
       -p 3923:3923 \
-      -v "C:\Users\youruser\wsdata\copyparty:/w" \
-      -v "C:\Users\youruser\wsconf:/cfg" \
+      -v "C:\Users\youruser\ws\data\copyparty:/w" \
+      -v "C:\Users\youruser\ws\init:/cfg" \
       copyparty/ac:latest
 ```
 
@@ -853,7 +856,7 @@ docker rmi $(docker images -q)
 docker volume rm $(docker volume ls -q)
 docker network rm $(docker network ls -q)
 docker system prune -a --volumes -f
-sudo rm -rf ~/wsdata/* ~/wsconf/*
+sudo rm -rf ~/ws/data/* ~/ws/init/*
 
 docker ps -a
 docker images
@@ -863,7 +866,7 @@ docker network ls
 
 **One-line complete cleanup:**
 ```bash
-docker stop $(docker ps -aq) 2>/dev/null; docker rm $(docker ps -aq) 2>/dev/null; docker system prune -a --volumes -f; sudo rm -rf ~/wsdata/* ~/wsconf/*
+docker stop $(docker ps -aq) 2>/dev/null; docker rm $(docker ps -aq) 2>/dev/null; docker system prune -a --volumes -f; sudo rm -rf ~/ws/data/* ~/ws/init/*
 ```
 
 **After cleanup, reinstall:**
@@ -1008,7 +1011,7 @@ docker logs caddy
 # Restart Caddy with proper permissions
 docker stop caddy
 docker rm caddy
-docker run -d --name caddy --network homelab-network -p 80:80 -p 443:443 -v ~/wsconf:/etc/caddy caddy:latest
+docker run -d --name caddy --network homelab-network -p 80:80 -p 443:443 -v ~/ws/init:/etc/caddy caddy:latest
 ```
 
 **Network issues:**
@@ -1048,8 +1051,39 @@ dig yourdomain.com
 **SSL certificate issues:**
 ```bash
 # Caddy auto-generates Let's Encrypt certs
-# Check Caddy logs for certificate errors
 docker logs caddy 2>&1 | grep -i cert
+```
 
-# Ensure port 80 and 443 are accessible from internet
+## Template Variables
+
+OnMind-HAL usa un sistema de plantillas YAML (`.yml`) para definir la instalación y configuración de cada servicio. Las plantillas usan variables con la sintaxis `{{VARIABLE_NAME}}` que son reemplazadas dinámicamente por el `TemplateEngine` con valores del objeto `HomelabConfig`.
+
+### Variables de expresioens y origen de los Valores
+
+Las variables son proporcionadas por el usuario durante la configuración interactiva (`bun run start`) y almacenadas en `HomelabConfig`:
+
+- **`NETWORK_NAME`**: Prompt `Enter container network name` (default: `homelab-network`)
+- **`DOMAIN`**: Prompt `Enter your domain` (ej. `mini.lan`)
+- **`STORAGE_PASSWORD`**: Prompt `Enter a storage/database password` (solo si se seleccionan servicios que lo requieren)
+- **`DATA_PATH`**: Prompt `Enter data path` (default: `ws/data`)
+- **`CONFIG_PATH`**: Prompt `Enter config path` (default: `ws/init`)
+- **`IP`**: Detectado automáticamente o prompt `Enter server IP address`
+- **`ADMIN_TOKEN`**: Generado automáticamente (32 caracteres alfanuméricos)
+- **`SECRET_KEY`**, **`UTILS_SECRET`**: Generados automáticamente para servicio de Outline
+
+### Ejemplo de Template
+
+```yaml
+# templates/services/mongodb.yml
+commands:
+  run: |
+    docker run -d \
+      --name mongodb \
+      --network {{NETWORK_NAME}} \
+      -e MONGO_INITDB_ROOT_PASSWORD={{STORAGE_PASSWORD}} \
+      mongo:latest
+
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
 ```

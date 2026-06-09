@@ -4,16 +4,16 @@ commands:
   install:
     - docker pull copyparty/ac:latest
   setup:
-    - mkdir -p ~/wsconf
-    - mkdir -p ~/wsdata/copyparty
+    - mkdir -p ~/{{CONFIG_PATH}}
+    - mkdir -p ~/{{DATA_PATH}}/copyparty
   run: |-
     docker run \
           -d \
           --name copyparty \
           --network {{NETWORK_NAME}} \
           -p 3923:3923 \
-          -v ~/wsdata/copyparty:/w \
-          -v ~/wsconf:/cfg \
+          -v ~/{{DATA_PATH}}/copyparty:/w \
+          -v ~/{{CONFIG_PATH}}:/cfg \
           copyparty/ac:latest
 variables:
   - NETWORK_NAME
@@ -21,8 +21,8 @@ variables:
 ports:
   - "3923:3923"
 volumes:
-  - ~/wsdata/copyparty:/w
-  - ~/wsconf:/cfg
+  - ~/{{DATA_PATH}}/copyparty:/w
+  - ~/{{CONFIG_PATH}}:/cfg
 accessUrl: https://files.{{DOMAIN}}
 dependencies: []
 isCore: true

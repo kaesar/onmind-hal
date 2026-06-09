@@ -3,12 +3,12 @@ import { TemplateEngine } from '../../templates/engine.js';
 import { BaseService } from '../base.js';
 
 /**
- * Redash SQL query editor and visualization platform service implementation
+ * ReDash SQL query editor and visualization platform service implementation
  */
 export class RedashService extends BaseService {
   constructor(config: HomelabConfig, templateEngine: TemplateEngine) {
     super(
-      'Redash',
+      'ReDash',
       ServiceType.REDASH,
       false,
       ['PostgreSQL', 'Redis'],

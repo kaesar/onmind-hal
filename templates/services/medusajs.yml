@@ -2,29 +2,38 @@ name: medusajs-service
 description: MedusaJS - Headless e-commerce platform
 commands:
   install:
-    - docker pull medusajs/medusa:latest
+    - docker pull node:20-alpine
   setup:
-    - mkdir -p ~/wsdata/medusajs
+    - mkdir -p ~/{{DATA_PATH}}/medusajs
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE medusa OWNER postgres;" 2>/dev/null || true
+    - git clone --depth=1 https://github.com/medusajs/medusa-starter-default ~/{{DATA_PATH}}/medusajs-starter 2>/dev/null || true
+    - cp templates/dockerfiles/medusajs.dockerfile ~/{{DATA_PATH}}/medusajs-starter/Dockerfile
+    - cd ~/{{DATA_PATH}}/medusajs-starter && docker build -t medusajs:latest .
   run: |-
     docker run \
           -d \
           --name medusajs \
           --network {{NETWORK_NAME}} \
           -p 9003:9000 \
+          --restart unless-stopped \
           -e DATABASE_TYPE=postgres \
-          -e DATABASE_URL=postgresql://postgres:postgres@postgresql:5432/medusa \
+          -e DATABASE_URL=postgresql://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/medusa \
           -e REDIS_URL=redis://redis:6379 \
-          -e JWT_SECRET=supersecret \
-          -e COOKIE_SECRET=supersecret \
-          -v ~/wsdata/medusajs:/app/medusa \
-          medusajs/medusa:latest
+          -e JWT_SECRET={{ADMIN_TOKEN}} \
+          -e COOKIE_SECRET={{ADMIN_TOKEN}} \
+          -v ~/{{DATA_PATH}}/medusajs:/app/data \
+          medusajs:latest
 variables:
   - NETWORK_NAME
   - DOMAIN
+  - STORAGE_PASSWORD
+  - ADMIN_TOKEN
 ports:
-  - "9001:9000"
+  - "9003:9000"
 volumes:
-  - ~/wsdata/medusajs:/data
+  - ~/{{DATA_PATH}}/medusajs:/data
 accessUrl: https://shop.{{DOMAIN}}
-dependencies: []
+dependencies:
+  - PostgreSQL
+  - Redis
 isCore: false

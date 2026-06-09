@@ -8,21 +8,23 @@ export enum DistributionType {
   ARCH = 'arch',
   AMAZON_LINUX = 'amazon',
   MACOS = 'macos',
-  MINGW = 'mingw'
+  MINGW = 'mingw',
 }
 
 // Container runtime types for macOS
 export enum ContainerRuntime {
   DOCKER = 'docker',
   COLIMA = 'colima',
-  PODMAN = 'podman'
+  PODMAN = 'podman',
 }
 
 // Service types
 export enum ServiceType {
   CADDY = 'caddy',
+  DOCKHAND = 'dockhand',
   PORTAINER = 'portainer',
   COPYPARTY = 'copyparty',
+  RUSTFS = 'rustfs',
   DUCKDB = 'duckdb',
   POSTGRESQL = 'postgresql', // (alternative to Oracle DB)
   REDIS = 'redis',
@@ -30,8 +32,8 @@ export enum ServiceType {
   MARIADB = 'mariadb',
   SCYLLADB = 'scylladb',
   IGNITE = 'ignite',
-  OPENJARVIS = 'openjarvis',
   KAFKA = 'kafka',
+  KAFKAUI = 'kafkaui',
   RABBITMQ = 'rabbitmq',
   OLLAMA = 'ollama',
   OPENWEBUI = 'openwebui',
@@ -53,27 +55,30 @@ export enum ServiceType {
   RAPIDOC = 'rapidoc',
   HOPPSCOTCH = 'hoppscotch',
   LOCUST = 'locust',
+  K6 = 'k6',
   GRAFANA = 'grafana',
   LOKI = 'loki',
   OPENSEARCH = 'opensearch',
+  COROOT = 'coroot',
   REDASH = 'redash',
   FLUENTBIT = 'fluentbit',
   REGISTRY = 'registry',
   NEXUS = 'nexus',
   VAULT = 'vault',
+  CONSUL = 'consul',
   VAULTWARDEN = 'vaultwarden',
   BACKVAULT = 'backvault',
   LINKWARDEN = 'linkwarden',
   PSITRANSFER = 'psitransfer',
   EXCALIDRAW = 'excalidraw',
   DRAWIO = 'drawio',
+  WISEMAPPING = 'wisemapping',
   KROKI = 'kroki',
   OUTLINE = 'outline',
   GRIST = 'grist',
   NOCODB = 'nocodb',
   TWENTYCRM = 'twentycrm',
   MEDUSAJS = 'medusajs',
-  PLANE = 'plane',
   MATTERMOST = 'mattermost',
   CALCOM = 'calcom',
   JASPERREPORTS = 'jasperreports',
@@ -87,17 +92,19 @@ export enum ServiceType {
   UPTIMEKUMA = 'uptimekuma',
   DOZZLE = 'dozzle',
   HULY = 'huly',
-  RUSTFS = 'rustfs',
-  INFISCAL = 'infiscal',
+  INFISCAL = 'infisical',
   FLOCI = 'floci',
   LITELLM = 'litellm',
   ANYTHINGLLM = 'anythingllm',
+  HERMES = 'hermes',
   OPENCLAW = 'openclaw',
   OPENHUMAN = 'openhuman',
+  OPENJARVIS = 'openjarvis',
   FIRECRAWL = 'firecrawl',
+  SEARXNG = 'searxng',
   DIRECTUS = 'directus',
   ORCAROUTERLITE = 'orcarouterlite',
-  DOCKHAND = 'dockhand',
+  FILESTASH = 'filestash',
   RUSTDESK = 'rustdesk',
 }
 
@@ -110,6 +117,8 @@ export interface HomelabConfig {
   selectedServices: ServiceType[];
   distribution: DistributionType;
   containerRuntime?: ContainerRuntime; // For macOS
+  configPath: string;
+  dataPath: string;
 }
 
 // Service selection interface
@@ -136,7 +145,11 @@ export interface DistributionStrategy {
   installDocker(): Promise<void>;
   installPackages(packages: string[]): Promise<void>;
   configureFirewall(): Promise<void>;
-  configureDnsmasq?(domain: string, ip: string, services: string[]): Promise<void>;
+  configureDnsmasq?(
+    domain: string,
+    ip: string,
+    services: string[],
+  ): Promise<void>;
   getPackageManager(): string;
 }
 

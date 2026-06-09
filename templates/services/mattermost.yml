@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull mattermost/mattermost-team-edition:latest
   setup:
-    - mkdir -p ~/wsconf/mattermost
+    - mkdir -p ~/{{CONFIG_PATH}}/mattermost
     - docker volume create mattermost_data
     - docker volume create mattermost_logs
     - docker volume create mattermost_plugins
@@ -14,7 +14,7 @@ commands:
           --name mattermost \
           --network {{NETWORK_NAME}} \
           -p 8065:8065 \
-          -v ~/wsconf/mattermost:/mattermost/config \
+          -v ~/{{CONFIG_PATH}}/mattermost:/mattermost/config \
           -v mattermost_data:/mattermost/data \
           -v mattermost_logs:/mattermost/logs \
           -v mattermost_plugins:/mattermost/plugins \

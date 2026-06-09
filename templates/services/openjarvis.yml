@@ -5,8 +5,8 @@ commands:
     - docker pull openjarvis/openjarvis:latest
     - docker pull ollama/ollama:latest
   setup:
-    - mkdir -p ~/wsdata/openjarvis/data
-    - mkdir -p ~/wsdata/openjarvis/ollama
+    - mkdir -p ~/{{DATA_PATH}}/openjarvis/data
+    - mkdir -p ~/{{DATA_PATH}}/openjarvis/ollama
     - docker volume create openjarvis_data
     - docker volume create openjarvis_ollama_data
   run: |-

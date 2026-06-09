@@ -4,14 +4,14 @@ commands:
   install:
     - docker pull psitrax/psitransfer:latest
   setup:
-    - mkdir -p ~/wsdata/psitransfer/data
+    - mkdir -p ~/{{DATA_PATH}}/psitransfer/data
   run: |-
     docker run \
           -d \
           --name psitransfer \
           --network {{NETWORK_NAME}} \
           -p 3005:3000 \
-          -v ~/wsdata/psitransfer/data:/data \
+          -v ~/{{DATA_PATH}}/psitransfer/data:/data \
           -e PSITRANSFER_UPLOAD_DIR=/data \
           psitrax/psitransfer:latest
 variables:

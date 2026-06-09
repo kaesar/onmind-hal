@@ -4,10 +4,10 @@ commands:
   install:
     - docker pull docker.io/mailserver/docker-mailserver:latest
   setup:
-    - mkdir -p ~/wsdata/mailserver/data
-    - mkdir -p ~/wsdata/mailserver/state
-    - mkdir -p ~/wsdata/mailserver/logs
-    - mkdir -p ~/wsdata/mailserver/config
+    - mkdir -p ~/{{DATA_PATH}}/mailserver/data
+    - mkdir -p ~/{{DATA_PATH}}/mailserver/state
+    - mkdir -p ~/{{DATA_PATH}}/mailserver/logs
+    - mkdir -p ~/{{DATA_PATH}}/mailserver/config
   run: |-
     docker run \
           -d \
@@ -17,10 +17,10 @@ commands:
           -p 143:143 \
           -p 587:587 \
           -p 993:993 \
-          -v ~/wsdata/mailserver/data:/var/mail \
-          -v ~/wsdata/mailserver/state:/var/mail-state \
-          -v ~/wsdata/mailserver/logs:/var/log/mail \
-          -v ~/wsdata/mailserver/config:/tmp/docker-mailserver \
+          -v ~/{{DATA_PATH}}/mailserver/data:/var/mail \
+          -v ~/{{DATA_PATH}}/mailserver/state:/var/mail-state \
+          -v ~/{{DATA_PATH}}/mailserver/logs:/var/log/mail \
+          -v ~/{{DATA_PATH}}/mailserver/config:/tmp/docker-mailserver \
           -e ENABLE_SPAMASSASSIN=1 \
           -e ENABLE_CLAMAV=1 \
           -e ENABLE_FAIL2BAN=1 \

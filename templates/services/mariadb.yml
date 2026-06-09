@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull mariadb:latest
   setup:
-    - mkdir -p ~/wsdata/mariadb/data
+    - mkdir -p ~/{{DATA_PATH}}/mariadb/data
     - docker volume create mariadb_data
   run: |-
     docker run \

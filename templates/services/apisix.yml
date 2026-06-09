@@ -4,9 +4,9 @@ commands:
   install:
     - docker pull apache/apisix:latest
     - docker pull apache/apisix-dashboard:latest
-    - docker pull bitnami/etcd:latest
+    - docker pull bitnamilegacy/etcd:latest
   setup:
-    - mkdir -p ~/wsconf/apisix
+    - mkdir -p ~/{{CONFIG_PATH}}/apisix
     - docker volume create apisix_data
     - docker volume create etcd_data
   run: |-
@@ -19,7 +19,7 @@ commands:
           -e ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379 \
           -v etcd_data:/bitnami/etcd \
           --restart unless-stopped \
-          bitnami/etcd:latest && docker run \
+          bitnamilegacy/etcd:latest && docker run \
           -d \
           --name apisix \
           --network {{NETWORK_NAME}} \
@@ -27,7 +27,7 @@ commands:
           -p 9443:9443 \
           -e APISIX_STAND_ALONE=false \
           -e APISIX_DEPLOYMENT_ETCD_HOST=http://etcd:2379 \
-          -v ~/wsconf/apisix:/usr/local/apisix/conf \
+          -v ~/{{CONFIG_PATH}}/apisix:/usr/local/apisix/conf \
           -v apisix_data:/usr/local/apisix/logs \
           --restart unless-stopped \
           apache/apisix:latest && docker run \

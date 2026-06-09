@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull ghcr.io/tinyhumansai/openhuman-core:latest
   setup:
-    - mkdir -p ~/wsdata/openhuman/workspace
+    - mkdir -p ~/{{DATA_PATH}}/openhuman/workspace
     - docker volume create openhuman_workspace
   run: |-
     docker run \

@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull n8nio/n8n:latest
   setup:
-    - mkdir -p ~/wsdata/n8n/data
+    - mkdir -p ~/{{DATA_PATH}}/n8n/data
     - docker volume create n8n_data
   run: |-
     docker run \

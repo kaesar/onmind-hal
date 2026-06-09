@@ -4,14 +4,12 @@ commands:
   install:
     - docker pull ghcr.io/firecrawl/firecrawl:latest
     - docker pull ghcr.io/firecrawl/playwright-service:latest
-    - docker pull redis:alpine
-    - docker pull ghcr.io/firecrawl/nuq-postgres:latest
-    - docker pull rabbitmq:3-management
   setup:
-    - mkdir -p ~/wsdata/firecrawl/data
-    - docker volume create firecrawl_redis_data
-    - docker volume create firecrawl_postgres_data
-    - docker volume create firecrawl_rabbitmq_data
+    - mkdir -p ~/{{DATA_PATH}}/firecrawl/data
+    - docker exec postgresql psql -U root -c "CREATE USER firecrawl WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE firecrawl OWNER firecrawl;" 2>/dev/null || true
+    - docker exec rabbitmq rabbitmqctl add_user firecrawl {{STORAGE_PASSWORD}} 2>/dev/null || true
+    - docker exec rabbitmq rabbitmqctl set_permissions -p / firecrawl ".*" ".*" ".*" 2>/dev/null || true
   run: |-
     docker run \
           -d \
@@ -23,7 +21,7 @@ commands:
           -e USE_DB_AUTHENTICATION=false \
           -e REDIS_URL=redis://redis:6379 \
           -e REDIS_RATE_LIMIT_URL=redis://redis:6379 \
-          -e POSTGRES_HOST=firecrawl-postgres \
+          -e POSTGRES_HOST=postgresql \
           -e POSTGRES_PORT=5432 \
           -e POSTGRES_DB=firecrawl \
           -e POSTGRES_USER=firecrawl \
@@ -34,7 +32,7 @@ commands:
           -e BLOCK_MEDIA=false \
           -e MAX_CPU=0.8 \
           -e MAX_RAM=0.8 \
-          -e NUQ_RABBITMQ_URL=amqp://firecrawl:{{STORAGE_PASSWORD}}@firecrawl-rabbitmq:5672 \
+          -e NUQ_RABBITMQ_URL=amqp://firecrawl:{{STORAGE_PASSWORD}}@rabbitmq:5672 \
           ghcr.io/firecrawl/firecrawl:latest
 
     docker run \
@@ -50,38 +48,6 @@ commands:
           -e BLOCK_MEDIA=false \
           -e MAX_CONCURRENT_PAGES=10 \
           ghcr.io/firecrawl/playwright-service:latest
-
-    docker run \
-          -d \
-          --name firecrawl-postgres \
-          --network {{NETWORK_NAME}} \
-          -p 5432:5432 \
-          -e POSTGRES_DB=firecrawl \
-          -e POSTGRES_USER=firecrawl \
-          -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
-          -v firecrawl_postgres_data:/var/lib/postgresql/data \
-          ghcr.io/firecrawl/nuq-postgres:latest \
-          postgres -c cron.database_name=firecrawl
-
-    docker run \
-          -d \
-          --name firecrawl-rabbitmq \
-          --network {{NETWORK_NAME}} \
-          -p 5672:5672 \
-          -p 15672:15672 \
-          -e RABBITMQ_DEFAULT_USER=firecrawl \
-          -e RABBITMQ_DEFAULT_PASS={{STORAGE_PASSWORD}} \
-          -v firecrawl_rabbitmq_data:/var/lib/rabbitmq \
-          rabbitmq:3-management
-
-    docker run \
-          -d \
-          --name firecrawl-redis \
-          --network {{NETWORK_NAME}} \
-          -p 6379:6379 \
-          -v firecrawl_redis_data:/data \
-          redis:alpine \
-          redis-server --bind 0.0.0.0
 variables:
   - NETWORK_NAME
   - STORAGE_PASSWORD
@@ -89,21 +55,13 @@ variables:
 ports:
   - "3002:3002"
   - "3000:3000"
-  - "5432:5432"
-  - "5672:5672"
-  - "15672:15672"
-  - "6379:6379"
-volumes:
-  - firecrawl_redis_data:/data
-  - firecrawl_postgres_data:/var/lib/postgresql/data
-  - firecrawl_rabbitmq_data:/var/lib/rabbitmq
 environment:
   PORT: "3002"
   HOST: "0.0.0.0"
   USE_DB_AUTHENTICATION: "false"
   REDIS_URL: "redis://redis:6379"
   REDIS_RATE_LIMIT_URL: "redis://redis:6379"
-  POSTGRES_HOST: "firecrawl-postgres"
+  POSTGRES_HOST: "postgresql"
   POSTGRES_PORT: "5432"
   POSTGRES_DB: "firecrawl"
   POSTGRES_USER: "firecrawl"
@@ -114,7 +72,10 @@ environment:
   BLOCK_MEDIA: "false"
   MAX_CPU: "0.8"
   MAX_RAM: "0.8"
-  NUQ_RABBITMQ_URL: "amqp://firecrawl:{{STORAGE_PASSWORD}}@firecrawl-rabbitmq:5672"
+  NUQ_RABBITMQ_URL: "amqp://firecrawl:{{STORAGE_PASSWORD}}@rabbitmq:5672"
 accessUrl: https://firecrawl.{{DOMAIN}}
-dependencies: []
+dependencies:
+  - PostgreSQL
+  - Redis
+  - RabbitMQ
 isCore: false

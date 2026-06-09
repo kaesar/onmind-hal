@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull tomcat:9-jdk11
   setup:
-    - mkdir -p ~/wsdata/jasperreports/data
+    - mkdir -p ~/{{DATA_PATH}}/jasperreports/data
     - echo 'JasperReports requires manual setup. Access Tomcat at port 8081 and deploy JasperReports WAR manually.'
   run: |-
     docker run \
@@ -14,7 +14,7 @@ commands:
           -p 8081:8080 \
           -e CATALINA_OPTS='-Xmx2g \
           -Xms1g' \
-          -v ~/wsdata/jasperreports/data:/usr/local/tomcat/webapps tomcat:9-jdk11
+          -v ~/{{DATA_PATH}}/jasperreports/data:/usr/local/tomcat/webapps tomcat:9-jdk11
 variables:
   - NETWORK_NAME
 dependencies: []

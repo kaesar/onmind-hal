@@ -2,10 +2,12 @@ name: OrcaRouter Lite
 description: Lightweight LLM router with multi-provider support and API key management
 commands:
   install:
-    - docker pull ghcr.io/continuum-ai-corp/orcarouter-lite:latest
+    - docker pull python:3.12-slim
   setup:
-    - mkdir -p ~/wsdata/orcarouter/data
-    - docker volume create orcarouter_data
+    - mkdir -p ~/{{DATA_PATH}}/orcarouter/data
+    - git clone --depth=1 https://github.com/Continuum-AI-Corp/OrcaRouter-Lite.git ~/{{DATA_PATH}}/orcarouter/repo 2>/dev/null || true
+    - cp templates/dockerfiles/orcarouterlite.dockerfile ~/{{DATA_PATH}}/orcarouter/repo/Dockerfile
+    - cd ~/{{DATA_PATH}}/orcarouter/repo && docker build -t orcarouter-lite:latest .
   run: |-
     docker run \
           -d \
@@ -17,7 +19,7 @@ commands:
           -e API_KEY_PEPPER={{ADMIN_TOKEN}} \
           -e OPENAI_API_KEY= \
           -v orcarouter_data:/data \
-          ghcr.io/continuum-ai-corp/orcarouter-lite:latest
+          orcarouter-lite:latest
 variables:
   - NETWORK_NAME
   - ADMIN_TOKEN

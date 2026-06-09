@@ -23,7 +23,7 @@ export class FrpService extends BaseService {
   protected async generateConfigFiles(): Promise<void> {
     try {
       const homeDir = process.env.HOME || process.env.USERPROFILE || '~';
-      const configDir = join(homeDir, 'wsconf');
+      const configDir = join(homeDir, this.config.configPath);
       
       await mkdir(configDir, { recursive: true });
       

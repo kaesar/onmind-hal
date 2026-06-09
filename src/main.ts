@@ -62,7 +62,7 @@ async function main(): Promise<void> {
     console.log('');
     console.log('Next steps:');
     console.log('1. Check your services at the configured domain');
-    console.log('2. Access Portainer for container management');
+    console.log('2. Access the management UI for container management');
     console.log('3. Use Copyparty for file sharing');
     console.log('');
     console.log('For support, check the documentation or logs.');

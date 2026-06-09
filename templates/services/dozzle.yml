@@ -4,21 +4,21 @@ commands:
   install:
     - docker pull amir20/dozzle:latest
   setup:
-    - mkdir -p ~/wsdata/dozzle/data
+    - mkdir -p ~/{{DATA_PATH}}/dozzle/data
     - docker volume create dozzle_data
   run: |-
     docker run \
           -d \
           --name dozzle \
           --network {{NETWORK_NAME}} \
-          -p 8080:8080 \
+          -p 8097:8080 \
           -v /var/run/docker.sock:/var/run/docker.sock:ro \
           -v dozzle_data:/data \
           amir20/dozzle:latest
 variables:
   - NETWORK_NAME
 ports:
-  - "8080:8080"
+  - "8097:8080"
 volumes:
   - /var/run/docker.sock:/var/run/docker.sock:ro
   - dozzle_data:/data

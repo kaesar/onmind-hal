@@ -4,9 +4,9 @@ commands:
   install:
     - docker pull fluent/fluent-bit:latest
   setup:
-    - mkdir -p ~/wsdata/fluentbit/config
+    - mkdir -p ~/{{DATA_PATH}}/fluentbit/config
     - |-
-      cat > ~/wsdata/fluentbit/config/fluent-bit.conf << 'EOF'
+      cat > ~/{{DATA_PATH}}/fluentbit/config/fluent-bit.conf << 'EOF'
       [SERVICE]
           Flush        5
           Daemon       Off
@@ -40,7 +40,7 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 2020:2020 \
           -p 24224:24224 \
-          -v ~/wsdata/fluentbit/config:/fluent-bit/etc \
+          -v ~/{{DATA_PATH}}/fluentbit/config:/fluent-bit/etc \
           --restart unless-stopped \
           fluent/fluent-bit:latest
 variables:

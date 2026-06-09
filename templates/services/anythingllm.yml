@@ -4,8 +4,8 @@ commands:
   install:
     - docker pull mintplexlabs/anythingllm:latest
   setup:
-    - mkdir -p ~/wsdata/anythingllm/storage
-    - mkdir -p ~/wsdata/anythingllm/env
+    - mkdir -p ~/{{DATA_PATH}}/anythingllm/storage
+    - mkdir -p ~/{{DATA_PATH}}/anythingllm/env
     - docker volume create anythingllm_storage
   run: |-
     docker run \

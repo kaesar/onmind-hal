@@ -27,7 +27,7 @@ export class CaddyService extends BaseService {
   protected async generateConfigFiles(): Promise<void> {
     try {
       const homeDir = process.env.HOME || process.env.USERPROFILE || '~';
-      const configDir = join(homeDir, 'wsconf');
+      const configDir = join(homeDir, this.config.configPath);
       
       // Create config directory
       await mkdir(configDir, { recursive: true });
@@ -139,6 +139,7 @@ export class CaddyService extends BaseService {
       [ServiceType.OPENNOTEBOOKLM]: { subdomain: 'notebook', port: 8502, container: 'opennotebooklm' },
       [ServiceType.N8N]: { subdomain: 'n8n', port: 5678, container: 'n8n' },
       [ServiceType.KESTRA]: { subdomain: 'kestra', port: 8080, container: 'kestra' },
+      [ServiceType.KAFKAUI]: { subdomain: 'kafkaui', port: 8080, container: 'kafkaui' },
       [ServiceType.KEYSTONEJS]: { subdomain: 'keystonejs', port: 3000, container: 'keystonejs' },
       [ServiceType.KEYCLOAK]: { subdomain: 'keycloak', port: 8080, container: 'keycloak' },
       [ServiceType.AUTHELIA]: { subdomain: 'authelia', port: 9091, container: 'authelia' },
@@ -164,12 +165,13 @@ export class CaddyService extends BaseService {
       [ServiceType.DOZZLE]: { subdomain: 'dozzle', port: 8080, container: 'dozzle' },
       [ServiceType.REGISTRY]: { subdomain: 'registry', port: 5000, container: 'registry' },
       [ServiceType.NEXUS]: { subdomain: 'nexus', port: 8081, container: 'nexus' },
-      [ServiceType.INFISCAL]: { subdomain: 'infiscal', port: 8080, container: 'infiscal' },
+      [ServiceType.INFISCAL]: { subdomain: 'infisical', port: 8080, container: 'infisical' },
       [ServiceType.VAULT]: { subdomain: 'vault', port: 8200, container: 'vault' },
       [ServiceType.VAULTWARDEN]: { subdomain: 'vaultwarden', port: 8222, container: 'vaultwarden' },
       [ServiceType.BACKVAULT]: { subdomain: 'backvault', port: 8080, container: 'backvault' },
       [ServiceType.LINKWARDEN]: { subdomain: 'linkwarden', port: 3000, container: 'linkwarden' },
       [ServiceType.PSITRANSFER]: { subdomain: 'psitransfer', port: 3005, container: 'psitransfer' },
+      [ServiceType.FILESTASH]: { subdomain: 'filestash', port: 8334, container: 'filestash' },
       [ServiceType.EXCALIDRAW]: { subdomain: 'excalidraw', port: 80, container: 'excalidraw' },
       [ServiceType.DRAWIO]: { subdomain: 'drawio', port: 8088, container: 'drawio' },
       [ServiceType.KROKI]: { subdomain: 'kroki', port: 8000, container: 'kroki' },
@@ -179,8 +181,7 @@ export class CaddyService extends BaseService {
       [ServiceType.DIRECTUS]: { subdomain: 'directus', port: 8055, container: 'directus' },
       [ServiceType.TWENTYCRM]: { subdomain: 'crm', port: 3000, container: 'twentycrm' },
       [ServiceType.MEDUSAJS]: { subdomain: 'shop', port: 9000, container: 'medusajs' },
-      [ServiceType.PLANE]: { subdomain: 'plane', port: 3000, container: 'plane-frontend' },
-      [ServiceType.HULY]: { subdomain: 'huly', port: 3000, container: 'huly' },
+      [ServiceType.HULY]: { subdomain: 'huly', port: 80, container: 'huly' },
       [ServiceType.MATTERMOST]: { subdomain: 'mattermost', port: 8065, container: 'mattermost' },
       [ServiceType.CALCOM]: { subdomain: 'cal', port: 3000, container: 'calcom' },
       [ServiceType.JASPERREPORTS]: { subdomain: 'jasper', port: 8080, container: 'jasperreports' },
@@ -193,6 +194,7 @@ export class CaddyService extends BaseService {
       [ServiceType.OPENHUMAN]: { subdomain: 'openhuman', port: 7788, container: 'openhuman-core' },
       [ServiceType.OPENJARVIS]: { subdomain: 'openjarvis', port: 8000, container: 'openjarvis' },
       [ServiceType.FIRECRAWL]: { subdomain: 'firecrawl', port: 3002, container: 'firecrawl' },
+      [ServiceType.SEARXNG]: { subdomain: 'searxng', port: 8080, container: 'searxng' },
       [ServiceType.MAILSERVER]: null,
       [ServiceType.KURRIER]: { subdomain: 'kurrier', port: 3000, container: 'kurrier' },
       [ServiceType.ZROK]: { subdomain: 'zrok', port: 443, container: 'zrok-caddy' },

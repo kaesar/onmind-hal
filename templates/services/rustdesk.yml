@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull rustdesk/rustdesk-server:latest
   setup:
-    - mkdir -p ~/wsdata/rustdesk/data
+    - mkdir -p ~/{{DATA_PATH}}/rustdesk/data
     - docker volume create rustdesk_data
   run: |-
     docker run \

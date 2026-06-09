@@ -1,0 +1,21 @@
+name: Coroot
+description: Open-source observability and monitoring platform
+commands:
+  install:
+    - docker pull ghcr.io/coroot/coroot:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/coroot/data
+  run: |-
+    docker run \
+          -d \
+          --name coroot \
+          --network {{NETWORK_NAME}} \
+          -p 8081:8080 \
+          -v ~/{{DATA_PATH}}/coroot/data:/data \
+          --restart unless-stopped \
+          ghcr.io/coroot/coroot:latest \
+          --data-dir /data
+variables:
+  - NETWORK_NAME
+  - DATA_PATH
+dependencies: []

@@ -2,58 +2,198 @@ name: Huly Platform
 description: All-in-one project management platform (Linear + Notion + GitHub alternative)
 commands:
   install:
-    - docker pull hcengineering/huly:latest
+    - docker pull hardcoreeng/account:v0.7.423
+    - docker pull hardcoreeng/front:v0.7.423
+    - docker pull hardcoreeng/transactor:v0.7.423
+    - docker pull hardcoreeng/workspace:v0.7.423
+    - docker pull hardcoreeng/collaborator:v0.7.423
+    - docker pull hardcoreeng/fulltext:v0.7.423
+    - docker pull hardcoreeng/rekoni-service:v0.7.423
+    - docker pull hardcoreeng/stats:v0.7.423
+    - docker pull hardcoreeng/hulykvs:v0.7.423
+    - docker pull nginx:1.21.3
   setup:
-    - mkdir -p ~/wsdata/huly/data
-    - docker volume create huly_data
+    - mkdir -p ~/{{DATA_PATH}}/huly
+    - |
+      cat > ~/{{DATA_PATH}}/huly/nginx.conf << 'NGINX'
+      server {
+          listen 80;
+          server_name _;
+          client_max_body_size 100M;
+
+          location / {
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_pass http://huly-front:8080;
+          }
+
+          location /_accounts {
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              rewrite ^/_accounts(/.*)$ $1 break;
+              proxy_pass http://huly-account:3000/;
+          }
+
+          location /_collaborator {
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              rewrite ^/_collaborator(/.*)$ $1 break;
+              proxy_pass http://huly-collaborator:3078/;
+          }
+
+          location /_transactor {
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              rewrite ^/_transactor(/.*)$ $1 break;
+              proxy_pass http://huly-transactor:3333/;
+          }
+
+          location ~ ^/eyJ {
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_pass http://huly-transactor:3333;
+          }
+
+          location /_rekoni {
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              rewrite ^/_rekoni(/.*)$ $1 break;
+              proxy_pass http://huly-rekoni:4004/;
+          }
+
+          location /_stats {
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              rewrite ^/_stats(/.*)$ $1 break;
+              proxy_pass http://huly-stats:4900/;
+          }
+      }
+      NGINX
   run: |-
-    docker run \
-          -d \
-          --name huly \
-          --network {{NETWORK_NAME}} \
-          -p 3000:3000 \
-          -e HOST_ADDRESS={{DOMAIN}} \
-          -e SECURE=true \
-          -e HTTP_PORT=3000 \
-          -e HTTP_BIND=0.0.0.0 \
-          -e TITLE=Huly \
-          -e DEFAULT_LANGUAGE=en \
-          -e LAST_NAME_FIRST=true \
-          -e STORAGE_CONFIG=minio|minio?accessKey=minioadmin&secretKey=minioadmin \
-          -e STORAGE_PROVIDER_NAME=minio \
-          -e DB_URL=postgresql://postgres:postgres@postgresql:5432/huly \
-          -e REDIS_URL=redis://redis:6379 \
-          -e SECRET={{ADMIN_TOKEN}} \
-          -e COCKROACH_SECRET={{ADMIN_TOKEN}} \
-          -e REDPANDA_SECRET={{ADMIN_TOKEN}} \
-          -v huly_data:/data \
-          hcengineering/huly:latest
+    docker run -d --name huly-rekoni --network {{NETWORK_NAME}} \
+      -e SECRET={{ADMIN_TOKEN}} \
+      --restart unless-stopped hardcoreeng/rekoni-service:v0.7.423 && \
+    docker run -d --name huly-fulltext --network {{NETWORK_NAME}} \
+      -e SERVER_SECRET={{ADMIN_TOKEN}} \
+      -e DB_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e FULLTEXT_DB_URL=http://opensearch:9200 \
+      -e ELASTIC_INDEX_NAME=huly_storage_index \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e REKONI_URL=http://huly-rekoni:4004 \
+      -e ACCOUNTS_URL=http://huly-account:3000 \
+      -e STATS_URL=http://huly-stats:4900 \
+      -e QUEUE_CONFIG=kafka:9092 \
+      --restart unless-stopped hardcoreeng/fulltext:v0.7.423 && \
+    docker run -d --name huly-stats --network {{NETWORK_NAME}} \
+      -e PORT=4900 \
+      -e SERVER_SECRET={{ADMIN_TOKEN}} \
+      --restart unless-stopped hardcoreeng/stats:v0.7.423 && \
+    docker run -d --name huly-kvs --network {{NETWORK_NAME}} \
+      -e HULY_DB_CONNECTION=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e HULY_TOKEN_SECRET={{ADMIN_TOKEN}} \
+      --restart unless-stopped hardcoreeng/hulykvs:v0.7.423 && \
+    docker run -d --name huly-transactor --network {{NETWORK_NAME}} \
+      -e SERVER_PORT=3333 \
+      -e SERVER_SECRET={{ADMIN_TOKEN}} \
+      -e DB_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e FRONT_URL=https://huly.{{DOMAIN}} \
+      -e ACCOUNTS_URL=http://huly-account:3000 \
+      -e FULLTEXT_URL=http://huly-fulltext:4700 \
+      -e STATS_URL=http://huly-stats:4900 \
+      -e LAST_NAME_FIRST=true \
+      -e QUEUE_CONFIG=kafka:9092 \
+      --restart unless-stopped hardcoreeng/transactor:v0.7.423 && \
+    docker run -d --name huly-collaborator --network {{NETWORK_NAME}} \
+      -e COLLABORATOR_PORT=3078 \
+      -e SECRET={{ADMIN_TOKEN}} \
+      -e ACCOUNTS_URL=http://huly-account:3000 \
+      -e STATS_URL=http://huly-stats:4900 \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      --restart unless-stopped hardcoreeng/collaborator:v0.7.423 && \
+    docker run -d --name huly-workspace --network {{NETWORK_NAME}} \
+      -e SERVER_SECRET={{ADMIN_TOKEN}} \
+      -e DB_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e TRANSACTOR_URL=ws://huly-transactor:3333 \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e MODEL_ENABLED=* \
+      -e ACCOUNTS_URL=http://huly-account:3000 \
+      -e STATS_URL=http://huly-stats:4900 \
+      -e QUEUE_CONFIG=kafka:9092 \
+      -e ACCOUNTS_DB_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      --restart unless-stopped hardcoreeng/workspace:v0.7.423 && \
+    docker run -d --name huly-account --network {{NETWORK_NAME}} \
+      -e SERVER_PORT=3000 \
+      -e SERVER_SECRET={{ADMIN_TOKEN}} \
+      -e DB_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e TRANSACTOR_URL=ws://huly-transactor:3333 \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e FRONT_URL=https://huly.{{DOMAIN}} \
+      -e STATS_URL=https://huly.{{DOMAIN}}/_stats \
+      -e MODEL_ENABLED=* \
+      -e ACCOUNTS_URL=https://huly.{{DOMAIN}}/_accounts \
+      -e ACCOUNT_PORT=3000 \
+      -e QUEUE_CONFIG=kafka:9092 \
+      --restart unless-stopped hardcoreeng/account:v0.7.423 && \
+    docker run -d --name huly-front --network {{NETWORK_NAME}} \
+      -e SERVER_PORT=8080 \
+      -e SERVER_SECRET={{ADMIN_TOKEN}} \
+      -e LOVE_ENDPOINT=https://huly.{{DOMAIN}}/_love \
+      -e ACCOUNTS_URL=https://huly.{{DOMAIN}}/_accounts \
+      -e ACCOUNTS_URL_INTERNAL=http://huly-account:3000 \
+      -e REKONI_URL=https://huly.{{DOMAIN}}/_rekoni \
+      -e CALENDAR_URL=https://huly.{{DOMAIN}}/_calendar \
+      -e GMAIL_URL=https://huly.{{DOMAIN}}/_gmail \
+      -e TELEGRAM_URL=https://huly.{{DOMAIN}}/_telegram \
+      -e STATS_URL=https://huly.{{DOMAIN}}/_stats \
+      -e UPLOAD_URL=/files \
+      -e ELASTIC_URL=http://opensearch:9200 \
+      -e COLLABORATOR_URL=wss://huly.{{DOMAIN}}/_collaborator \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e TITLE=Huly \
+      -e DEFAULT_LANGUAGE=en \
+      -e LAST_NAME_FIRST=true \
+      -e DISABLED_FEATURES=auto-translate,mailboxes \
+      --restart unless-stopped hardcoreeng/front:v0.7.423 && \
+    docker run -d --name huly --network {{NETWORK_NAME}} \
+      -p 8087:80 \
+      -v ~/{{DATA_PATH}}/huly/nginx.conf:/etc/nginx/conf.d/default.conf \
+      --restart unless-stopped nginx:1.21.3
 variables:
   - NETWORK_NAME
   - DOMAIN
+  - STORAGE_PASSWORD
   - ADMIN_TOKEN
+  - DATA_PATH
 ports:
-  - "3000:3000"
-volumes:
-  - huly_data:/data
-environment:
-  HOST_ADDRESS: "{{DOMAIN}}"
-  SECURE: "true"
-  HTTP_PORT: "3000"
-  HTTP_BIND: "0.0.0.0"
-  TITLE: "Huly"
-  DEFAULT_LANGUAGE: "en"
-  LAST_NAME_FIRST: "true"
-  STORAGE_CONFIG: "minio|minio?accessKey=minioadmin&secretKey=minioadmin"
-  STORAGE_PROVIDER_NAME: "minio"
-  DB_URL: "postgresql://postgres:postgres@postgresql:5432/huly"
-  REDIS_URL: "redis://redis:6379"
-  SECRET: "{{ADMIN_TOKEN}}"
-  COCKROACH_SECRET: "{{ADMIN_TOKEN}}"
-  REDPANDA_SECRET: "{{ADMIN_TOKEN}}"
+  - "8087:80"
 accessUrl: https://huly.{{DOMAIN}}
 dependencies:
   - PostgreSQL
-  - Redis
-  - Minio
+  - Kafka
+  - RustFS
+  - OpenSearch
 isCore: false

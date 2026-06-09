@@ -11,7 +11,7 @@ export class FirecrawlService extends BaseService {
       'Firecrawl',
       ServiceType.FIRECRAWL,
       false,
-      [],
+      ['PostgreSQL', 'Redis', 'RabbitMQ'],
       config,
       templateEngine
     );

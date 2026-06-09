@@ -4,14 +4,14 @@ commands:
   install:
     - docker pull outlinewiki/outline:latest
   setup:
-    - mkdir -p ~/wsdata/outline/data
+    - mkdir -p ~/{{DATA_PATH}}/outline/data
   run: |-
     docker run \
           -d \
           --name outline \
           --network {{NETWORK_NAME}} \
           -p 3030:3000 \
-          -v ~/wsdata/outline/data:/var/lib/outline/data \
+          -v ~/{{DATA_PATH}}/outline/data:/var/lib/outline/data \
           -e SECRET_KEY={{SECRET_KEY}} \
           -e UTILS_SECRET={{UTILS_SECRET}} \
           -e DATABASE_URL=postgres://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \

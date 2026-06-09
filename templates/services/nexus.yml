@@ -4,14 +4,15 @@ commands:
   install:
     - docker pull sonatype/nexus3:latest
   setup:
-    - mkdir -p ~/wsdata/nexus/data
+    - mkdir -p ~/{{DATA_PATH}}/nexus/data
   run: |-
     docker run \
           -d \
           --name nexus \
           --network {{NETWORK_NAME}} \
-          -p 8085:8081 \
-          -v ~/wsdata/nexus/data:/nexus-data \
+          -p 8098:8081 \
+          -v ~/{{DATA_PATH}}/nexus/data:/nexus-data \
+          --user root \
           -e INSTALL4J_ADD_VM_PARAMS='-Xms512m \
           -Xmx512m \
           -XX:MaxDirectMemorySize=512m' \

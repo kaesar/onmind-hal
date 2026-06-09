@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull redis:7.2-alpine
   setup:
-    - mkdir -p ~/wsdata/redis/data
+    - mkdir -p ~/{{DATA_PATH}}/redis/data
     - docker volume create redis_data
   run: |-
     docker run \

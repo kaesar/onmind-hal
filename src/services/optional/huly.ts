@@ -11,7 +11,7 @@ export class HulyService extends BaseService {
       'Huly',
       ServiceType.HULY,
       false,
-      ['PostgreSQL', 'Redis', 'Minio'],
+      ['PostgreSQL', 'Redis'],
       config,
       templateEngine
     );

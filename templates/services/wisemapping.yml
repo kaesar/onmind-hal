@@ -1,0 +1,24 @@
+name: WiseMapping
+description: Web-based mind mapping tool (requires PostgreSQL)
+commands:
+  install:
+    - docker pull wisemapping/wisemapping:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/wisemapping/data
+  run: |-
+    docker run \
+          -d \
+          --name wisemapping \
+          --network {{NETWORK_NAME}} \
+          -p 8095:8080 \
+          -e WISE_DATABASE_URL=jdbc:postgresql://postgresql:5432/wisemapping \
+          -e WISE_DATABASE_USER=postgres \
+          -e WISE_DATABASE_PASSWORD={{STORAGE_PASSWORD}} \
+          -e WISE_DATABASE_SCHEMA=wisemapping \
+          --restart unless-stopped \
+          wisemapping/wisemapping:latest
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+dependencies:
+  - postgresql

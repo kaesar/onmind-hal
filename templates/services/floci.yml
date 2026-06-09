@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull floci/floci:latest
   setup:
-    - mkdir -p ~/wsdata/floci/data
+    - mkdir -p ~/{{DATA_PATH}}/floci/data
     - docker volume create floci_data
   run: |-
     docker run \

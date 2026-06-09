@@ -15,8 +15,8 @@ export class PathConverter {
   /**
    * Convert Unix-style path to Windows path for MINGW64
    * Examples:
-   *   ~/wsconf -> C:/Users/username/wsconf
-   *   ~/wsdata/caddy -> C:/Users/username/wsdata/caddy
+   *   ~/ws/init -> C:/Users/username/ws/init
+   *   ~/ws/data/caddy -> C:/Users/username/ws/data/caddy
    */
   static async convertPath(unixPath: string): Promise<string> {
     if (!this.isMingw()) {
@@ -43,8 +43,8 @@ export class PathConverter {
 
   /**
    * Convert volume mount paths in docker command for MINGW64
-   * Converts: -v ~/wsconf:/etc/caddy
-   * To: -v "C:/Users/username/wsconf:/etc/caddy"
+   * Converts: -v ~/ws/init:/etc/caddy
+   * To: -v "C:/Users/username/ws/init:/etc/caddy"
    */
   static async convertDockerVolumes(command: string): Promise<string> {
     if (!this.isMingw()) {

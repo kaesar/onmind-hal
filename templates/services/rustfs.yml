@@ -4,7 +4,7 @@ commands:
   install:
     - docker pull rustfs/rustfs:latest
   setup:
-    - mkdir -p ~/wsdata/rustfs/data
+    - mkdir -p ~/{{DATA_PATH}}/rustfs/data
     - docker volume create rustfs_data
   run: |-
     docker run \

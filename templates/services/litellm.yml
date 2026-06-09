@@ -4,8 +4,8 @@ commands:
   install:
     - docker pull ghcr.io/berriai/litellm:main-stable
   setup:
-    - mkdir -p ~/wsdata/litellm/data
-    - mkdir -p ~/wsconf/litellm
+    - mkdir -p ~/{{DATA_PATH}}/litellm/data
+    - mkdir -p ~/{{CONFIG_PATH}}/litellm
     - docker volume create litellm_data
     - docker volume create litellm_postgres_data
   run: |-
@@ -19,7 +19,7 @@ commands:
           -e STORE_MODEL_IN_DB=True \
           -e REDIS_HOST=redis \
           -e REDIS_PORT=6379 \
-          -v ~/wsconf/litellm/config.yaml:/app/config.yaml \
+          -v ~/{{CONFIG_PATH}}/litellm/config.yaml:/app/config.yaml \
           -v litellm_data:/app/logs \
           ghcr.io/berriai/litellm:main-stable \
           --config /app/config.yaml --port 4000
@@ -30,7 +30,7 @@ variables:
 ports:
   - "4000:4000"
 volumes:
-  - ~/wsconf/litellm/config.yaml:/app/config.yaml
+  - ~/{{CONFIG_PATH}}/litellm/config.yaml:/app/config.yaml
   - litellm_data:/app/logs
   - litellm_postgres_data:/var/lib/postgresql/data
 environment:

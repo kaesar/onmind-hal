@@ -12,6 +12,7 @@ import {
   sanitizeUserInput
 } from '../utils/validation.js';
 import { ValidationError } from '../utils/errors.js';
+import { ContainerRuntimeUtils } from '../utils/container.js';
 
 // Wrapper functions for inquirer validation (return string for error, true for success)
 export function validateIP(input: string): boolean | string {
@@ -111,6 +112,11 @@ export async function promptForNetworkName(): Promise<string> {
 export async function promptForOptionalServices(): Promise<ServiceType[]> {
   const optionalServices = [
     {
+      name: 'RustFS - High-performance S3-compatible distributed object storage',
+      value: ServiceType.RUSTFS,
+      short: 'RustFS'
+    },
+    {
       name: 'DuckDB - In-memory analytical database with web UI',
       value: ServiceType.DUCKDB,
       short: 'DuckDB'
@@ -146,19 +152,14 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Apache Ignite'
     },
     {
-      name: 'RustFS - High-performance S3-compatible distributed object storage',
-      value: ServiceType.RUSTFS,
-      short: 'RustFS'
-    },
-    {
-      name: 'OpenJarvis - AI assistant platform with Ollama backend',
-      value: ServiceType.OPENJARVIS,
-      short: 'OpenJarvis'
-    },
-    {
       name: 'Kafka - Distributed streaming platform (with KRaft)',
       value: ServiceType.KAFKA,
       short: 'Kafka'
+    },
+    {
+      name: 'Kafka UI - Web UI for managing Apache Kafka',
+      value: ServiceType.KAFKAUI,
+      short: 'Kafka UI'
     },
     {
       name: 'RabbitMQ - Message broker for distributed systems',
@@ -271,6 +272,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Locust'
     },
     {
+      name: 'K6 OSS - Open-source load testing tool (Grafana)',
+      value: ServiceType.K6,
+      short: 'K6 OSS'
+    },
+    {
       name: 'Grafana - Analytics and monitoring platform',
       value: ServiceType.GRAFANA,
       short: 'Grafana'
@@ -286,9 +292,14 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'OpenSearch'
     },
     {
-      name: 'Redash - SQL query editor and visualization platform',
+      name: 'Coroot - Open-source observability and monitoring platform',
+      value: ServiceType.COROOT,
+      short: 'Coroot'
+    },
+    {
+      name: 'ReDash - SQL query editor and visualization platform',
       value: ServiceType.REDASH,
-      short: 'Redash'
+      short: 'ReDash'
     },
     {
       name: 'Fluent Bit - Lightweight log processor and forwarder',
@@ -326,6 +337,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Vault'
     },
     {
+      name: 'Consul - Service discovery and configuration (HashiCorp)',
+      value: ServiceType.CONSUL,
+      short: 'Consul'
+    },
+    {
       name: 'Vaultwarden - Self-hosted Bitwarden-compatible password manager',
       value: ServiceType.VAULTWARDEN,
       short: 'Vaultwarden'
@@ -346,6 +362,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'PsiTransfer'
     },
     {
+      name: 'Filestash - Web-based file manager for any storage backend',
+      value: ServiceType.FILESTASH,
+      short: 'Filestash'
+    },
+    {
       name: 'Excalidraw - Virtual whiteboard for sketching',
       value: ServiceType.EXCALIDRAW,
       short: 'Excalidraw'
@@ -354,6 +375,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Draw.io - Web-based diagramming application',
       value: ServiceType.DRAWIO,
       short: 'Draw.io'
+    },
+    {
+      name: 'WiseMapping - Web-based mind mapping tool (requires PostgreSQL)',
+      value: ServiceType.WISEMAPPING,
+      short: 'WiseMapping'
     },
     {
       name: 'Kroki - API for generating diagrams',
@@ -389,11 +415,6 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'MedusaJS - Headless e-commerce platform (Shopify alternative)',
       value: ServiceType.MEDUSAJS,
       short: 'MedusaJS'
-    },
-    {
-      name: 'Plane - Modern project management platform (like Jira)',
-      value: ServiceType.PLANE,
-      short: 'Plane'
     },
     {
       name: 'Huly - All-in-one project management platform (Linear + Notion + GitHub alternative)',
@@ -441,6 +462,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'AnythingLLM'
     },
     {
+      name: 'Hermes Agent - Self-improving AI agent with persistent memory (requires API key)',
+      value: ServiceType.HERMES,
+      short: 'Hermes'
+    },
+    {
       name: 'OpenClaw - AI agent gateway for Claude Code, OpenAI Codex and more',
       value: ServiceType.OPENCLAW,
       short: 'OpenClaw'
@@ -459,6 +485,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Firecrawl - Open-source web scraping API with JavaScript rendering',
       value: ServiceType.FIRECRAWL,
       short: 'Firecrawl'
+    },
+    {
+      name: 'SearXNG - Privacy-respecting metasearch engine',
+      value: ServiceType.SEARXNG,
+      short: 'SearXNG'
     },
     {
       name: 'Docker Mailserver - Full-featured mail server',
@@ -484,16 +515,6 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Wetty - Web-based SSH terminal for secure host access',
       value: ServiceType.WETTY,
       short: 'Wetty'
-    },
-    {
-      name: 'Dockhand - Lightweight Docker management UI (default for Docker)',
-      value: ServiceType.DOCKHAND,
-      short: 'Dockhand'
-    },
-    {
-      name: 'Portainer - Docker container management interface',
-      value: ServiceType.PORTAINER,
-      short: 'Portainer'
     },
     {
       name: 'RustDesk Server - Open-source remote desktop server',
@@ -531,6 +552,30 @@ export async function promptForStoragePassword(): Promise<string> {
   return password.trim();
 }
 
+export async function promptForConfigPath(): Promise<string> {
+  const { configPath } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'configPath',
+      message: 'Enter configuration files directory:',
+      default: 'ws/init'
+    }
+  ]);
+  return configPath.trim();
+}
+
+export async function promptForDataPath(): Promise<string> {
+  const { dataPath } = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'dataPath',
+      message: 'Enter data and storage directory:',
+      default: 'ws/data'
+    }
+  ]);
+  return dataPath.trim();
+}
+
 export async function promptForConfirmation(message: string): Promise<boolean> {
   const { confirmed } = await inquirer.prompt([
     {
@@ -543,6 +588,35 @@ export async function promptForConfirmation(message: string): Promise<boolean> {
   return confirmed;
 }
 
+export async function promptForDockerManagementUI(): Promise<ServiceType> {
+  try {
+    const runtime = await ContainerRuntimeUtils.detectRuntime();
+
+    if (runtime === 'podman') {
+      console.log('🦭 Podman detected: Portainer will be used for container management');
+      return ServiceType.PORTAINER;
+    }
+
+    const { managementUI } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'managementUI',
+        message: 'Select container management UI:',
+        choices: [
+          { name: 'Dockhand - Lightweight Docker management UI (default)', value: ServiceType.DOCKHAND },
+          { name: 'Portainer - Full-featured container management interface', value: ServiceType.PORTAINER }
+        ],
+        default: ServiceType.DOCKHAND
+      }
+    ]);
+
+    return managementUI;
+  } catch {
+    console.log('⚠️  No container runtime detected. Defaulting to Dockhand.');
+    return ServiceType.DOCKHAND;
+  }
+}
+
 // Main configuration collection function
 export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>> {
   console.log('🏠 HomeLab Configuration Setup');
@@ -551,7 +625,12 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
   const ip = await promptForIP();
   const domain = await promptForDomain();
   const networkName = await promptForNetworkName();
+  const configPath = await promptForConfigPath();
+  const dataPath = await promptForDataPath();
   
+  const managementUI = await promptForDockerManagementUI();
+  console.log(`   ✓ ${managementUI === ServiceType.DOCKHAND ? 'Dockhand' : 'Portainer'} selected for container management`);
+
   const optionalServices = await promptForOptionalServices();
   
   let storagePassword: string | undefined;
@@ -561,14 +640,16 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
     storagePassword = await promptForStoragePassword();
   }
 
-  // Core services are always included (no longer includes DuckDB or Portainer)
+  // Core services are always included
   const coreServices = [ServiceType.CADDY, ServiceType.COPYPARTY];
-  const selectedServices = [...coreServices, ...optionalServices];
+  const selectedServices = [...coreServices, managementUI, ...optionalServices];
 
   return {
     ip,
     domain,
     networkName,
+    configPath,
+    dataPath,
     storagePassword,
     selectedServices
   };
