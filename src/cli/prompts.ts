@@ -14,6 +14,20 @@ import {
 import { ValidationError } from '../utils/errors.js';
 import { ContainerRuntimeUtils } from '../utils/container.js';
 
+export const DEFAULT_OPTIONAL_SERVICES: ServiceType[] = [
+  ServiceType.RUSTFS,
+  ServiceType.POSTGRESQL,
+  ServiceType.REDIS,
+  ServiceType.KAFKA,
+  ServiceType.POCKETID,
+  ServiceType.DOZZLE,
+  ServiceType.REGISTRY,
+  ServiceType.INFISCAL,
+  ServiceType.GOOSE,
+];
+
+const CORE_SERVICES: ServiceType[] = [ServiceType.CADDY, ServiceType.COPYPARTY];
+
 // Wrapper functions for inquirer validation (return string for error, true for success)
 export function validateIP(input: string): boolean | string {
   try {
@@ -370,6 +384,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Linkwarden'
     },
     {
+      name: 'Shlink - URL shortener with REST API and web interface',
+      value: ServiceType.SHLINK,
+      short: 'Shlink'
+    },
+    {
       name: 'PsiTransfer - File sharing platform (like WeTransfer)',
       value: ServiceType.PSITRANSFER,
       short: 'PsiTransfer'
@@ -440,9 +459,14 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Mattermost'
     },
     {
-      name: 'Cal.com - Open-source scheduling platform (Calendly alternative, requires PostgreSQL)',
-      value: ServiceType.CALCOM,
-      short: 'Cal.com'
+      name: 'Cal.diy - Open-source scheduling platform (MIT licensed, community edition, requires PostgreSQL)',
+      value: ServiceType.CALDIY,
+      short: 'Cal.diy'
+    },
+    {
+      name: 'AdGuard Home - Network-wide ad and tracker blocking DNS server',
+      value: ServiceType.ADGUARD,
+      short: 'AdGuard Home'
     },
     {
       name: 'JasperReports - Business intelligence and reporting platform (requires PostgreSQL)',
@@ -475,7 +499,12 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'AnythingLLM'
     },
     {
-      name: 'Hermes Agent - Self-improving AI agent with persistent memory (requires API key)',
+      name: 'Goose - Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation)',
+      value: ServiceType.GOOSE,
+      short: 'Goose'
+    },
+    {
+      name: 'Hermes - Self-improving AI agent with persistent memory (requires API key)',
       value: ServiceType.HERMES,
       short: 'Hermes'
     },
@@ -503,6 +532,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'SearXNG - Privacy-respecting metasearch engine',
       value: ServiceType.SEARXNG,
       short: 'SearXNG'
+    },
+    {
+      name: 'Plausible Analytics - Open-source web analytics platform (requires PostgreSQL)',
+      value: ServiceType.PLAUSIBLE,
+      short: 'Plausible'
     },
     {
       name: 'Docker Mailserver - Full-featured mail server',
@@ -665,5 +699,50 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
     dataPath,
     storagePassword,
     selectedServices
+  };
+}
+
+export async function collectUserConfigurationFromArgs(
+  ip: string,
+  domain?: string,
+  serviceNames?: string[],
+  password?: string,
+): Promise<Partial<HomelabConfig>> {
+  let managementUI: ServiceType;
+  try {
+    const runtime = await ContainerRuntimeUtils.detectRuntime();
+    managementUI = runtime === 'podman' ? ServiceType.PORTAINER : ServiceType.DOCKHAND;
+  } catch {
+    managementUI = ServiceType.DOCKHAND;
+  }
+
+  let optionalServices: ServiceType[];
+  if (serviceNames && serviceNames.length > 0) {
+    optionalServices = serviceNames
+      .map(name => Object.values(ServiceType).find(v => v === name))
+      .filter((s): s is ServiceType => s !== undefined);
+  } else {
+    optionalServices = [...DEFAULT_OPTIONAL_SERVICES];
+  }
+
+  const selectedServices: ServiceType[] = [...CORE_SERVICES, managementUI, ...optionalServices];
+
+  let storagePassword: string | undefined = password;
+  if (!storagePassword &&
+      (optionalServices.includes(ServiceType.POSTGRESQL) ||
+       optionalServices.includes(ServiceType.MARIADB) ||
+       optionalServices.includes(ServiceType.MONGODB))) {
+    const yearSuffix = String(new Date().getFullYear()).slice(-2);
+    storagePassword = `Admin${yearSuffix}!`;
+  }
+
+  return {
+    ip,
+    domain: domain || 'homelab.lan',
+    networkName: 'homelab-network',
+    configPath: 'ws/init',
+    dataPath: 'ws/data',
+    storagePassword,
+    selectedServices,
   };
 }

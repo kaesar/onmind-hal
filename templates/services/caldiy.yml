@@ -1,0 +1,26 @@
+name: Cal.diy
+description: Open-source scheduling platform (MIT licensed, community edition)
+commands:
+  install:
+    - docker pull calcom/cal.diy:latest
+  setup:
+    - docker volume create caldiy_data
+  run: |-
+    docker run -d \
+      --name caldiy \
+      --network {{NETWORK_NAME}} \
+      -p 3040:3000 \
+      -v caldiy_data:/calcom/apps/web/.next \
+      -e DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/caldiy \
+      -e NEXTAUTH_SECRET={{STORAGE_PASSWORD}} \
+      -e NEXTAUTH_URL=https://cal.{{DOMAIN}} \
+      -e CALENDSO_ENCRYPTION_KEY={{STORAGE_PASSWORD}} \
+      -e NEXT_PUBLIC_WEBAPP_URL=https://cal.{{DOMAIN}} \
+      --restart=unless-stopped \
+      calcom/cal.diy:latest
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+  - DOMAIN
+dependencies:
+  - PostgreSQL

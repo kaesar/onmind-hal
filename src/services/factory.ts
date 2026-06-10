@@ -56,6 +56,7 @@ import { VaultService } from './optional/vault.js';
 import { ConsulService } from './optional/consul.js';
 import { VaultwardenService } from './optional/vaultwarden.js';
 import { LinkwardenService } from './optional/linkwarden.js';
+import { ShlinkService } from './optional/shlink.js';
 import { PsiTransferService } from './optional/psitransfer.js';
 import { FilestashService } from './optional/filestash.js';
 import { ExcalidrawService } from './optional/excalidraw.js';
@@ -68,7 +69,8 @@ import { NocoDBService } from './optional/nocodb.js';
 import { TwentyCRMService } from './optional/twentycrm.js';
 import { MedusaJSService } from './optional/medusajs.js';
 import { MattermostService } from './optional/mattermost.js';
-import { CalcomService } from './optional/calcom.js';
+import { CaldiyService } from './optional/caldiy.js';
+import { AdGuardService } from './optional/adguard.js';
 import { JasperReportsService } from './optional/jasperreports.js';
 import { StirlingPDFService } from './optional/stirlingpdf.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
@@ -87,10 +89,12 @@ import { FlociGCPService } from './optional/flocigcp.js';
 import { LiteLLMService } from './optional/litellm.js';
 import { AnythingLLMService } from './optional/anythingllm.js';
 import { OpenClawService } from './optional/openclaw.js';
+import { GooseService } from './optional/goose.js';
 import { HermesService } from './optional/hermes.js';
 import { OpenHumanService } from './optional/openhuman.js';
 import { FirecrawlService } from './optional/firecrawl.js';
 import { SearXNGService } from './optional/searxng.js';
+import { PlausibleService } from './optional/plausible.js';
 import { DirectusService } from './optional/directus.js';
 import { OrcaRouterLiteService } from './optional/orcarouter-lite.js';
 import { DockhandService } from './core/dockhand.js';
@@ -278,6 +282,9 @@ export class ServiceFactory {
       case ServiceType.LINKWARDEN:
         service = new LinkwardenService(config, this.templateEngine);
         break;
+      case ServiceType.SHLINK:
+        service = new ShlinkService(config, this.templateEngine);
+        break;
       case ServiceType.PSITRANSFER:
         service = new PsiTransferService(config, this.templateEngine);
         break;
@@ -314,8 +321,11 @@ export class ServiceFactory {
       case ServiceType.MATTERMOST:
         service = new MattermostService(config, this.templateEngine);
         break;
-      case ServiceType.CALCOM:
-        service = new CalcomService(config, this.templateEngine);
+      case ServiceType.CALDIY:
+        service = new CaldiyService(config, this.templateEngine);
+        break;
+      case ServiceType.ADGUARD:
+        service = new AdGuardService(config, this.templateEngine);
         break;
       case ServiceType.JASPERREPORTS:
         service = new JasperReportsService(config, this.templateEngine);
@@ -365,6 +375,9 @@ export class ServiceFactory {
       case ServiceType.ANYTHINGLLM:
         service = new AnythingLLMService(config, this.templateEngine);
         break;
+      case ServiceType.GOOSE:
+        service = new GooseService(config, this.templateEngine);
+        break;
       case ServiceType.HERMES:
         service = new HermesService(config, this.templateEngine);
         break;
@@ -382,6 +395,9 @@ export class ServiceFactory {
         break;
       case ServiceType.SEARXNG:
         service = new SearXNGService(config, this.templateEngine);
+        break;
+      case ServiceType.PLAUSIBLE:
+        service = new PlausibleService(config, this.templateEngine);
         break;
       case ServiceType.DIRECTUS:
         service = new DirectusService(config, this.templateEngine);
@@ -574,12 +590,14 @@ export class ServiceFactory {
       ServiceType.FLOCIGCP,
       ServiceType.LITELLM,
       ServiceType.ANYTHINGLLM,
+      ServiceType.GOOSE,
       ServiceType.HERMES,
       ServiceType.OPENCLAW,
       ServiceType.OPENHUMAN,
       ServiceType.OPENJARVIS,
       ServiceType.FIRECRAWL,
       ServiceType.SEARXNG,
+      ServiceType.PLAUSIBLE,
       ServiceType.DOCKHAND,
       ServiceType.REGISTRY,
       ServiceType.NEXUS,
@@ -587,6 +605,7 @@ export class ServiceFactory {
       ServiceType.CONSUL,
       ServiceType.VAULTWARDEN,
       ServiceType.LINKWARDEN,
+      ServiceType.SHLINK,
       ServiceType.PSITRANSFER,
       ServiceType.FILESTASH,
       ServiceType.EXCALIDRAW,
@@ -599,7 +618,8 @@ export class ServiceFactory {
       ServiceType.TWENTYCRM,
       ServiceType.MEDUSAJS,
       ServiceType.MATTERMOST,
-      ServiceType.CALCOM,
+      ServiceType.CALDIY,
+      ServiceType.ADGUARD,
       ServiceType.JASPERREPORTS,
       ServiceType.STIRLINGPDF,
       ServiceType.LIBRETRANSLATE,
@@ -712,6 +732,7 @@ export class ServiceFactory {
       'Consul': ServiceType.CONSUL,
       'Vaultwarden': ServiceType.VAULTWARDEN,
       'Linkwarden': ServiceType.LINKWARDEN,
+      'Shlink': ServiceType.SHLINK,
       'PsiTransfer': ServiceType.PSITRANSFER,
       'Filestash': ServiceType.FILESTASH,
       'Excalidraw': ServiceType.EXCALIDRAW,
@@ -724,7 +745,8 @@ export class ServiceFactory {
       'TwentyCRM': ServiceType.TWENTYCRM,
       'MedusaJS': ServiceType.MEDUSAJS,
       'Mattermost': ServiceType.MATTERMOST,
-      'Cal.com': ServiceType.CALCOM,
+      'Cal.diy': ServiceType.CALDIY,
+      'AdGuard Home': ServiceType.ADGUARD,
       'JasperReports Server': ServiceType.JASPERREPORTS,
       'Stirling-PDF': ServiceType.STIRLINGPDF,
       'LibreTranslate': ServiceType.LIBRETRANSLATE,
@@ -745,12 +767,14 @@ export class ServiceFactory {
       'Floci-GCP': ServiceType.FLOCIGCP,
       'LiteLLM': ServiceType.LITELLM,
       'AnythingLLM': ServiceType.ANYTHINGLLM,
-      'Hermes Agent': ServiceType.HERMES,
+      'Goose': ServiceType.GOOSE,
+      'Hermes': ServiceType.HERMES,
       'OpenClaw': ServiceType.OPENCLAW,
       'OpenHuman': ServiceType.OPENHUMAN,
       'OpenSearch': ServiceType.OPENSEARCH,
       'Firecrawl': ServiceType.FIRECRAWL,
       'SearXNG': ServiceType.SEARXNG,
+      'Plausible': ServiceType.PLAUSIBLE,
       'Dockhand': ServiceType.DOCKHAND,
       'RustDesk': ServiceType.RUSTDESK,
       'Portainer': ServiceType.PORTAINER,

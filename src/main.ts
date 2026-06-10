@@ -40,13 +40,12 @@ async function main(): Promise<void> {
     
     logger.info('Starting HomeLab Tool...');
     
-    // Initialize CLI interface
-    const cli = new CLIInterface();
+    // Initialize CLI interface with arguments for non-interactive mode
+    const cli = new CLIInterface(Bun.argv);
     
     // Initialize main application
     const app = new HomelabApplication();
     
-    // Start the interactive setup process
     // Start the interactive setup process and collect configuration
     const config = await cli.start();
 

@@ -4,10 +4,16 @@
 
 import { HomelabConfig, DistributionType } from '../core/types.js';
 import { HomelabError } from '../utils/errors.js';
-import { collectUserConfiguration, promptForConfirmation } from './prompts.js';
+import { collectUserConfiguration, collectUserConfigurationFromArgs, promptForConfirmation } from './prompts.js';
+import { parseArgs, CliArgs } from './args.js';
 
 export class CLIInterface {
   private config: Partial<HomelabConfig> = {};
+  private args: CliArgs;
+
+  constructor(argv?: string[]) {
+    this.args = argv ? parseArgs(argv) : {};
+  }
 
   /**
    * Start the CLI interface (alias for run method)
@@ -21,6 +27,10 @@ export class CLIInterface {
    */
   async run(): Promise<HomelabConfig> {
     try {
+      if (this.args.ip) {
+        return await this.runNonInteractive();
+      }
+
       console.log('🚀 Welcome to HomeLab Setup!');
       console.log('This tool will help you configure and install your HomeLab services.\n');
 
@@ -45,6 +55,23 @@ export class CLIInterface {
       this.handleError(error);
       process.exit(1);
     }
+  }
+
+  /**
+   * Non-interactive mode: build config from CLI args without prompts
+   */
+  private async runNonInteractive(): Promise<HomelabConfig> {
+    console.log('⚙️  Non-interactive mode: using provided arguments and defaults.\n');
+
+    this.config = await collectUserConfigurationFromArgs(
+      this.args.ip!,
+      this.args.domain,
+      this.args.list,
+      this.args.password,
+    );
+
+    await this.displayConfigurationSummary();
+    return this.validateAndCompleteConfig();
   }
 
   /**
@@ -142,6 +169,7 @@ export class CLIInterface {
       consul: 'Consul (Service Discovery)',
       vaultwarden: 'Vaultwarden (Password Manager)',
       linkwarden: 'Linkwarden (Bookmark Manager)',
+      shlink: 'Shlink (URL Shortener)',
       psitransfer: 'PsiTransfer (File Sharing)',
       filestash: 'Filestash (Web File Manager)',
       excalidraw: 'Excalidraw (Whiteboard)',
@@ -154,7 +182,8 @@ export class CLIInterface {
       twentycrm: 'TwentyCRM (CRM Platform)',
       medusajs: 'MedusaJS (E-commerce)',
       mattermost: 'Mattermost (Team Chat)',
-      calcom: 'Cal.com (Scheduling Platform)',
+      caldiy: 'Cal.diy (Scheduling Platform)',
+      adguard: 'AdGuard Home (DNS Ad Blocker)',
       jasperreports: 'JasperReports (Business Intelligence)',
       stirlingpdf: 'Stirling-PDF (PDF Tools)',
       libretranslate: 'LibreTranslate (Translation API)',
@@ -173,11 +202,13 @@ export class CLIInterface {
       flociaz: 'Floci-AZ (Azure Emulator)',
       flocigcp: 'Floci-GCP (GCP Emulator)',
       litellm: 'LiteLLM (LLM Proxy)',
-      hermes: 'Hermes Agent (AI Agent)',
+      goose: 'Goose (AI Agent)',
+      hermes: 'Hermes (AI Agent)',
       openclaw: 'OpenClaw (AI Agent Gateway)',
       openjarvis: 'OpenJarvis (AI Assistant Platform)',
       firecrawl: 'Firecrawl (Web Scraper)',
       searxng: 'SearXNG (Metasearch Engine)',
+      plausible: 'Plausible Analytics (Web Analytics)',
       redash: 'ReDash (SQL Query & Visualization)',
       dockhand: 'Dockhand (Docker Management UI)',
       portainer: 'Portainer (Docker Management UI)',

@@ -23,7 +23,7 @@ commands:
           -d \
           --name openjarvis \
           --network {{NETWORK_NAME}} \
-          -p 8000:8000 \
+          -p 8010:8000 \
           -e OPENJARVIS_ENGINE_DEFAULT=ollama \
           -e OPENJARVIS_OLLAMA_HOST=http://openjarvis-ollama:11434 \
           -e OPENJARVIS_API_KEY={{ADMIN_TOKEN}} \
@@ -35,7 +35,7 @@ variables:
   - NETWORK_NAME
   - ADMIN_TOKEN
 ports:
-  - "8000:8000"
+  - "8010:8000"
   - "11434:11434"
 volumes:
   - openjarvis_data:/root/.openjarvis

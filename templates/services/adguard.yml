@@ -1,0 +1,31 @@
+name: AdGuard Home
+description: Network-wide ad and tracker blocking DNS server
+commands:
+  install:
+    - docker pull adguard/adguardhome:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/adguard/work
+    - mkdir -p ~/{{DATA_PATH}}/adguard/conf
+  run: |-
+    docker run \
+          -d \
+          --name adguardhome \
+          --network {{NETWORK_NAME}} \
+          -p 3000:3000 \
+          -p 53:53/udp \
+          -v ~/{{DATA_PATH}}/adguard/work:/opt/adguardhome/work \
+          -v ~/{{DATA_PATH}}/adguard/conf:/opt/adguardhome/conf \
+          --restart=unless-stopped \
+          adguard/adguardhome:latest
+variables:
+  - NETWORK_NAME
+  - DATA_PATH
+ports:
+  - "3000:3000"
+  - "53:53/udp"
+volumes:
+  - ~/{{DATA_PATH}}/adguard/work:/opt/adguardhome/work
+  - ~/{{DATA_PATH}}/adguard/conf:/opt/adguardhome/conf
+accessUrl: https://adguard.{{DOMAIN}}
+dependencies: []
+isCore: false

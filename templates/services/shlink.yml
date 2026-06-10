@@ -1,0 +1,32 @@
+name: Shlink URL Shortener
+description: URL shortener with REST API and web interface
+commands:
+  install:
+    - docker pull shlinkio/shlink:stable
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/shlink/data
+  run: |-
+    docker run \
+          -d \
+          --name shlink \
+          --network {{NETWORK_NAME}} \
+          -p 8080:8080 \
+          -e DEFAULT_DOMAIN={{DOMAIN}} \
+          -e IS_HTTPS_ENABLED=true \
+          -v ~/{{DATA_PATH}}/shlink/data:/etc/shlink/data \
+          --restart=unless-stopped \
+          shlinkio/shlink:stable
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - DATA_PATH
+ports:
+  - "8080:8080"
+volumes:
+  - ~/{{DATA_PATH}}/shlink/data:/etc/shlink/data
+environment:
+  DEFAULT_DOMAIN: "{{DOMAIN}}"
+  IS_HTTPS_ENABLED: "true"
+accessUrl: https://shlink.{{DOMAIN}}
+dependencies: []
+isCore: false

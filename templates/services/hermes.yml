@@ -1,4 +1,4 @@
-name: Hermes Agent
+name: Hermes
 description: Self-improving AI agent with persistent memory (Nous Research)
 commands:
   install:

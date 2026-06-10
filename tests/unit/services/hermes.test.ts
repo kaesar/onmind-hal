@@ -22,7 +22,7 @@ describe('HermesService', () => {
   });
 
   it('should have correct service name', () => {
-    expect(service.name).toBe('Hermes Agent');
+    expect(service.name).toBe('Hermes');
   });
 
   it('should have correct service type', () => {

@@ -1,0 +1,44 @@
+name: Plausible Analytics
+description: Open-source web analytics platform
+commands:
+  install:
+    - docker pull plausible/analytics:latest
+    - docker pull clickhouse/clickhouse-server:latest-alpine
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/plausible/clickhouse
+  run: |-
+    docker run -d \
+      --name plausible_clickhouse \
+      --network {{NETWORK_NAME}} \
+      -v ~/{{DATA_PATH}}/plausible/clickhouse:/var/lib/clickhouse \
+      --restart=unless-stopped \
+      clickhouse/clickhouse-server:latest-alpine && \
+    sleep 3 && \
+    docker run -d \
+      --name plausible \
+      --network {{NETWORK_NAME}} \
+      -p 3200:8000 \
+      -e BASE_URL=https://analytics.{{DOMAIN}} \
+      -e SECRET_KEY_BASE={{ADMIN_TOKEN}}{{ADMIN_TOKEN}} \
+      -e DATABASE_URL=postgres://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/plausible_db \
+      -e CLICKHOUSE_DATABASE_URL=http://plausible_clickhouse:8123/plausible \
+      --restart=unless-stopped \
+      plausible/analytics:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - DATA_PATH
+  - ADMIN_TOKEN
+  - STORAGE_PASSWORD
+ports:
+  - "3200:8000"
+volumes:
+  - ~/{{DATA_PATH}}/plausible/clickhouse:/var/lib/clickhouse
+environment:
+  BASE_URL: "https://analytics.{{DOMAIN}}"
+  SECRET_KEY_BASE: "{{ADMIN_TOKEN}}{{ADMIN_TOKEN}}"
+  DATABASE_URL: "postgres://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/plausible_db"
+  CLICKHOUSE_DATABASE_URL: "http://plausible_clickhouse:8123/plausible"
+accessUrl: https://analytics.{{DOMAIN}}
+dependencies: []
+isCore: false

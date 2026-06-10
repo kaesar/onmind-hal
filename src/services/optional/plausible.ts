@@ -2,11 +2,11 @@ import { ServiceType, HomelabConfig } from '../../core/types.js';
 import { TemplateEngine } from '../../templates/engine.js';
 import { BaseService } from '../base.js';
 
-export class HermesService extends BaseService {
+export class PlausibleService extends BaseService {
   constructor(config: HomelabConfig, templateEngine: TemplateEngine) {
     super(
-      'Hermes',
-      ServiceType.HERMES,
+      'Plausible Analytics',
+      ServiceType.PLAUSIBLE,
       false,
       [],
       config,
@@ -15,6 +15,6 @@ export class HermesService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `https://hermes.${this.config.domain}`;
+    return `https://analytics.${this.config.domain}`;
   }
 }
