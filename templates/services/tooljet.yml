@@ -1,0 +1,54 @@
+name: tooljet-service
+description: ToolJet low-code internal tools builder
+commands:
+  install:
+    - docker pull tooljet/tooljet-ce:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/tooljet/data
+    - |-
+      docker run --rm \
+        --network {{NETWORK_NAME}} \
+        -e PGPASSWORD={{STORAGE_PASSWORD}} \
+        postgres:latest \
+        psql -h postgresql -U root -d postgres -c "CREATE DATABASE tooljet;" 2>/dev/null || true
+  run: |-
+    docker run \
+      -d \
+      --name tooljet \
+      --network {{NETWORK_NAME}} \
+      -p 3084:3000 \
+      -e TOOLJET_HOST=https://tooljet.{{DOMAIN}} \
+      -e LOCKBOX_MASTER_KEY={{ADMIN_TOKEN}} \
+      -e SECRET_KEY_BASE={{ADMIN_TOKEN}}{{ADMIN_TOKEN}} \
+      -e DATABASE_URL=postgres://root:{{STORAGE_PASSWORD}}@postgresql:5432/tooljet \
+      -e REDIS_URL=redis://redis:6379/0 \
+      -e NODE_ENV=production \
+      -e ENABLE_TOOLJET_DB=true \
+      -e TOOLJET_SERVER_URL=https://tooljet.{{DOMAIN}} \
+      -v ~/{{DATA_PATH}}/tooljet/data:/app/.env \
+      --restart unless-stopped \
+      tooljet/tooljet-ce:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - DATA_PATH
+  - ADMIN_TOKEN
+  - STORAGE_PASSWORD
+ports:
+  - "3084:3000"
+volumes:
+  - ~/{{DATA_PATH}}/tooljet/data:/app/.env
+environment:
+  TOOLJET_HOST: https://tooljet.{{DOMAIN}}
+  LOCKBOX_MASTER_KEY: "{{ADMIN_TOKEN}}"
+  SECRET_KEY_BASE: "{{ADMIN_TOKEN}}{{ADMIN_TOKEN}}"
+  DATABASE_URL: postgres://root:{{STORAGE_PASSWORD}}@postgresql:5432/tooljet
+  REDIS_URL: redis://redis:6379/0
+  NODE_ENV: production
+  ENABLE_TOOLJET_DB: "true"
+  TOOLJET_SERVER_URL: https://tooljet.{{DOMAIN}}
+accessUrl: https://tooljet.{{DOMAIN}}
+dependencies:
+  - PostgreSQL
+  - Redis
+isCore: false

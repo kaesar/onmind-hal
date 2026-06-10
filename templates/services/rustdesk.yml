@@ -10,22 +10,20 @@ commands:
     docker run \
           -d \
           --name rustdesk-hbbs \
-          --network {{NETWORK_NAME}} \
+          --network=host \
           --restart=unless-stopped \
           -v rustdesk_data:/data \
-          --network=host \
           rustdesk/rustdesk-server:latest \
-          hbbs -r {{DOMAIN}}:21117
+          hbbs -r {{DOMAIN}}:21117 || true
 
     docker run \
           -d \
           --name rustdesk-hbbr \
-          --network {{NETWORK_NAME}} \
+          --network=host \
           --restart=unless-stopped \
           -v rustdesk_data:/data \
-          --network=host \
           rustdesk/rustdesk-server:latest \
-          hbbr
+          hbbr || true
 variables:
   - NETWORK_NAME
   - DOMAIN

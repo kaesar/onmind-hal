@@ -23,6 +23,7 @@ import { OllamaService } from './optional/ollama.js';
 import { OpenWebUIService } from './optional/openwebui.js';
 import { OpenNotebookLMService } from './optional/opennotebooklm.js';
 import { N8nService } from './optional/n8n.js';
+import { TooljetService } from './optional/tooljet.js';
 import { KestraService } from './optional/kestra.js';
 import { KeystoneJSService } from './optional/keystonejs.js';
 import { KeycloakService } from './optional/keycloak.js';
@@ -81,6 +82,8 @@ import { HulyService } from './optional/huly.js';
 import { RustFSService } from './optional/rustfs.js';
 import { InfisicalService } from './optional/infisical.js';
 import { FlociService } from './optional/floci.js';
+import { FlociAZService } from './optional/flociaz.js';
+import { FlociGCPService } from './optional/flocigcp.js';
 import { LiteLLMService } from './optional/litellm.js';
 import { AnythingLLMService } from './optional/anythingllm.js';
 import { OpenClawService } from './optional/openclaw.js';
@@ -175,6 +178,9 @@ export class ServiceFactory {
         break;
       case ServiceType.N8N:
         service = new N8nService(config, this.templateEngine);
+        break;
+      case ServiceType.TOOLJET:
+        service = new TooljetService(config, this.templateEngine);
         break;
       case ServiceType.KESTRA:
         service = new KestraService(config, this.templateEngine);
@@ -346,6 +352,12 @@ export class ServiceFactory {
         break;
       case ServiceType.FLOCI:
         service = new FlociService(config, this.templateEngine);
+        break;
+      case ServiceType.FLOCIAZ:
+        service = new FlociAZService(config, this.templateEngine);
+        break;
+      case ServiceType.FLOCIGCP:
+        service = new FlociGCPService(config, this.templateEngine);
         break;
       case ServiceType.LITELLM:
         service = new LiteLLMService(config, this.templateEngine);
@@ -521,7 +533,7 @@ export class ServiceFactory {
       ServiceType.MONGODB,
       ServiceType.MARIADB,
       ServiceType.SCYLLADB,
-      ServiceType.IGNITE,
+      ServiceType.OPENSEARCH,
       ServiceType.KAFKA,
       ServiceType.KAFKAUI,
       ServiceType.RABBITMQ,
@@ -529,6 +541,7 @@ export class ServiceFactory {
       ServiceType.OPENWEBUI,
       ServiceType.OPENNOTEBOOKLM,
       ServiceType.N8N,
+      ServiceType.TOOLJET,
       ServiceType.KESTRA,
       ServiceType.KEYSTONEJS,
       ServiceType.KEYCLOAK,
@@ -549,7 +562,6 @@ export class ServiceFactory {
       ServiceType.K6,
       ServiceType.GRAFANA,
       ServiceType.LOKI,
-      ServiceType.OPENSEARCH,
       ServiceType.COROOT,
       ServiceType.REDASH,
       ServiceType.FLUENTBIT,
@@ -558,6 +570,8 @@ export class ServiceFactory {
       ServiceType.HULY,
       ServiceType.INFISCAL,
       ServiceType.FLOCI,
+      ServiceType.FLOCIAZ,
+      ServiceType.FLOCIGCP,
       ServiceType.LITELLM,
       ServiceType.ANYTHINGLLM,
       ServiceType.HERMES,
@@ -661,8 +675,6 @@ export class ServiceFactory {
       'MongoDB': ServiceType.MONGODB,
       'MariaDB': ServiceType.MARIADB,
       'ScyllaDB': ServiceType.SCYLLADB,
-      'Apache Ignite': ServiceType.IGNITE,
-      'OpenJarvis': ServiceType.OPENJARVIS,
       'Kafka': ServiceType.KAFKA,
       'Kafka UI': ServiceType.KAFKAUI,
       'RabbitMQ': ServiceType.RABBITMQ,
@@ -670,6 +682,7 @@ export class ServiceFactory {
       'Open WebUI': ServiceType.OPENWEBUI,
       'Open NotebookLM': ServiceType.OPENNOTEBOOKLM,
       'n8n': ServiceType.N8N,
+      'ToolJet': ServiceType.TOOLJET,
       'Kestra': ServiceType.KESTRA,
       'KeystoneJS': ServiceType.KEYSTONEJS,
       'Keycloak': ServiceType.KEYCLOAK,
@@ -690,7 +703,6 @@ export class ServiceFactory {
       'K6': ServiceType.K6,
       'Grafana': ServiceType.GRAFANA,
       'Loki': ServiceType.LOKI,
-      'OpenSearch': ServiceType.OPENSEARCH,
       'Coroot': ServiceType.COROOT,
       'ReDash': ServiceType.REDASH,
       'Fluent Bit': ServiceType.FLUENTBIT,
@@ -729,11 +741,14 @@ export class ServiceFactory {
       'RustFS': ServiceType.RUSTFS,
       'Infisical': ServiceType.INFISCAL,
       'Floci': ServiceType.FLOCI,
+      'Floci-AZ': ServiceType.FLOCIAZ,
+      'Floci-GCP': ServiceType.FLOCIGCP,
       'LiteLLM': ServiceType.LITELLM,
       'AnythingLLM': ServiceType.ANYTHINGLLM,
       'Hermes Agent': ServiceType.HERMES,
       'OpenClaw': ServiceType.OPENCLAW,
       'OpenHuman': ServiceType.OPENHUMAN,
+      'OpenSearch': ServiceType.OPENSEARCH,
       'Firecrawl': ServiceType.FIRECRAWL,
       'SearXNG': ServiceType.SEARXNG,
       'Dockhand': ServiceType.DOCKHAND,

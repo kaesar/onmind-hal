@@ -114,7 +114,8 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
     {
       name: 'RustFS - High-performance S3-compatible distributed object storage',
       value: ServiceType.RUSTFS,
-      short: 'RustFS'
+      short: 'RustFS',
+      checked: true
     },
     {
       name: 'DuckDB - In-memory analytical database with web UI',
@@ -124,12 +125,14 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
     {
       name: 'PostgreSQL - SQL database server (alternative to Oracle DB)',
       value: ServiceType.POSTGRESQL,
-      short: 'PostgreSQL'
+      short: 'PostgreSQL',
+      checked: true
     },
     {
       name: 'Redis - In-memory data store',
       value: ServiceType.REDIS,
-      short: 'Redis'
+      short: 'Redis',
+      checked: true
     },
     {
       name: 'MongoDB - NoSQL document database',
@@ -147,14 +150,15 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'ScyllaDB'
     },
     {
-      name: 'Apache Ignite - Distributed in-memory database with SQL and JDBC',
-      value: ServiceType.IGNITE,
-      short: 'Apache Ignite'
+      name: 'OpenSearch - Search and analytics engine (Elasticsearch alternative)',
+      value: ServiceType.OPENSEARCH,
+      short: 'OpenSearch'
     },
     {
       name: 'Kafka - Distributed streaming platform (with KRaft)',
       value: ServiceType.KAFKA,
-      short: 'Kafka'
+      short: 'Kafka',
+      checked: true
     },
     {
       name: 'Kafka UI - Web UI for managing Apache Kafka',
@@ -187,6 +191,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'n8n'
     },
     {
+      name: 'ToolJet - Open-source low-code platform for building internal tools',
+      value: ServiceType.TOOLJET,
+      short: 'ToolJet'
+    },
+    {
       name: 'Kestra - Orchestration and scheduling platform',
       value: ServiceType.KESTRA,
       short: 'Kestra'
@@ -209,7 +218,8 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
     {
       name: 'PocketID - OIDC provider with passkeys support (for Caddy + oauth2-proxy)',
       value: ServiceType.POCKETID,
-      short: 'PocketID'
+      short: 'PocketID',
+      checked: true
     },
     {
       name: 'Apache APISIX - Cloud-native API Gateway and microservices management',
@@ -220,6 +230,16 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Floci - LocalStack alternative - AWS service emulator for local development',
       value: ServiceType.FLOCI,
       short: 'Floci'
+    },
+    {
+      name: 'Floci-AZ - Azure service emulator for local development',
+      value: ServiceType.FLOCIAZ,
+      short: 'Floci-AZ'
+    },
+    {
+      name: 'Floci-GCP - GCP service emulator for local development',
+      value: ServiceType.FLOCIGCP,
+      short: 'Floci-GCP'
     },
     {
       name: 'k3d - Lightweight Kubernetes in Docker',
@@ -287,11 +307,6 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Loki'
     },
     {
-      name: 'OpenSearch - Search and analytics engine (Elasticsearch alternative)',
-      value: ServiceType.OPENSEARCH,
-      short: 'OpenSearch'
-    },
-    {
       name: 'Coroot - Open-source observability and monitoring platform',
       value: ServiceType.COROOT,
       short: 'Coroot'
@@ -314,12 +329,14 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
     {
       name: 'Dozzle - Lightweight Docker log viewer and monitor',
       value: ServiceType.DOZZLE,
-      short: 'Dozzle'
+      short: 'Dozzle',
+      checked: true
     },
     {
       name: 'Registry - Private Docker container registry',
       value: ServiceType.REGISTRY,
-      short: 'Registry'
+      short: 'Registry',
+      checked: true
     },
     {
       name: 'Nexus Repository - Universal artifact repository manager',
@@ -329,7 +346,8 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
     {
       name: 'Infisical - Open-source secret management platform',
       value: ServiceType.INFISCAL,
-      short: 'Infisical'
+      short: 'Infisical',
+      checked: true
     },
     {
       name: 'Vault - Secrets and encryption management (HashiCorp)',

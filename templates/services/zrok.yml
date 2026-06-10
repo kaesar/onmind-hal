@@ -25,7 +25,8 @@ commands:
           -e POSTGRES_USER=zrok2 \
           -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
           -v zrok_postgres_data:/var/lib/postgresql/data \
-          postgres:16-alpine
+          --restart unless-stopped \
+          postgres:16-alpine || true
 
     docker run \
           -d \
@@ -35,7 +36,8 @@ commands:
           -e ZITI_PWD={{ADMIN_TOKEN}} \
           -e ZITI_USER=admin \
           -v ziti_controller_data:/var/lib/ziti-controller \
-          openziti/ziti-controller:latest
+          --restart unless-stopped \
+          openziti/ziti-controller:latest || true
 
     docker run \
           -d \
@@ -46,7 +48,8 @@ commands:
           -e ZITI_CTRL_ADVERTISED_HOST=ziti-controller \
           -e ZITI_CTRL_ADVERTISED_PORT=1280 \
           -v ziti_router_data:/var/lib/ziti-router \
-          openziti/ziti-router:latest
+          --restart unless-stopped \
+          openziti/ziti-router:latest || true
 
     docker run \
           -d \
@@ -63,7 +66,8 @@ commands:
           -e ZROK2_FRONTEND_PORT=8080 \
           -e ZROK2_INSECURE_INTERFACE=0.0.0.0 \
           -v zrok_controller_data:/var/lib/zrok2-controller \
-          openziti/zrok2:latest controller start
+          --restart unless-stopped \
+          openziti/zrok2:latest controller start || true
 
     docker run \
           -d \
@@ -75,7 +79,8 @@ commands:
           -e ZROK2_FRONTEND_PORT=8080 \
           -e ZROK2_DNS_ZONE={{DOMAIN}} \
           -v zrok_frontend_data:/var/lib/zrok2-frontend \
-          openziti/zrok2:latest frontend start
+          --restart unless-stopped \
+          openziti/zrok2:latest frontend start || true
 
     docker run \
           -d \
@@ -85,7 +90,8 @@ commands:
           -p 8081:80 \
           -v ~/{{CONFIG_PATH}}/zrok/Caddyfile:/etc/caddy/Caddyfile \
           -v ~/{{DATA_PATH}}/zrok/caddy:/data \
-          caddy:latest
+          --restart unless-stopped \
+          caddy:latest || true
 variables:
   - NETWORK_NAME
   - DOMAIN

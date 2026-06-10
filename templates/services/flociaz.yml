@@ -1,0 +1,36 @@
+name: Floci-AZ Emulator
+description: Azure service emulator for local development
+commands:
+  install:
+    - docker pull floci/floci-az:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/floci-az/data
+    - docker volume create floci_az_data
+  run: |-
+    docker run \
+          -d \
+          --name flociaz \
+          --network {{NETWORK_NAME}} \
+          -p 4567:4566 \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v floci_az_data:/app/data \
+          -e FLOCI_HOSTNAME=flociaz \
+          -e FLOCI_STORAGE_MODE=persistent \
+          -e FLOCI_STORAGE_PERSISTENT_PATH=/app/data \
+          -e FLOCI_SERVICES_DOCKER_NETWORK={{NETWORK_NAME}} \
+          floci/floci-az:latest
+variables:
+  - NETWORK_NAME
+ports:
+  - "4567:4566"
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock
+  - floci_az_data:/app/data
+environment:
+  FLOCI_HOSTNAME: "flociaz"
+  FLOCI_STORAGE_MODE: "persistent"
+  FLOCI_STORAGE_PERSISTENT_PATH: "/app/data"
+  FLOCI_SERVICES_DOCKER_NETWORK: "{{NETWORK_NAME}}"
+accessUrl: http://flociaz.{{DOMAIN}}:4567
+dependencies: []
+isCore: false

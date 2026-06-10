@@ -583,6 +583,7 @@ export class HomelabApplication {
         'rustfs',
         'duckdb',
         'n8n',
+        'tooljet',
         'kestra',
         'keystonejs',
         'ollama',
@@ -630,12 +631,13 @@ export class HomelabApplication {
         'liquibase',
         'apisix',
         'opensearch',
-        'redash',
         'kurrier',
         'wetty',
         'huly',
         'infisical',
         'floci',
+        'flociaz',
+        'flocigcp',
         'litellm',
         'openclaw',
         'openjarvis',
@@ -668,6 +670,8 @@ export class HomelabApplication {
           huly: 'huly',
           infisical: 'infisical',
           floci: 'floci',
+          flociaz: 'flociaz',
+          flocigcp: 'flocigcp',
           litellm: 'litellm',
           openclaw: 'openclaw',
           openjarvis: 'openjarvis',
@@ -679,6 +683,7 @@ export class HomelabApplication {
           redash: 'redash',
           codeserver: 'codeserver',
           jupyterlab: 'jupyterlab',
+          tooljet: 'tooljet',
         };
 
         for (const service of this.installedServices) {
@@ -722,7 +727,6 @@ export class HomelabApplication {
             mongodb: 'Database server - connect via localhost:27017',
             mariadb: 'Database server - connect via localhost:3306',
             scylladb: 'Database server - connect via localhost:9042',
-            ignite: 'In-memory database - JDBC via localhost:10800',
             fluentbit: 'Log processor - no direct connection needed',
           };
 
