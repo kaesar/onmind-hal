@@ -19,11 +19,16 @@
 
 ## Quick Start
 
-Just install **Bun** runtime, then clone **OnMind-HAL** to install modules, build and start. Open a terminal and execute next lines:
+Just install **Bun** runtime, then clone **OnMind-HAL** to install modules, build and start. Then, open a terminal and execute next lines:
 
 ```bash
 curl -fsSL https://bun.com/install | bash
+```
 
+> **macOS with Homebrew**: `brew install oven-sh/bun/bun`  
+> **Windows**: `powershell -c "irm bun.sh/install.ps1|iex"`
+
+```bash
 git clone https://github.com/kaesar/onmind-hal.git hal
 cd hal
 bun install
@@ -36,30 +41,44 @@ bun run start
 
 ### Non-Interactive Mode (Script)
 
-You can skip all prompts by providing an IP address as the first argument:
+You can skip all prompts by providing flags:
 
 ```bash
-bun run src/main.ts <IP> [--domain <domain>] [--list <services>] [--password <password>]
+bun run src/main.ts [--ip <address>] [--domain <domain>] [--list <services>] [--password <password>]
 ```
 
-- **IP** (required, positional): Triggers non-interactive mode. Must be a valid IPv4 address.
+- **`--ip`** (optional): Server IP address. Auto-detected if omitted. Must be a valid IPv4 address.
 - **`--domain`** (optional): Domain name (default: `homelab.lan`).
 - **`--list`** (optional): Comma-separated list of service names (lowercase, e.g. `postgresql,redis,grafana`). Uses pre-selected defaults if omitted.
 - **`--password`** (optional): Database/Storage password in base64. If omitted but PostgreSQL/MariaDB/MongoDB are selected, a password is generated as `Admin<YY>!` (YY = last two digits of current year).
+- **`--help`**: Show usage information.
 
+<!--
 Examples:
+
 ```bash
-# IP only — all defaults
-bun run src/main.ts 192.168.1.100
+# Custom IP only
+bun run src/main.ts --ip 192.168.1.100
 
-# IP + custom domain
-bun run src/main.ts 192.168.1.100 --domain myhomelab.local
+# Custom IP + domain
+bun run src/main.ts --ip 192.168.1.100 --domain myhomelab.local
 
-# IP + domain + specific services
-bun run src/main.ts 192.168.1.100 --domain myhomelab.local --list postgresql,redis,kafka
+# Custom IP + domain + specific services
+bun run src/main.ts --ip 192.168.1.100 --domain myhomelab.local --list postgresql,redis,kafka
 
-# IP + services + explicit password
-bun run src/main.ts 192.168.1.100 --list postgresql,redis --password MySecr3t!
+# Auto-detected IP + services (no --ip needed)
+bun run src/main.ts --list postgresql,redis
+
+# Services + explicit password
+bun run src/main.ts --ip 192.168.1.100 --list postgresql,redis --password MySecr3t!
+```
+-->
+Examples:
+
+```bash
+bun run src/main.ts --domain myhomelab.lan
+
+bun run src/main.ts --list postgresql,redis
 ```
 
 > To install directly in Linux you can add `sudo` (at the beginning) for priviledges
@@ -72,11 +91,11 @@ bun run src/main.ts 192.168.1.100 --list postgresql,redis --password MySecr3t!
 - **Dockhand** (or **Portainer**): Docker container management interface
 - **Copyparty**: File sharing and management platform
 
-> When using Docker, **Dockhand** is automatically selected as the default management UI. When using Podman, **Portainer** is used instead. You can override this selection for Docker during configuration.
+> **Dockhand** is automatically selected as the default management UI. **Portainer** is the alternative. You can override this selection during interactive configuration (not for script mode).
 
 ### Optional Services
 
-| # | Service | Name | Description | Port |
+| # | Service | Code | Description | Port |
 |---|---------|------|-------------|------|
 | 1 | **RustFS** | `rustfs` | High-performance S3-compatible distributed object storage | 9001 |
 | 2 | **DuckDB** | `duckdb` | In-memory analytical database with web UI | 4214 |
@@ -148,20 +167,21 @@ bun run src/main.ts 192.168.1.100 --list postgresql,redis --password MySecr3t!
 | 68 | **AdGuard-Home** | `adguard` | Network-wide ad and tracker blocking DNS server | 3000 |
 | 69 | **JasperReports** | `jasperreports` | Business intelligence and reporting platform | 8081 |
 | 70 | **Stirling-PDF** | `stirlingpdf` | Powerful locally hosted PDF manipulation tool | 8090 |
-| 71 | **LibreTranslate** | `libretranslate` | Free and open source machine translation API | 5001 |
-| 72 | **OrcaRouter-Lite** | `orcarouterlite` | Lightweight LLM router with multi-provider support | 8000 |
-| 73 | **LiteLLM** | `litellm` | LLM proxy with unified API for 100+ LLMs | 4000 |
-| 74 | **AnythingLLM** | `anythingllm` | Multi-user AI platform with RAG, Agents, and local LLM support | 3001 |
-| 75 | **Goose** | `goose` | Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation) | 8300 |
-| 76 | **Hermes** | `hermes` | Self-improving AI agent with persistent memory (Nous Research) | 8642 |
-| 77 | **OpenClaw** | `openclaw` | AI agent gateway for Claude Code, OpenAI Codex and more | 18789 |
-| 78 | **OpenHuman** | `openhuman` | Open-source AI agent platform with Rust core | 7788 |
-| 79 | **OpenJarvis** | `openjarvis` | AI assistant platform with Ollama backend | 8010 |
-| 80 | **Firecrawl** | `firecrawl` | Open-source web scraping API with JavaScript rendering | 3002 |
-| 81 | **SearXNG** | `searxng` | Privacy-respecting metasearch engine | 8080 |
-| 82 | **Plausible** | `plausible` | Open-source web analytics platform (ClickHouse + PostgreSQL) | 3200 |
-| 83 | **Docker-Mailserver** | `mailserver` | Full-featured mail server (SMTP, IMAP, antispam, antivirus) | 25 |
-| 84 | **Kurrier** | `kurrier` | Self-hosted email marketing and newsletter platform | 3031 |
+| 71 | **Pandoc-Web** | `pandocweb` | Web interface for Pandoc document converter | 8094 |
+| 72 | **LibreTranslate** | `libretranslate` | Free and open source machine translation API | 5001 |
+| 73 | **OrcaRouter-Lite** | `orcarouterlite` | Lightweight LLM router with multi-provider support | 8000 |
+| 74 | **LiteLLM** | `litellm` | LLM proxy with unified API for 100+ LLMs | 4000 |
+| 75 | **AnythingLLM** | `anythingllm` | Multi-user AI platform with RAG, Agents, and local LLM support | 3001 |
+| 76 | **Goose** | `goose` | Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation) | 8300 |
+| 77 | **Hermes** | `hermes` | Self-improving AI agent with persistent memory (Nous Research) | 8642 |
+| 78 | **OpenClaw** | `openclaw` | AI agent gateway for Claude Code, OpenAI Codex and more | 18789 |
+| 79 | **OpenHuman** | `openhuman` | Open-source AI agent platform with Rust core | 7788 |
+| 80 | **OpenJarvis** | `openjarvis` | AI assistant platform with Ollama backend | 8010 |
+| 81 | **Firecrawl** | `firecrawl` | Open-source web scraping API with JavaScript rendering | 3002 |
+| 82 | **SearXNG** | `searxng` | Privacy-respecting metasearch engine | 8080 |
+| 83 | **Plausible** | `plausible` | Open-source web analytics platform (ClickHouse + PostgreSQL) | 3200 |
+| 84 | **Docker-Mailserver** | `mailserver` | Full-featured mail server (SMTP, IMAP, antispam, antivirus) | 25 |
+| 85 | **Kurrier** | `kurrier` | Self-hosted email marketing and newsletter platform | 3031 |
 | 85 | **Zrok** | `zrok` | Zero-trust tunneling platform (NGROK alternative) with OpenZiti | 18080, 8081, 8082 |
 | 86 | **Cloudflare-Tunnel** | `cloudflared` | Secure tunnel to expose services without opening ports ⚠️ | — |
 | 87 | **Wetty** | `wetty` | Web-based SSH terminal for secure host access | 3033 |
@@ -191,15 +211,6 @@ bun run src/main.ts 192.168.1.100 --list postgresql,redis --password MySecr3t!
    ├── unit/                   # Unit tests
    └── integration/            # Integration tests
 ```
-
-## Bun Runtime - Installation required
-
-```bash
-curl -fsSL https://bun.com/install | bash
-```
-
-> **macOS with Homebrew**: `brew install oven-sh/bun/bun`  
-> **Windows**: `powershell -c "irm bun.sh/install.ps1|iex"`
 
 ## Documentation
 

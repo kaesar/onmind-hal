@@ -88,6 +88,7 @@ export enum ServiceType {
   ADGUARD = 'adguard',
   JASPERREPORTS = 'jasperreports',
   STIRLINGPDF = 'stirlingpdf',
+  PANDOCWEB = 'pandocweb',
   LIBRETRANSLATE = 'libretranslate',
   MAILSERVER = 'mailserver',
   KURRIER = 'kurrier',

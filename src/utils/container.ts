@@ -11,6 +11,7 @@ export type ContainerRuntime = 'docker' | 'podman';
 export class ContainerRuntimeUtils {
   private static logger = new Logger();
   private static detectedRuntime: ContainerRuntime | null = null;
+  private static detectedSocketPath: string | null = null;
 
   /**
    * Detect available container runtime
@@ -130,6 +131,49 @@ export class ContainerRuntimeUtils {
   }
 
   /**
+   * Detect the appropriate Docker-compatible socket path for the current runtime
+   */
+  static async getSocketPath(): Promise<string> {
+    if (this.detectedSocketPath) {
+      return this.detectedSocketPath;
+    }
+
+    try {
+      const runtime = await this.detectRuntime();
+      if (runtime === 'docker') {
+        this.detectedSocketPath = '/var/run/docker.sock';
+        return this.detectedSocketPath;
+      }
+
+      this.detectedSocketPath = await this.detectPodmanSocketPath();
+      return this.detectedSocketPath;
+    } catch {
+      this.detectedSocketPath = '/var/run/docker.sock';
+      return this.detectedSocketPath;
+    }
+  }
+
+  /**
+   * Detect Podman socket path (rootful or rootless)
+   */
+  private static async detectPodmanSocketPath(): Promise<string> {
+    try {
+      await $`test -S /run/podman/podman.sock`.quiet();
+      return '/run/podman/podman.sock';
+    } catch {
+      try {
+        const uidResult = await $`id -u`.quiet();
+        const uid = uidResult.stdout.toString().trim();
+        const rootlessSocket = `/run/user/${uid}/podman/podman.sock`;
+        await $`test -S ${rootlessSocket}`.quiet();
+        return rootlessSocket;
+      } catch {
+        return '/var/run/docker.sock';
+      }
+    }
+  }
+
+  /**
    * Get runtime-specific warnings
    */
   static getRuntimeWarnings(runtime: ContainerRuntime): string[] {
@@ -137,7 +181,7 @@ export class ContainerRuntimeUtils {
       return [
         '⚠️  Using Podman runtime - some additional setup may be required:',
         '   • For macOS: Ensure Podman machine is running with `podman machine start`',
-        '   • For Portainer: Run `systemctl --user enable --now podman.socket` (Linux)',
+        '   • For Dockhand/Portainer: Run `systemctl --user enable --now podman.socket` (Linux)',
         '   • Rootless containers run under user namespace',
         '   • Some Docker-specific features may not be available',
         '   • Network creation might require manual setup'

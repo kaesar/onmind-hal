@@ -86,6 +86,7 @@ export abstract class BaseService implements Service {
    */
   protected async executeCommands(commands: string[]): Promise<void> {
     const context = this.getTemplateContext();
+    context['DOCKER_SOCKET_PATH'] = await ContainerRuntimeUtils.getSocketPath();
     
     for (const command of commands) {
       let interpolatedCommand = command;

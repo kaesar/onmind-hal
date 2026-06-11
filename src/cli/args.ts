@@ -2,11 +2,26 @@ import { ServiceType } from '../core/types.js';
 import { validateIP as validateIPUtil } from '../utils/validation.js';
 import { sanitizeUserInput } from '../utils/validation.js';
 
+const USAGE = `
+Usage: hal [options]
+
+Options:
+  --ip <address>       Server IP address (auto-detected if omitted)
+  --domain <domain>    Domain name (default: homelab.lan)
+  --list <services>    Comma-separated list of optional services
+  --password <base64>  Database password (base64-encoded)
+  --help               Show this help message
+`;
+
+export { USAGE };
+
 export interface CliArgs {
   ip?: string;
   domain?: string;
   list?: string[];
   password?: string;
+  scriptMode?: boolean;
+  help?: boolean;
 }
 
 function flagValue(args: string[], flag: string): string | undefined {
@@ -17,30 +32,41 @@ function flagValue(args: string[], flag: string): string | undefined {
   return undefined;
 }
 
+function hasFlag(args: string[], flag: string): boolean {
+  return args.includes(flag);
+}
+
 export function parseArgs(argv: string[]): CliArgs {
-  const args = argv.slice(2);
-  if (args.length === 0) return {};
+  const raw = argv.slice(2);
+  if (raw.length === 0) return {};
 
-  const first = args[0];
-  if (!first || first.startsWith('-')) return {};
-
-  let ip: string | undefined;
-  try {
-    const trimmed = sanitizeUserInput(first.trim());
-    validateIPUtil(trimmed);
-    ip = trimmed;
-  } catch {
-    return {};
+  if (hasFlag(raw, '--help')) {
+    return { scriptMode: true, help: true };
   }
 
-  const result: CliArgs = { ip };
+  const hasFlags = raw.some(a => a.startsWith('--'));
+  if (!hasFlags) return {};
 
-  const domain = flagValue(args, '--domain');
+  let ip: string | undefined;
+
+  const ipFlag = flagValue(raw, '--ip');
+  if (ipFlag) {
+    try {
+      const trimmed = sanitizeUserInput(ipFlag.trim());
+      validateIPUtil(trimmed);
+      ip = trimmed;
+    } catch {}
+  }
+
+  const result: CliArgs = { scriptMode: true };
+  if (ip) result.ip = ip;
+
+  const domain = flagValue(raw, '--domain');
   if (domain) {
     result.domain = sanitizeUserInput(domain.trim());
   }
 
-  const list = flagValue(args, '--list');
+  const list = flagValue(raw, '--list');
   if (list) {
     result.list = list
       .split(',')
@@ -48,7 +74,7 @@ export function parseArgs(argv: string[]): CliArgs {
       .filter(s => s.length > 0 && Object.values(ServiceType).includes(s as ServiceType));
   }
 
-  const password = flagValue(args, '--password');
+  const password = flagValue(raw, '--password');
   if (password) {
     try {
       result.password = Buffer.from(password, 'base64').toString('utf-8');

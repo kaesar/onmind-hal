@@ -188,6 +188,7 @@ export class CaddyService extends BaseService {
       [ServiceType.ADGUARD]: { subdomain: 'adguard', port: 3000, container: 'adguardhome' },
       [ServiceType.JASPERREPORTS]: { subdomain: 'jasper', port: 8080, container: 'jasperreports' },
       [ServiceType.STIRLINGPDF]: { subdomain: 'pdf', port: 8080, container: 'stirlingpdf' },
+      [ServiceType.PANDOCWEB]: { subdomain: 'pandoc', port: 8080, container: 'pandocweb' },
       [ServiceType.LIBRETRANSLATE]: { subdomain: 'translate', port: 5000, container: 'libretranslate' },
       [ServiceType.ORCAROUTERLITE]: { subdomain: 'orcarouter', port: 8000, container: 'orcarouter-lite' },
       [ServiceType.LITELLM]: { subdomain: 'litellm', port: 4000, container: 'litellm' },

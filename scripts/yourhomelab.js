@@ -610,7 +610,7 @@ async function main() {
     console.log("\n📋 Configuration Summary:");
     console.log("═".repeat(50));
     console.log(`🌐 IP Address: ${config.ip}`);
-    console.log(`🏷️  Domain: ${config.domain}`);
+    console.log(`🏷️ Domain: ${config.domain}`);
     console.log(`🔗 Network: ${config.networkName}`);
     console.log(
       `📦 Services: ${config.services.length > 0 ? config.services.join(", ") : "Core services only"}`,

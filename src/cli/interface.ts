@@ -5,7 +5,7 @@
 import { HomelabConfig, DistributionType } from '../core/types.js';
 import { HomelabError } from '../utils/errors.js';
 import { collectUserConfiguration, collectUserConfigurationFromArgs, promptForConfirmation } from './prompts.js';
-import { parseArgs, CliArgs } from './args.js';
+import { parseArgs, CliArgs, USAGE } from './args.js';
 
 export class CLIInterface {
   private config: Partial<HomelabConfig> = {};
@@ -27,7 +27,12 @@ export class CLIInterface {
    */
   async run(): Promise<HomelabConfig> {
     try {
-      if (this.args.ip) {
+      if (this.args.help) {
+        console.log(USAGE);
+        process.exit(0);
+      }
+
+      if (this.args.scriptMode) {
         return await this.runNonInteractive();
       }
 
@@ -64,7 +69,7 @@ export class CLIInterface {
     console.log('⚙️  Non-interactive mode: using provided arguments and defaults.\n');
 
     this.config = await collectUserConfigurationFromArgs(
-      this.args.ip!,
+      this.args.ip,
       this.args.domain,
       this.args.list,
       this.args.password,
@@ -81,7 +86,7 @@ export class CLIInterface {
     console.log('\n📋 Configuration Summary:');
     console.log('═'.repeat(50));
     console.log(`🌐 Server IP: ${this.config.ip}`);
-    console.log(`🏷️  Domain: ${this.config.domain}`);
+    console.log(`🏷️ Domain: ${this.config.domain}`);
     console.log(`🔗 Network: ${this.config.networkName}`);
     console.log(`📁 Config path: ~/${this.config.configPath || 'ws/init'}`);
     console.log(`💾 Data path: ~/${this.config.dataPath || 'ws/data'}`);
@@ -121,7 +126,8 @@ export class CLIInterface {
   private getServiceDisplayName(service: string): string {
     const serviceNames: Record<string, string> = {
       caddy: 'Caddy (Reverse Proxy)',
-      portainer: 'Portainer (Docker Management)',
+      dockhand: 'Dockhand (Docker Management UI)',
+      portainer: 'Portainer (Docker Management UI)',
       copyparty: 'Copyparty (File Sharing)',
       duckdb: 'DuckDB (Analytics Database)',
       postgresql: 'PostgreSQL (Database)',
@@ -186,6 +192,7 @@ export class CLIInterface {
       adguard: 'AdGuard Home (DNS Ad Blocker)',
       jasperreports: 'JasperReports (Business Intelligence)',
       stirlingpdf: 'Stirling-PDF (PDF Tools)',
+      pandocweb: 'Pandoc-Web (Document Converter)',
       libretranslate: 'LibreTranslate (Translation API)',
       directus: 'Directus (Headless CMS)',
       orcarouterlite: 'OrcaRouter Lite (LLM Router)',
@@ -210,8 +217,6 @@ export class CLIInterface {
       searxng: 'SearXNG (Metasearch Engine)',
       plausible: 'Plausible Analytics (Web Analytics)',
       redash: 'ReDash (SQL Query & Visualization)',
-      dockhand: 'Dockhand (Docker Management UI)',
-      portainer: 'Portainer (Docker Management UI)',
     };
     return serviceNames[service] || service;
   }

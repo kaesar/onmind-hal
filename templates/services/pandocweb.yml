@@ -1,0 +1,20 @@
+name: Pandoc-Web
+description: Web interface for Pandoc document converter
+commands:
+  install:
+    - docker pull ghcr.io/synyx/pandocweb:latest
+  setup: []
+  run: |-
+    docker run \
+          -d \
+          --name pandocweb \
+          --network {{NETWORK_NAME}} \
+          -p 8094:8080 \
+          ghcr.io/synyx/pandocweb:latest
+variables:
+  - NETWORK_NAME
+ports:
+  - "8094:8080"
+accessUrl: https://pandoc.{{DOMAIN}}
+dependencies: []
+isCore: false

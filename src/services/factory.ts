@@ -73,6 +73,7 @@ import { CaldiyService } from './optional/caldiy.js';
 import { AdGuardService } from './optional/adguard.js';
 import { JasperReportsService } from './optional/jasperreports.js';
 import { StirlingPDFService } from './optional/stirlingpdf.js';
+import { PandocWebService } from './optional/pandocweb.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
 import { MailserverService } from './optional/mailserver.js';
 import { KurrierService } from './optional/kurrier.js';
@@ -332,6 +333,9 @@ export class ServiceFactory {
         break;
       case ServiceType.STIRLINGPDF:
         service = new StirlingPDFService(config, this.templateEngine);
+        break;
+      case ServiceType.PANDOCWEB:
+        service = new PandocWebService(config, this.templateEngine);
         break;
       case ServiceType.LIBRETRANSLATE:
         service = new LibreTranslateService(config, this.templateEngine);
@@ -622,6 +626,7 @@ export class ServiceFactory {
       ServiceType.ADGUARD,
       ServiceType.JASPERREPORTS,
       ServiceType.STIRLINGPDF,
+      ServiceType.PANDOCWEB,
       ServiceType.LIBRETRANSLATE,
       ServiceType.DIRECTUS,
       ServiceType.ORCAROUTERLITE,
@@ -749,6 +754,7 @@ export class ServiceFactory {
       'AdGuard Home': ServiceType.ADGUARD,
       'JasperReports Server': ServiceType.JASPERREPORTS,
       'Stirling-PDF': ServiceType.STIRLINGPDF,
+      'Pandoc-Web': ServiceType.PANDOCWEB,
       'LibreTranslate': ServiceType.LIBRETRANSLATE,
       'Directus': ServiceType.DIRECTUS,
       'OrcaRouter Lite': ServiceType.ORCAROUTERLITE,

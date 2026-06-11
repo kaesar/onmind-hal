@@ -69,9 +69,6 @@ export class HomelabApplication {
       // Step 3: Install Docker if needed
       await this.installDocker();
 
-      // Step 3b: Configure Docker management UI (Dockhand/Portainer)
-      await this.configureDockerManagementUI();
-
       // Step 4: Configure firewall
       await this.configureFirewall();
 
@@ -179,39 +176,6 @@ export class HomelabApplication {
         'Docker',
         error instanceof Error ? error.message : String(error),
       );
-    }
-  }
-
-  /**
-   * Verify Docker management UI selection is compatible with container runtime
-   * Selection is made at prompt time; this handles edge cases
-   */
-  private async configureDockerManagementUI(): Promise<void> {
-    if (!this.config || !this.distributionStrategy) {
-      return;
-    }
-
-    const containerRuntime = await ContainerRuntimeUtils.detectRuntime();
-    const isPodman = containerRuntime === 'podman';
-
-    const hasDockhand = this.config.selectedServices.includes(
-      ServiceType.DOCKHAND,
-    );
-    const hasPortainer = this.config.selectedServices.includes(
-      ServiceType.PORTAINER,
-    );
-
-    // If Dockhand selected but using Podman - switch to Portainer
-    if (hasDockhand && isPodman) {
-      this.logger.warn(
-        '⚠️ Dockhand requires Docker. Switching to Portainer for Podman.',
-      );
-      this.config.selectedServices = this.config.selectedServices.filter(
-        (s) => s !== ServiceType.DOCKHAND,
-      );
-      if (!hasPortainer) {
-        this.config.selectedServices.push(ServiceType.PORTAINER);
-      }
     }
   }
 
@@ -512,7 +476,7 @@ export class HomelabApplication {
     console.log('\n🎉 HomeLab Installation Complete!');
     console.log('═'.repeat(60));
     console.log(`🌐 Server IP: ${this.config.ip}`);
-    console.log(`🏷️  Domain: ${this.config.domain}`);
+    console.log(`🏷️ Domain: ${this.config.domain}`);
     console.log(`🔗 Network: ${this.config.networkName}`);
 
     // Show container runtime info

@@ -2,6 +2,8 @@
  * Network utilities for domain and IP validation
  */
 
+import { $ } from 'bun';
+
 export class NetworkUtils {
   /**
    * Check if domain is local (.lan, .local, localhost, or private IP ranges)
@@ -34,5 +36,57 @@ export class NetworkUtils {
     ];
     
     return privateRanges.some(range => range.test(ip));
+  }
+
+  /**
+   * Detect the primary local private IP address
+   * Tries multiple methods and returns the first private, non-loopback IP found
+   */
+  static async detectLocalIP(): Promise<string | null> {
+    const candidates = await this.collectCandidateIPs();
+
+    for (const ip of candidates) {
+      const trimmed = ip.trim();
+      if (trimmed && this.isPrivateIP(trimmed) && !trimmed.startsWith('127.')) {
+        return trimmed;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Collect IP candidates from multiple sources
+   */
+  private static async collectCandidateIPs(): Promise<string[]> {
+    const ips: string[] = [];
+
+    // Method 1: ip route get (most reliable for primary interface)
+    try {
+      const result = await $`ip route get 1.1.1.1`.quiet();
+      const match = result.stdout.toString().match(/src\s+(\S+)/);
+      if (match) ips.push(match[1]);
+    } catch {}
+
+    // Method 2: hostname -I (all non-loopback addresses)
+    try {
+      const result = await $`hostname -I`.quiet();
+      const parts = result.stdout.toString().trim().split(/\s+/);
+      ips.push(...parts.filter(Boolean));
+    } catch {}
+
+    // Method 3: ip -4 addr (exclude docker bridges)
+    try {
+      const result = await $`ip -4 addr show`.quiet();
+      const matches = result.stdout.toString().matchAll(/inet\s+(\S+)/g);
+      for (const m of matches) {
+        const ip = m[1].split('/')[0];
+        if (!ip.startsWith('172.') || !ips.includes(ip)) {
+          ips.push(ip);
+        }
+      }
+    } catch {}
+
+    return ips;
   }
 }

@@ -11,8 +11,9 @@ import {
   validateStoragePassword,
   sanitizeUserInput
 } from '../utils/validation.js';
-import { ValidationError } from '../utils/errors.js';
+import { HomelabError, ValidationError } from '../utils/errors.js';
 import { ContainerRuntimeUtils } from '../utils/container.js';
+import { NetworkUtils } from '../utils/network.js';
 
 export const DEFAULT_OPTIONAL_SERVICES: ServiceType[] = [
   ServiceType.RUSTFS,
@@ -20,10 +21,10 @@ export const DEFAULT_OPTIONAL_SERVICES: ServiceType[] = [
   ServiceType.REDIS,
   ServiceType.KAFKA,
   ServiceType.POCKETID,
-  ServiceType.DOZZLE,
   ServiceType.REGISTRY,
   ServiceType.INFISCAL,
   ServiceType.GOOSE,
+  ServiceType.CLOUDFLARED,
 ];
 
 const CORE_SERVICES: ServiceType[] = [ServiceType.CADDY, ServiceType.COPYPARTY];
@@ -85,13 +86,15 @@ export function validatePassword(input: string): boolean | string {
 
 // Prompt functions
 export async function promptForIP(): Promise<string> {
+  const localIP = await NetworkUtils.detectLocalIP();
+
   const { ip } = await inquirer.prompt([
     {
       type: 'input',
       name: 'ip',
       message: 'Enter your server IP address:',
       validate: validateIP,
-      default: '192.168.1.100'
+      default: localIP || '192.168.1.100'
     }
   ]);
   return ip.trim();
@@ -343,8 +346,7 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
     {
       name: 'Dozzle - Lightweight Docker log viewer and monitor',
       value: ServiceType.DOZZLE,
-      short: 'Dozzle',
-      checked: true
+      short: 'Dozzle'
     },
     {
       name: 'Registry - Private Docker container registry',
@@ -556,7 +558,8 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
     {
       name: 'Cloudflare Tunnel - Secure tunnel to expose services (requires Cloudflare account)',
       value: ServiceType.CLOUDFLARED,
-      short: 'Cloudflared'
+      short: 'Cloudflared',
+      checked: true
     },
     {
       name: 'Wetty - Web-based SSH terminal for secure host access',
@@ -587,13 +590,17 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
 }
 
 export async function promptForStoragePassword(): Promise<string> {
+  const yearSuffix = String(new Date().getFullYear()).slice(-2);
+  const defaultPassword = `Admin${yearSuffix}!`;
+
   const { password } = await inquirer.prompt([
     {
       type: 'password',
       name: 'password',
       message: 'Enter database password (for PostgreSQL/MariaDB/MongoDB):',
       validate: validatePassword,
-      mask: '*'
+      mask: '*',
+      default: defaultPassword
     }
   ]);
   return password.trim();
@@ -637,12 +644,7 @@ export async function promptForConfirmation(message: string): Promise<boolean> {
 
 export async function promptForDockerManagementUI(): Promise<ServiceType> {
   try {
-    const runtime = await ContainerRuntimeUtils.detectRuntime();
-
-    if (runtime === 'podman') {
-      console.log('🦭 Podman detected: Portainer will be used for container management');
-      return ServiceType.PORTAINER;
-    }
+    await ContainerRuntimeUtils.detectRuntime();
 
     const { managementUI } = await inquirer.prompt([
       {
@@ -703,17 +705,31 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
 }
 
 export async function collectUserConfigurationFromArgs(
-  ip: string,
+  ip: string | undefined,
   domain?: string,
   serviceNames?: string[],
   password?: string,
 ): Promise<Partial<HomelabConfig>> {
   let managementUI: ServiceType;
   try {
-    const runtime = await ContainerRuntimeUtils.detectRuntime();
-    managementUI = runtime === 'podman' ? ServiceType.PORTAINER : ServiceType.DOCKHAND;
+    await ContainerRuntimeUtils.detectRuntime();
+    managementUI = ServiceType.DOCKHAND;
   } catch {
     managementUI = ServiceType.DOCKHAND;
+  }
+
+  // Auto-detect IP if not provided
+  if (!ip) {
+    const detected = await NetworkUtils.detectLocalIP();
+    if (!detected) {
+      throw new HomelabError(
+        'Could not detect local IP address. Provide one with --ip <address>.',
+        'NO_IP_DETECTED',
+        false,
+      );
+    }
+    ip = detected;
+    console.log(`   ✓ Detected local IP: ${ip}`);
   }
 
   let optionalServices: ServiceType[];

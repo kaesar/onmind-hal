@@ -15,12 +15,13 @@ commands:
           -e DATA_DIR=/app/data \
           -e PUID=1000 \
           -e PGID=1000 \
-          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v {{DOCKER_SOCKET_PATH}}:/var/run/docker.sock \
           -v dockhand_data:/app/data \
           --restart=unless-stopped \
           fnsys/dockhand:latest
 variables:
   - NETWORK_NAME
+  - DOCKER_SOCKET_PATH
 ports:
   - "3000:3000"
 volumes:

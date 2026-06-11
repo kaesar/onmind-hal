@@ -182,7 +182,7 @@ describe('CLI Interface Integration', () => {
 
       expect(consoleSpy.log).toHaveBeenCalledWith('\n📋 Configuration Summary:');
       expect(consoleSpy.log).toHaveBeenCalledWith('🌐 Server IP: 192.168.1.100');
-      expect(consoleSpy.log).toHaveBeenCalledWith('🏷️  Domain: homelab.local');
+      expect(consoleSpy.log).toHaveBeenCalledWith('🏷️ Domain: homelab.local');
       expect(consoleSpy.log).toHaveBeenCalledWith('🔗 Network: homelab-network');
     });
 
