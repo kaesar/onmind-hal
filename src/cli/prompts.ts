@@ -21,7 +21,7 @@ export const DEFAULT_OPTIONAL_SERVICES: ServiceType[] = [
   ServiceType.REDIS,
   ServiceType.KAFKA,
   ServiceType.POCKETID,
-  ServiceType.REGISTRY,
+  ServiceType.MAILSERVER,
   ServiceType.INFISCAL,
   ServiceType.GOOSE,
   ServiceType.CLOUDFLARED,
@@ -351,8 +351,7 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
     {
       name: 'Registry - Private Docker container registry',
       value: ServiceType.REGISTRY,
-      short: 'Registry',
-      checked: true
+      short: 'Registry'
     },
     {
       name: 'Nexus Repository - Universal artifact repository manager',
@@ -543,7 +542,8 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
     {
       name: 'Docker Mailserver - Full-featured mail server',
       value: ServiceType.MAILSERVER,
-      short: 'Mailserver'
+      short: 'Mailserver',
+      checked: true
     },
     {
       name: 'Kurrier - Self-hosted email marketing and newsletter platform',
@@ -664,6 +664,28 @@ export async function promptForDockerManagementUI(): Promise<ServiceType> {
     console.log('⚠️  No container runtime detected. Defaulting to Dockhand.');
     return ServiceType.DOCKHAND;
   }
+}
+
+export type StateDecision = 'reuse' | 'fresh';
+
+export async function promptForPreviousInstallation(
+  installedAt: string,
+  ip: string,
+  domain: string,
+  serviceCount: number,
+): Promise<StateDecision> {
+  const { decision } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'decision',
+      message: 'What would you like to do?',
+      choices: [
+        { name: 'Reuse previous configuration and continue', value: 'reuse' },
+        { name: 'Start fresh (ignore previous installation)', value: 'fresh' },
+      ],
+    },
+  ]);
+  return decision;
 }
 
 // Main configuration collection function

@@ -155,7 +155,7 @@ export class TemplateValidator {
       customValidators: {
         commands: (value) => {
           return typeof value === 'object' && 
-                 ('install' in value || 'setup' in value || 'run' in value);
+                 ('install' in value || 'setup' in value || 'run' in value || 'postRun' in value);
         }
       }
     });

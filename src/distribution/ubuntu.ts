@@ -61,8 +61,8 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
       if (dockerInstalled) {
         console.log('✅ Docker is already installed, skipping installation...');
         // Ensure Docker service is running
-        await $`sudo systemctl enable docker`;
-        await $`sudo systemctl start docker`;
+        await $`sudo systemctl enable docker`.quiet();
+        await $`sudo systemctl start docker`.quiet();
         return;
       }
 
@@ -91,8 +91,8 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
       await $`sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`.quiet();
 
       // Start and enable Docker service
-      await $`sudo systemctl start docker`;
-      await $`sudo systemctl enable docker`;
+      await $`sudo systemctl start docker`.quiet();
+      await $`sudo systemctl enable docker`.quiet();
 
       // Add current user to docker group
       const currentUser = await $`whoami`.text();
@@ -153,7 +153,8 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
         if (!hasHTTPS) await $`sudo ufw allow 443/tcp`.quiet();
         
         console.log('✅ Firewall rules updated');
-        await $`sudo ufw status`;
+        const updatedStatus = await $`sudo ufw status`.text();
+        console.log(updatedStatus.trimEnd());
         return;
       }
       
@@ -180,10 +181,11 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
       await $`sudo ufw allow 443/tcp`.quiet();
 
       // Enable UFW
-      await $`sudo ufw --force enable`;
+      await $`sudo ufw --force enable`.quiet();
 
       // Show status for verification
-      await $`sudo ufw status`;  // +verbose
+      const status = await $`sudo ufw status`.text();
+      console.log(status.trimEnd());
 
     } catch (error) {
       throw new Error(`Failed to configure UFW firewall on Ubuntu: ${error}`);

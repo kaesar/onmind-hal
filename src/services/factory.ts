@@ -74,6 +74,8 @@ import { AdGuardService } from './optional/adguard.js';
 import { JasperReportsService } from './optional/jasperreports.js';
 import { StirlingPDFService } from './optional/stirlingpdf.js';
 import { PandocWebService } from './optional/pandocweb.js';
+import { CalibreWebService } from './optional/calibreweb.js';
+import { ImmichService } from './optional/immich.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
 import { MailserverService } from './optional/mailserver.js';
 import { KurrierService } from './optional/kurrier.js';
@@ -336,6 +338,12 @@ export class ServiceFactory {
         break;
       case ServiceType.PANDOCWEB:
         service = new PandocWebService(config, this.templateEngine);
+        break;
+      case ServiceType.CALIBREWEB:
+        service = new CalibreWebService(config, this.templateEngine);
+        break;
+      case ServiceType.IMMICH:
+        service = new ImmichService(config, this.templateEngine);
         break;
       case ServiceType.LIBRETRANSLATE:
         service = new LibreTranslateService(config, this.templateEngine);
@@ -627,6 +635,8 @@ export class ServiceFactory {
       ServiceType.JASPERREPORTS,
       ServiceType.STIRLINGPDF,
       ServiceType.PANDOCWEB,
+      ServiceType.CALIBREWEB,
+      ServiceType.IMMICH,
       ServiceType.LIBRETRANSLATE,
       ServiceType.DIRECTUS,
       ServiceType.ORCAROUTERLITE,
@@ -755,6 +765,8 @@ export class ServiceFactory {
       'JasperReports Server': ServiceType.JASPERREPORTS,
       'Stirling-PDF': ServiceType.STIRLINGPDF,
       'Pandoc-Web': ServiceType.PANDOCWEB,
+      'Calibre Web': ServiceType.CALIBREWEB,
+      'Immich': ServiceType.IMMICH,
       'LibreTranslate': ServiceType.LIBRETRANSLATE,
       'Directus': ServiceType.DIRECTUS,
       'OrcaRouter Lite': ServiceType.ORCAROUTERLITE,

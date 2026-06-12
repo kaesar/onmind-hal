@@ -170,6 +170,8 @@ describe('ServiceFactory', () => {
       ServiceType.JASPERREPORTS,
       ServiceType.STIRLINGPDF,
       ServiceType.PANDOCWEB,
+      ServiceType.CALIBREWEB,
+      ServiceType.IMMICH,
       ServiceType.LIBRETRANSLATE,
       ServiceType.DIRECTUS,
       ServiceType.ORCAROUTERLITE,

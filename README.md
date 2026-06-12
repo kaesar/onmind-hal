@@ -168,26 +168,28 @@ bun run src/main.ts --list postgresql,redis
 | 69 | **JasperReports** | `jasperreports` | Business intelligence and reporting platform | 8081 |
 | 70 | **Stirling-PDF** | `stirlingpdf` | Powerful locally hosted PDF manipulation tool | 8090 |
 | 71 | **Pandoc-Web** | `pandocweb` | Web interface for Pandoc document converter | 8094 |
-| 72 | **LibreTranslate** | `libretranslate` | Free and open source machine translation API | 5001 |
-| 73 | **OrcaRouter-Lite** | `orcarouterlite` | Lightweight LLM router with multi-provider support | 8000 |
-| 74 | **LiteLLM** | `litellm` | LLM proxy with unified API for 100+ LLMs | 4000 |
-| 75 | **AnythingLLM** | `anythingllm` | Multi-user AI platform with RAG, Agents, and local LLM support | 3001 |
-| 76 | **Goose** | `goose` | Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation) | 8300 |
-| 77 | **Hermes** | `hermes` | Self-improving AI agent with persistent memory (Nous Research) | 8642 |
-| 78 | **OpenClaw** | `openclaw` | AI agent gateway for Claude Code, OpenAI Codex and more | 18789 |
-| 79 | **OpenHuman** | `openhuman` | Open-source AI agent platform with Rust core | 7788 |
-| 80 | **OpenJarvis** | `openjarvis` | AI assistant platform with Ollama backend | 8010 |
-| 81 | **Firecrawl** | `firecrawl` | Open-source web scraping API with JavaScript rendering | 3002 |
-| 82 | **SearXNG** | `searxng` | Privacy-respecting metasearch engine | 8080 |
-| 83 | **Plausible** | `plausible` | Open-source web analytics platform (ClickHouse + PostgreSQL) | 3200 |
-| 84 | **Docker-Mailserver** | `mailserver` | Full-featured mail server (SMTP, IMAP, antispam, antivirus) | 25 |
-| 85 | **Kurrier** | `kurrier` | Self-hosted email marketing and newsletter platform | 3031 |
-| 85 | **Zrok** | `zrok` | Zero-trust tunneling platform (NGROK alternative) with OpenZiti | 18080, 8081, 8082 |
-| 86 | **Cloudflare-Tunnel** | `cloudflared` | Secure tunnel to expose services without opening ports ⚠️ | — |
-| 87 | **Wetty** | `wetty` | Web-based SSH terminal for secure host access | 3033 |
-| 88 | **RustDesk-Server** | `rustdesk` | Open-source remote desktop server | 21115 |
+| 72 | **Calibre-Web** | `calibreweb` | Web-based ebook library management and reader | 8083 |
+| 73 | **Immich** | `immich` | Self-hosted photo and video backup and management platform | 2283 |
+| 74 | **LibreTranslate** | `libretranslate` | Free and open source machine translation API | 5001 |
+| 75 | **OrcaRouter-Lite** | `orcarouterlite` | Lightweight LLM router with multi-provider support | 8000 |
+| 76 | **LiteLLM** | `litellm` | LLM proxy with unified API for 100+ LLMs | 4000 |
+| 77 | **AnythingLLM** | `anythingllm` | Multi-user AI platform with RAG, Agents, and local LLM support | 3001 |
+| 78 | **Goose** | `goose` | Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation) | 8300 |
+| 79 | **Hermes** | `hermes` | Self-improving AI agent with persistent memory (Nous Research) | 8642 |
+| 80 | **OpenClaw** | `openclaw` | AI agent gateway for Claude Code, OpenAI Codex and more | 18789 |
+| 81 | **OpenHuman** | `openhuman` | Open-source AI agent platform with Rust core | 7788 |
+| 82 | **OpenJarvis** | `openjarvis` | AI assistant platform with Ollama backend | 8010 |
+| 83 | **Firecrawl** | `firecrawl` | Open-source web scraping API with JavaScript rendering | 3002 |
+| 84 | **SearXNG** | `searxng` | Privacy-respecting metasearch engine | 8080 |
+| 85 | **Plausible** | `plausible` | Open-source web analytics platform (ClickHouse + PostgreSQL) | 3200 |
+| 86 | **Docker-Mailserver** | `mailserver` | Full-featured mail server (SMTP, IMAP, antispam, antivirus) | 25 |
+| 87 | **Kurrier** | `kurrier` | Self-hosted email marketing and newsletter platform | 3031 |
+| 88 | **Zrok** | `zrok` | Zero-trust tunneling platform (NGROK alternative) with OpenZiti | 18080, 8081, 8082 |
+| 89 | **Cloudflare-Tunnel** | `cloudflared` | Secure tunnel to expose services without opening ports ⚠️ | — |
+| 90 | **Wetty** | `wetty` | Web-based SSH terminal for secure host access | 3033 |
+| 91 | **RustDesk-Server** | `rustdesk` | Open-source remote desktop server | 21115 |
 
-> *Perhaps, I will consider includes in a future*: Seafile, Jitsi, DocuSeal, Immich, PeerTube, Mastodon, Plane, FRP, Backstage, Ignite, Locust, Beszel, BackVault, Koffan
+> *Perhaps, I will consider includes in a future*: Seafile, Jitsi, DocuSeal, PeerTube, Mastodon, Plane, FRP, Backstage, Ignite, Locust, Beszel, BackVault, Koffan
 
 ## Project Structure
 

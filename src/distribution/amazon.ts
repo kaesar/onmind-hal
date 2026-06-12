@@ -73,8 +73,8 @@ export class AmazonLinuxStrategy extends BaseDistributionStrategy {
       if (dockerInstalled) {
         console.log('✅ Docker is already installed, skipping installation...');
         // Ensure Docker service is running
-        await $`sudo systemctl enable docker`;
-        await $`sudo systemctl start docker`;
+        await $`sudo systemctl enable docker`.quiet();
+        await $`sudo systemctl start docker`.quiet();
         return;
       }
 
@@ -89,15 +89,16 @@ export class AmazonLinuxStrategy extends BaseDistributionStrategy {
       await $`sudo ${packageManager} install -y docker`.quiet();
 
       // Start and enable Docker service
-      await $`sudo systemctl enable docker`;
-      await $`sudo systemctl start docker`;
+      await $`sudo systemctl enable docker`.quiet();
+      await $`sudo systemctl start docker`.quiet();
 
       // Add current user to docker group
       const currentUser = await $`whoami`.text();
       await $`sudo usermod -aG docker ${currentUser.trim()}`;
 
       // Verify Docker installation
-      await $`docker --version`;
+      const dockerVersion = await $`docker --version`.text();
+      console.log(`   ${dockerVersion.trim()}`);
 
     } catch (error) {
       throw new Error(`Failed to install Docker on Amazon Linux: ${error}`);
@@ -158,10 +159,11 @@ export class AmazonLinuxStrategy extends BaseDistributionStrategy {
         if (!hasHTTPS) await $`sudo firewall-cmd --permanent --add-service=https`.quiet();
         
         // Reload firewall to apply changes
-        await $`sudo firewall-cmd --reload`;
+        await $`sudo firewall-cmd --reload`.quiet();
         
         console.log('✅ Firewall rules updated');
-        await $`sudo firewall-cmd --list-services`;
+        const services = await $`sudo firewall-cmd --list-services`.text();
+        console.log(`   Allowed services: ${services.trim()}`);
         return;
       }
       
@@ -188,10 +190,11 @@ export class AmazonLinuxStrategy extends BaseDistributionStrategy {
       await $`sudo firewall-cmd --permanent --add-service=https`.quiet();
 
       // Reload firewall to apply changes
-      await $`sudo firewall-cmd --reload`;
+      await $`sudo firewall-cmd --reload`.quiet();
 
       // Show status for verification
-      await $`sudo firewall-cmd --list-all`;
+      const allServices = await $`sudo firewall-cmd --list-services`.text();
+      console.log(`   Allowed services: ${allServices.trim()}`);
 
     } catch (error) {
       throw new Error(`Failed to configure firewall on Amazon Linux: ${error}`);

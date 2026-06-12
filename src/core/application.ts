@@ -26,6 +26,7 @@ import { MingwStrategy } from '../distribution/mingw.js';
 import { Logger } from '../utils/logger.js';
 import { NetworkUtils } from '../utils/network.js';
 import { ContainerRuntimeUtils } from '../utils/container.js';
+import { StateManager } from '../utils/state.js';
 import { $ } from 'bun';
 
 /**
@@ -80,6 +81,12 @@ export class HomelabApplication {
 
       // Step 7: Display completion summary
       this.displayCompletionSummary();
+
+      // Save installation state for future re-runs
+      const managementUI = this.config!.selectedServices.includes(ServiceType.DOCKHAND)
+        ? ServiceType.DOCKHAND
+        : ServiceType.PORTAINER;
+      await StateManager.save(this.config!, managementUI);
 
       this.logger.info('✅ HomeLab installation completed successfully!');
     } catch (error) {
@@ -540,78 +547,88 @@ export class HomelabApplication {
       const needsHostsFile = isMacOS || dnsmasqConfigured === false;
 
       // Define web services list (used for both /etc/hosts and non-web services filtering)
+      // Ordered to match README.md service table
       const webServices = [
         'copyparty',
         'portainer',
         'dockhand',
         'rustfs',
         'duckdb',
+        'opensearch',
+        'kafkaui',
+        'rabbitmq',
+        'ollama',
+        'openwebui',
+        'opennotebooklm',
         'n8n',
         'tooljet',
         'kestra',
         'keystonejs',
-        'ollama',
-        'openwebui',
-        'opennotebooklm',
-        'authelia',
         'keycloak',
+        'authelia',
         'pocketid',
-        'rabbitmq',
-        'grafana',
-        'loki',
+        'apisix',
+        'floci',
+        'flociaz',
+        'flocigcp',
+        'k3d',
+        'codeserver',
+        'jupyterlab',
+        'onedev',
+        'semaphore',
+        'liquibase',
+        'sonarqube',
         'trivy',
         'karate',
-        'sonarqube',
+        'rapidoc',
+        'hoppscotch',
+        'grafana',
+        'loki',
+        'redash',
+        'uptimekuma',
+        'dozzle',
+        'registry',
         'nexus',
+        'infisical',
         'vault',
         'vaultwarden',
         'linkwarden',
         'shlink',
-        'rapidoc',
-        'hoppscotch',
-        'locust',
         'psitransfer',
+        'filestash',
         'excalidraw',
         'drawio',
         'kroki',
         'outline',
         'grist',
         'nocodb',
+        'directus',
         'twentycrm',
         'medusajs',
+        'huly',
         'mattermost',
         'caldiy',
+        'adguard',
         'jasperreports',
         'stirlingpdf',
-        'onedev',
-        'codeserver',
-        'jupyterlab',
-        'registry',
-        'localstack',
+        'pandocweb',
+        'calibreweb',
+        'immich',
         'libretranslate',
-        'uptimekuma',
-        'dozzle',
-        'k3d',
-        'semaphore',
-        'liquibase',
-        'apisix',
-        'opensearch',
-        'kurrier',
-        'wetty',
-        'huly',
-        'infisical',
-        'floci',
-        'flociaz',
-        'flocigcp',
-        'litellm',
-        'openclaw',
-        'openjarvis',
-        'goose',
-        'firecrawl',
-        'directus',
-        'plausible',
         'orcarouterlite',
+        'litellm',
+        'anythingllm',
+        'goose',
+        'openclaw',
+        'openhuman',
+        'openjarvis',
+        'firecrawl',
+        'searxng',
+        'plausible',
+        'kurrier',
         'zrok',
+        'wetty',
+        'rustdesk',
       ];
 
       if (needsHostsFile) {
@@ -625,34 +642,25 @@ export class HomelabApplication {
         const hostsIP = isMacOS ? '127.0.0.1' : this.config.ip;
         console.log(`   ${hostsIP} ${this.config.domain}`);
 
-        // Map service types to their subdomain names
+        // Map service types to their subdomain names (only where name differs from type)
         const subdomainMap: Record<string, string> = {
           copyparty: 'files',
-          dockhand: 'dockhand',
-          portainer: 'portainer',
-          rustfs: 'rustfs',
+          opennotebooklm: 'notebook',
+          pocketid: 'auth',
+          floci: 'aws',
+          flociaz: 'azure',
+          flocigcp: 'gcp',
+          keystonejs: 'keystone',
+          twentycrm: 'crm',
+          medusajs: 'shop',
+          caldiy: 'cal',
           jasperreports: 'jasper',
           stirlingpdf: 'pdf',
+          pandocweb: 'pandoc',
+          calibreweb: 'books',
           libretranslate: 'translate',
-          huly: 'huly',
-          infisical: 'infisical',
-          floci: 'floci',
-          flociaz: 'flociaz',
-          flocigcp: 'flocigcp',
-          litellm: 'litellm',
-          openclaw: 'openclaw',
-          openjarvis: 'openjarvis',
-          goose: 'goose',
-          firecrawl: 'firecrawl',
-          plausible: 'analytics',
-          directus: 'directus',
           orcarouterlite: 'orcarouter',
-          dozzle: 'dozzle',
-          zrok: 'zrok',
-          redash: 'redash',
-          codeserver: 'codeserver',
-          jupyterlab: 'jupyterlab',
-          tooljet: 'tooljet',
+          plausible: 'analytics',
         };
 
         for (const service of this.installedServices) {
@@ -687,8 +695,7 @@ export class HomelabApplication {
         for (const service of nonWebServices) {
           const cfgPath = this.config!.configPath;
           const descriptions: Record<string, string> = {
-            mailserver:
-              'Mail server - configure email client with SMTP/IMAP ports',
+            mailserver: 'Mail server - configure email client with SMTP/IMAP ports',
             cloudflared: 'Cloudflare Tunnel - managed via Cloudflare Dashboard',
             kafka: 'Streaming platform - connect via localhost:9092',
             postgresql: 'Database server - connect via localhost:5432',

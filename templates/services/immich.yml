@@ -1,0 +1,57 @@
+name: Immich
+description: Self-hosted photo and video backup and management platform
+commands:
+  install:
+    - docker pull ghcr.io/immich-app/immich-server:release
+    - docker pull ghcr.io/immich-app/immich-microservices:release
+    - docker pull ghcr.io/immich-app/immich-machine-learning:release
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/immich/photos
+    - mkdir -p ~/{{DATA_PATH}}/immich/encoding
+    - docker exec postgresql psql -U root -c "CREATE USER immich WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE immich OWNER immich;" 2>/dev/null || true
+  run: |-
+    docker run \
+          -d \
+          --name immich-server \
+          --network {{NETWORK_NAME}} \
+          -p 2283:2283 \
+          -e DB_HOSTNAME=postgresql \
+          -e DB_USERNAME=immich \
+          -e DB_PASSWORD={{STORAGE_PASSWORD}} \
+          -e DB_DATABASE_NAME=immich \
+          -e REDIS_HOSTNAME=redis \
+          -e IMMICH_MACHINE_LEARNING_URL=http://immich-ml:3003 \
+          -v ~/{{DATA_PATH}}/immich/photos:/usr/src/app/upload \
+          -v ~/{{DATA_PATH}}/immich/encoding:/usr/src/app/encoding \
+          --restart=always \
+          ghcr.io/immich-app/immich-server:release
+
+    docker run \
+          -d \
+          --name immich-microservices \
+          --network {{NETWORK_NAME}} \
+          -e DB_HOSTNAME=postgresql \
+          -e DB_USERNAME=immich \
+          -e DB_PASSWORD={{STORAGE_PASSWORD}} \
+          -e DB_DATABASE_NAME=immich \
+          -e REDIS_HOSTNAME=redis \
+          -e IMMICH_MACHINE_LEARNING_URL=http://immich-ml:3003 \
+          -v ~/{{DATA_PATH}}/immich/photos:/usr/src/app/upload \
+          -v ~/{{DATA_PATH}}/immich/encoding:/usr/src/app/encoding \
+          --restart=always \
+          ghcr.io/immich-app/immich-microservices:release
+
+    docker run \
+          -d \
+          --name immich-ml \
+          --network {{NETWORK_NAME}} \
+          -v ~/{{DATA_PATH}}/immich/encoding:/usr/src/app/encoding \
+          --restart=always \
+          ghcr.io/immich-app/immich-machine-learning:release
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+dependencies:
+  - PostgreSQL
+  - Redis

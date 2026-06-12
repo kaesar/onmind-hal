@@ -89,6 +89,8 @@ export enum ServiceType {
   JASPERREPORTS = 'jasperreports',
   STIRLINGPDF = 'stirlingpdf',
   PANDOCWEB = 'pandocweb',
+  CALIBREWEB = 'calibreweb',
+  IMMICH = 'immich',
   LIBRETRANSLATE = 'libretranslate',
   MAILSERVER = 'mailserver',
   KURRIER = 'kurrier',
@@ -176,6 +178,7 @@ export interface DockerTemplate {
     install: string[];
     setup: string[];
     run: string;
+    postRun?: string[];
   };
   variables: string[];
   dependencies?: string[];

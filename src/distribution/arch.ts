@@ -59,8 +59,8 @@ export class ArchStrategy extends BaseDistributionStrategy {
       if (dockerInstalled) {
         console.log('✅ Docker is already installed, skipping installation...');
         // Ensure Docker service is running
-        await $`sudo systemctl enable docker`;
-        await $`sudo systemctl start docker`;
+        await $`sudo systemctl enable docker`.quiet();
+        await $`sudo systemctl start docker`.quiet();
         return;
       }
 
@@ -73,23 +73,24 @@ export class ArchStrategy extends BaseDistributionStrategy {
       await $`sudo pacman -S --noconfirm docker docker-buildx`.quiet();
 
       // Start and enable Docker service
-      await $`sudo systemctl enable docker`;
-      await $`sudo systemctl start docker`;
+      await $`sudo systemctl enable docker`.quiet();
+      await $`sudo systemctl start docker`.quiet();
 
       // Add current user to docker group
       const currentUser = await $`whoami`.text();
       await $`sudo usermod -aG docker ${currentUser.trim()}`;
 
       // Ensure Docker daemon is running and accessible
-      await $`sudo systemctl restart docker`;
-      await $`sleep 3`;
+      await $`sudo systemctl restart docker`.quiet();
+      await $`sleep 3`.quiet();
 
       // Set proper permissions for Docker socket
       await $`sudo chmod 666 /var/run/docker.sock`;
 
       // Verify Docker installation and permissions
-      await $`docker --version`;
-      await $`docker info`;
+      const dockerVersion = await $`docker --version`.text();
+      console.log(`   ${dockerVersion.trim()}`);
+      await $`docker info`.quiet();
       
       console.log('⚠️  Note: You may need to log out and back in for Docker group changes to take full effect.');
       console.log('    For now, Docker socket permissions have been set to allow immediate access.');
@@ -149,7 +150,8 @@ export class ArchStrategy extends BaseDistributionStrategy {
         if (!hasHTTPS) await $`sudo ufw allow 443/tcp`.quiet();
         
         console.log('✅ Firewall rules updated');
-        await $`sudo ufw status`;
+        const updatedStatus = await $`sudo ufw status`.text();
+        console.log(updatedStatus.trimEnd());
         return;
       }
       
@@ -176,14 +178,15 @@ export class ArchStrategy extends BaseDistributionStrategy {
       await $`sudo ufw allow 443/tcp`.quiet();
 
       // Enable UFW service
-      await $`sudo systemctl enable ufw`;
-      await $`sudo systemctl start ufw`;
+      await $`sudo systemctl enable ufw`.quiet();
+      await $`sudo systemctl start ufw`.quiet();
 
       // Enable UFW
-      await $`sudo ufw --force enable`;
+      await $`sudo ufw --force enable`.quiet();
 
       // Show status for verification
-      await $`sudo ufw status`;  // +verbose
+      const status = await $`sudo ufw status`.text();
+      console.log(status.trimEnd());
 
     } catch (error) {
       throw new Error(`Failed to configure UFW firewall on Arch Linux: ${error}`);

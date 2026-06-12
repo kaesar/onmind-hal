@@ -274,6 +274,17 @@ export abstract class BaseService implements Service {
         await this.executeCommands([this.serviceTemplate.commands.run]);
       }
 
+      // Execute post-run commands (health checks, additional setup after container starts)
+      // Post-run failures are non-fatal - the container is already running
+      if (this.serviceTemplate.commands?.postRun) {
+        try {
+          await this.executeCommands(this.serviceTemplate.commands.postRun);
+        } catch (error) {
+          console.log(`⚠️  Post-run setup for ${this.name} failed: ${error}`);
+          console.log(`💡 The container is running but some setup steps may need manual intervention`);
+        }
+      }
+
       console.log(`${this.name} configuration completed`);
     } catch (error) {
       throw new ServiceInstallationError(

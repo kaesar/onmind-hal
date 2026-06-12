@@ -2,9 +2,10 @@
  * CLI interface logic for orchestrating user prompts and collecting configuration
  */
 
-import { HomelabConfig, DistributionType } from '../core/types.js';
+import { HomelabConfig, DistributionType, ServiceType } from '../core/types.js';
 import { HomelabError } from '../utils/errors.js';
-import { collectUserConfiguration, collectUserConfigurationFromArgs, promptForConfirmation } from './prompts.js';
+import { collectUserConfiguration, collectUserConfigurationFromArgs, promptForConfirmation, promptForPreviousInstallation } from './prompts.js';
+import { StateManager } from '../utils/state.js';
 import { parseArgs, CliArgs, USAGE } from './args.js';
 
 export class CLIInterface {
@@ -34,6 +35,34 @@ export class CLIInterface {
 
       if (this.args.scriptMode) {
         return await this.runNonInteractive();
+      }
+
+      // Check for previous installation state
+      const prevState = await StateManager.load();
+      if (prevState) {
+        const dateStr = new Date(prevState.installedAt).toLocaleDateString();
+        console.log(`📋 Previous installation detected (${dateStr})`);
+        console.log(`   IP: ${prevState.ip}  Domain: ${prevState.domain}`);
+        console.log(`   Services: ${prevState.selectedServices.length} installed\n`);
+
+        const decision = await promptForPreviousInstallation(
+          dateStr,
+          prevState.ip,
+          prevState.domain,
+          prevState.selectedServices.length,
+        );
+
+        if (decision === 'reuse') {
+          this.config = StateManager.toConfig(prevState);
+          await this.displayConfigurationSummary();
+          const confirmed = await promptForConfirmation('Do you want to proceed with this configuration?');
+          if (!confirmed) {
+            console.log('❌ Configuration cancelled by user.');
+            process.exit(0);
+          }
+          return this.validateAndCompleteConfig();
+        }
+        console.log('   Starting fresh configuration...\n');
       }
 
       console.log('🚀 Welcome to HomeLab Setup!');
@@ -68,10 +97,22 @@ export class CLIInterface {
   private async runNonInteractive(): Promise<HomelabConfig> {
     console.log('⚙️  Non-interactive mode: using provided arguments and defaults.\n');
 
+    // If no --list provided, try to restore from previous state
+    let services = this.args.list;
+    if (!services) {
+      const prevState = await StateManager.load();
+      if (prevState) {
+        const coreTypes = [ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.PORTAINER];
+        const optionalServices = prevState.selectedServices.filter(s => !coreTypes.includes(s));
+        console.log(`   📋 Restoring ${optionalServices.length} optional services from previous installation`);
+        services = optionalServices;
+      }
+    }
+
     this.config = await collectUserConfigurationFromArgs(
       this.args.ip,
       this.args.domain,
-      this.args.list,
+      services,
       this.args.password,
     );
 
@@ -193,6 +234,8 @@ export class CLIInterface {
       jasperreports: 'JasperReports (Business Intelligence)',
       stirlingpdf: 'Stirling-PDF (PDF Tools)',
       pandocweb: 'Pandoc-Web (Document Converter)',
+      calibreweb: 'Calibre Web (eBook Library)',
+      immich: 'Immich (Photo/Video Backup)',
       libretranslate: 'LibreTranslate (Translation API)',
       directus: 'Directus (Headless CMS)',
       orcarouterlite: 'OrcaRouter Lite (LLM Router)',

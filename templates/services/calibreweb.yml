@@ -1,0 +1,23 @@
+name: Calibre Web
+description: Web-based ebook library management with reading, downloading and format conversion
+commands:
+  install:
+    - docker pull lscr.io/linuxserver/calibre-web:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/calibre-web/config
+    - mkdir -p ~/{{DATA_PATH}}/calibre-web/books
+  run: |-
+    docker run \
+          -d \
+          --name calibreweb \
+          --network {{NETWORK_NAME}} \
+          -p 8083:8083 \
+          -e PUID=1000 \
+          -e PGID=1000 \
+          -v ~/{{DATA_PATH}}/calibre-web/config:/config \
+          -v ~/{{DATA_PATH}}/calibre-web/books:/books \
+          --restart=always \
+          lscr.io/linuxserver/calibre-web:latest
+variables:
+  - NETWORK_NAME
+dependencies: []

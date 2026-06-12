@@ -368,7 +368,7 @@ If you need to remove all HAL services and start fresh:
 
 ```bash
 # Stop and remove all HAL containers
-docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|kafka|rabbitmq|ollama|openwebui|n8n|tooljet|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|onedev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|linkwarden|shlink|psitransfer|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|twentycrm|keystonejs|caldiy|huly|mattermost|jasperreports|stirlingpdf|libretranslate|orcarouter|litellm|anythingllm|opennotebooklm|hermes|goose|openclaw|openhuman|firecrawl|searxng|plausible|plausible_clickhouse|mailserver|cloudflared|wetty" --format "{{.Names}}" | xargs -r docker rm -f
+docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|kafka|rabbitmq|ollama|openwebui|n8n|tooljet|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|onedev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|linkwarden|shlink|psitransfer|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|twentycrm|keystonejs|caldiy|huly|mattermost|jasperreports|stirlingpdf|libretranslate|orcarouter|litellm|anythingllm|opennotebooklm|hermes|goose|openclaw|openhuman|firecrawl|searxng|plausible|plausible_clickhouse|mailserver|zrok|ziti|cloudflared|wetty" --format "{{.Names}}" | xargs -r docker rm -f
 
 # Remove HAL network
 docker network rm homelab-network 2>/dev/null || true
@@ -1085,4 +1085,42 @@ commands:
 variables:
   - NETWORK_NAME
   - STORAGE_PASSWORD
+```
+
+### Post-Run Commands (`postRun`)
+
+Además de `install`, `setup` y `run`, las plantillas pueden incluir una sección `postRun` con comandos que se ejecutan **después** de que el contenedor principal del servicio se haya iniciado:
+
+```yaml
+commands:
+  install:
+    - docker pull myimage:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/myapp/data
+  run: |
+    docker run -d --name myapp ...
+  postRun:
+    - sleep 5 && docker exec myapp init-admin --password {{PASSWORD}}
+```
+
+**Características:**
+
+- Los comandos `postRun` se ejecutan inmediatamente después de que el contenedor se inicia con `run`
+- Son ideales para configuración inicial que requiere el contenedor en ejecución (crear usuarios, ejecutar migraciones, seed data)
+- **Los errores en `postRun` no son fatales**: si falla, el servicio continúa funcionando y se muestra una advertencia. Esto permite que el contenedor principal esté operativo aunque haya pasos secundarios pendientes.
+
+**Ejemplo real (Docker Mailserver):**
+
+```yaml
+postRun:
+  - |
+    for i in $(seq 1 6); do
+      docker exec mailserver pgrep dovecot >/dev/null 2>&1 && break
+      echo "  Waiting for mailserver to initialize... ($i/6)"
+      sleep 10
+    done
+    printf "%s\n%s\n" "{{MAIL_PASSWORD}}" "{{MAIL_PASSWORD}}" | docker exec -i mailserver setup email add {{MAIL_USER}}
+```
+
+Este ejemplo espera hasta 60 segundos a que dovecot esté disponible dentro del contenedor antes de crear el admin, evitando errores por contenedor aún no inicializado.
 ```

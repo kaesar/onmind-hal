@@ -8,7 +8,6 @@ commands:
     - mkdir -p ~/{{DATA_PATH}}/mailserver/state
     - mkdir -p ~/{{DATA_PATH}}/mailserver/logs
     - mkdir -p ~/{{DATA_PATH}}/mailserver/config
-    - printf "%s\n%s\n" "{{MAIL_PASSWORD}}" "{{MAIL_PASSWORD}}" | docker run --rm -i -v ~/{{DATA_PATH}}/mailserver/config:/tmp/docker-mailserver docker.io/mailserver/docker-mailserver:latest setup email add {{MAIL_USER}}
   run: |-
     docker run \
           -d \
@@ -27,6 +26,14 @@ commands:
           -e ENABLE_FAIL2BAN=1 \
           --hostname mail.{{DOMAIN}} \
           --restart unless-stopped docker.io/mailserver/docker-mailserver:latest
+  postRun:
+    - |
+      for i in $(seq 1 6); do
+        docker exec mailserver pgrep dovecot >/dev/null 2>&1 && break
+        echo "  Waiting for mailserver to initialize... ($i/6)"
+        sleep 10
+      done
+      printf "%s\n%s\n" "{{MAIL_PASSWORD}}" "{{MAIL_PASSWORD}}" | docker exec -i mailserver setup email add {{MAIL_USER}}
 variables:
   - NETWORK_NAME
   - DOMAIN
