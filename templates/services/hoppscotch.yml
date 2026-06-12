@@ -3,14 +3,16 @@ description: Open-source API development ecosystem (Postman alternative)
 commands:
   install:
     - docker pull hoppscotch/hoppscotch:latest
-  setup: []
+  setup:
+    - docker exec postgresql psql -U root -c "CREATE USER hoppscotch WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE hoppscotch OWNER hoppscotch;" 2>/dev/null || true
   run: |-
     docker run \
           -d \
           --name hoppscotch \
           --network {{NETWORK_NAME}} \
           -p 3080:3000 \
-          -e DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/hoppscotch \
+          -e DATABASE_URL=postgresql://hoppscotch:{{STORAGE_PASSWORD}}@postgresql:5432/hoppscotch \
           -e PGSSLMODE=disable \
           -e VITE_BASE_URL=https://hoppscotch.{{DOMAIN}} \
           -e VITE_BACKEND_API_URL=https://hoppscotch.{{DOMAIN}} \

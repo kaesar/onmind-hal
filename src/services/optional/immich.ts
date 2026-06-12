@@ -15,6 +15,6 @@ export class ImmichService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `https://immich.${this.config.domain}`;
+    return `https://photos.${this.config.domain}`;
   }
 }

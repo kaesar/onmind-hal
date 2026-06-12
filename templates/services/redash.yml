@@ -4,6 +4,8 @@ commands:
   install:
     - docker pull redash/redash:latest
   setup:
+    - docker exec postgresql psql -U root -c "CREATE USER redash WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE redash OWNER redash;" 2>/dev/null || true
     - mkdir -p ~/{{DATA_PATH}}/redash
   run: |-
     docker run \
@@ -13,7 +15,7 @@ commands:
           -p 5000:5000 \
           -e REDASH_COOKIE_SECRET={{ADMIN_TOKEN}} \
           -e REDASH_SECRET_KEY={{ADMIN_TOKEN}} \
-          -e REDASH_DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+          -e REDASH_DATABASE_URL=postgresql://redash:{{STORAGE_PASSWORD}}@postgresql:5432/redash \
           -e REDASH_REDIS_URL=redis://redis:6379/0 \
           -e REDASH_HOST=https://redash.{{DOMAIN}} \
           -e PYTHONUNBUFFERED=0 \
@@ -29,7 +31,7 @@ commands:
           --network {{NETWORK_NAME}} \
           -e REDASH_COOKIE_SECRET={{ADMIN_TOKEN}} \
           -e REDASH_SECRET_KEY={{ADMIN_TOKEN}} \
-          -e REDASH_DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+          -e REDASH_DATABASE_URL=postgresql://redash:{{STORAGE_PASSWORD}}@postgresql:5432/redash \
           -e REDASH_REDIS_URL=redis://redis:6379/0 \
           -e PYTHONUNBUFFERED=0 \
           -e REDASH_LOG_LEVEL=INFO \
@@ -45,7 +47,7 @@ commands:
           --network {{NETWORK_NAME}} \
           -e REDASH_COOKIE_SECRET={{ADMIN_TOKEN}} \
           -e REDASH_SECRET_KEY={{ADMIN_TOKEN}} \
-          -e REDASH_DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+          -e REDASH_DATABASE_URL=postgresql://redash:{{STORAGE_PASSWORD}}@postgresql:5432/redash \
           -e REDASH_REDIS_URL=redis://redis:6379/0 \
           -e PYTHONUNBUFFERED=0 \
           -e REDASH_LOG_LEVEL=INFO \
@@ -64,7 +66,7 @@ ports:
 environment:
   REDASH_COOKIE_SECRET: "{{ADMIN_TOKEN}}"
   REDASH_SECRET_KEY: "{{ADMIN_TOKEN}}"
-  REDASH_DATABASE_URL: "postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab"
+  REDASH_DATABASE_URL: "postgresql://redash:{{STORAGE_PASSWORD}}@postgresql:5432/redash"
   REDASH_REDIS_URL: "redis://redis:6379/0"
   REDASH_HOST: "https://redash.{{DOMAIN}}"
   PYTHONUNBUFFERED: "0"

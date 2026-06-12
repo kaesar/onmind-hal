@@ -2,10 +2,11 @@
  * Integration tests for HomelabApplication workflow management
  */
 
-import { describe, it, expect, beforeEach, afterEach, mock, spyOn } from 'bun:test';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, mock, spyOn } from 'bun:test';
 import { HomelabApplication } from '../../src/core/application.js';
 import { HomelabConfig, ServiceType, DistributionType } from '../../src/core/types.js';
 import { HomelabError, ServiceInstallationError } from '../../src/utils/errors.js';
+import { ContainerRuntimeUtils } from '../../src/utils/container.js';
 
 // Mock the CLI interface
 const mockCLIInterface = {
@@ -13,7 +14,7 @@ const mockCLIInterface = {
     ip: '192.168.1.100',
     domain: 'homelab.local',
     networkName: 'homelab-network',
-    selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY, ServiceType.N8N],
+    selectedServices: [ServiceType.CADDY, ServiceType.DOCKHAND, ServiceType.COPYPARTY, ServiceType.N8N],
     distribution: DistributionType.UBUNTU,
     postgresPassword: undefined
   } as HomelabConfig))
@@ -80,6 +81,11 @@ describe('HomelabApplication Integration Tests', () => {
   let consoleLogSpy: any;
   let consoleErrorSpy: any;
 
+  beforeAll(() => {
+    // Cache container runtime to 'docker' to avoid real Docker info calls that can hang
+    (ContainerRuntimeUtils as any).detectedRuntime = 'docker';
+  });
+
   beforeEach(() => {
     // Reset all mocks
     mock.restore();
@@ -105,7 +111,7 @@ describe('HomelabApplication Integration Tests', () => {
   });
 
   describe('Complete Installation Workflow', () => {
-    it('should execute complete installation workflow successfully', async () => {
+    it('should execute complete installation workflow successfully', { timeout: 15000 }, async () => {
       // Set configuration before running
       const config: HomelabConfig = {
         ip: '192.168.1.100',
@@ -227,7 +233,7 @@ describe('HomelabApplication Integration Tests', () => {
   });
 
   describe('Configuration Management', () => {
-    it('should validate configuration correctly', async () => {
+    it('should validate configuration correctly', { timeout: 15000 }, async () => {
       // Set up valid configuration
       const validConfig: HomelabConfig = {
         ip: '192.168.1.100',

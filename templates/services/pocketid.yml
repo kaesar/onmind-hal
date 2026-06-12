@@ -2,10 +2,13 @@ name: pocketid-service
 description: PocketID OIDC provider with passkeys support
 commands:
   install:
-    - docker pull node:20-alpine
+    - docker pull ghcr.io/pocket-id/pocket-id:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/pocketid
-    - docker build -f templates/dockerfiles/pocketid.dockerfile -t pocketid:latest .
+    - |
+      if [ ! -f ~/{{DATA_PATH}}/pocketid/encryption.key ]; then
+        openssl rand -hex 16 > ~/{{DATA_PATH}}/pocketid/encryption.key
+      fi
   run: |-
     docker run \
           -d \
@@ -13,9 +16,9 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 8093:80 \
           -e PUBLIC_APP_URL=https://auth.{{DOMAIN}} \
-          -e ENCRYPTION_KEY=CHANGEME_REPLACE_WITH_32_CHAR_HEX_KEY \
+          -e ENCRYPTION_KEY=$(cat ~/{{DATA_PATH}}/pocketid/encryption.key) \
           -v ~/{{DATA_PATH}}/pocketid:/app/backend/data \
-          pocketid:latest
+          ghcr.io/pocket-id/pocket-id:latest
 variables:
   - NETWORK_NAME
   - DOMAIN

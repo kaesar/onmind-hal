@@ -98,6 +98,21 @@ export class UbuntuStrategy extends BaseDistributionStrategy {
       const currentUser = await $`whoami`.text();
       await $`sudo usermod -aG docker ${currentUser.trim()}`;
 
+      // Ensure Docker daemon is running and accessible
+      await $`sudo systemctl restart docker`.quiet();
+      await $`sleep 3`.quiet();
+
+      // Set proper permissions for Docker socket
+      await $`sudo chmod 666 /var/run/docker.sock`;
+
+      // Verify Docker installation and permissions
+      const dockerVersion = await $`docker --version`.text();
+      console.log(`   ${dockerVersion.trim()}`);
+      await $`docker info`.quiet();
+
+      console.log('⚠️  Note: You may need to log out and back in for Docker group changes to take full effect.');
+      console.log('    For now, Docker socket permissions have been set to allow immediate access.');
+
     } catch (error) {
       throw new Error(`Failed to install Docker on Ubuntu: ${error}`);
     }

@@ -4,6 +4,14 @@ commands:
   install:
     - docker pull infisical/infisical:latest
   setup:
+    - |
+      for i in $(seq 1 12); do
+        docker exec postgresql pg_isready -U postgres >/dev/null 2>&1 && break
+        echo "  Waiting for PostgreSQL to be ready... ($i/12)"
+        sleep 5
+      done
+    - docker exec postgresql psql -U postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='infisical'" | grep -q 1 || docker exec postgresql psql -U postgres -c "CREATE USER infisical WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname='infisical'" | grep -q 1 || docker exec postgresql psql -U postgres -c "CREATE DATABASE infisical OWNER infisical;"
     - mkdir -p ~/{{DATA_PATH}}/infisical/data
     - docker volume create infisical_data
   run: |-
@@ -14,9 +22,9 @@ commands:
           -p 8096:8080 \
           -e ENCRYPTION_KEY={{ADMIN_TOKEN}} \
           -e AUTH_SECRET={{ADMIN_TOKEN}} \
-          -e DB_CONNECTION_URI=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/infisical \
+          -e DB_CONNECTION_URI=postgresql://infisical:{{STORAGE_PASSWORD}}@postgresql:5432/infisical \
           -e REDIS_URL=redis://redis:6379 \
-          -e SITE_URL=https://infisical.{{DOMAIN}} \
+          -e SITE_URL=https://secrets.{{DOMAIN}} \
           -e PORT=8080 \
           -e HOST=0.0.0.0 \
           infisical/infisical:latest
@@ -32,12 +40,12 @@ volumes:
 environment:
   ENCRYPTION_KEY: "{{ADMIN_TOKEN}}"
   AUTH_SECRET: "{{ADMIN_TOKEN}}"
-  DB_CONNECTION_URI: "postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/infisical"
+  DB_CONNECTION_URI: "postgresql://infisical:{{STORAGE_PASSWORD}}@postgresql:5432/infisical"
   REDIS_URL: "redis://redis:6379"
-  SITE_URL: "https://infisical.{{DOMAIN}}"
+  SITE_URL: "https://secrets.{{DOMAIN}}"
   PORT: "8080"
   HOST: "0.0.0.0"
-accessUrl: https://infisical.{{DOMAIN}}
+accessUrl: https://secrets.{{DOMAIN}}
 dependencies:
   - PostgreSQL
   - Redis

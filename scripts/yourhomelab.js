@@ -123,7 +123,8 @@ async function collectConfiguration() {
 
 // --- Docker Commands Functions ---
 function getCommands(config) {
-  const { networkName, postgresPassword } = config;
+  const { networkName, domain, postgresPassword } = config;
+  const yy = String(new Date().getFullYear()).slice(-2);
 
   return {
     // Base System Setup
@@ -144,44 +145,46 @@ function getCommands(config) {
     docker_network_create: `docker network create ${networkName} || true`,
 
     // Dockhand
-    dockhand_volume_create: `docker volume create dockhand_data`,
+    dockhand_volume_create: `docker volume create dockhand_data || true`,
     dockhand_run: `docker run -d -p 3000:3000 --name dockhand --network ${networkName} --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock -e DATA_DIR=/app/data -e PUID=1000 -e PGID=1000 -v dockhand_data:/app/data fnsys/dockhand:latest`,
 
     // Caddy
     caddy_mkdir_conf: `mkdir -p ~/ws/init`,
-    caddy_volume_create: `docker volume create caddy_data`,
-    caddy_run: `docker run -d -p 80:80 -p 443:443 --name caddy --network ${networkName} --restart always -v $PWD/ws/init:/etc/caddy -v caddy_data:/data caddy`,
+    caddy_volume_create: `docker volume create caddy_data || true`,
+    caddy_run: `docker run -d -p 80:80 -p 443:443 --name caddy --network ${networkName} --restart always -v ~/ws/init:/etc/caddy -v caddy_data:/data caddy`,
     caddy_install_ca_cert_1: `docker cp caddy:/data/caddy/pki/authorities/local/root.crt /tmp/caddy-root.crt`,
     caddy_install_ca_cert_2: `sudo cp /tmp/caddy-root.crt /usr/local/share/ca-certificates/caddy-root.crt`,
     caddy_install_ca_cert_3: `sudo update-ca-certificates`,
 
     // Copyparty
     copyparty_mkdir_root: `mkdir -p ~/ws/data`,
-    copyparty_run: `docker run -d -p 3923:3923 --name copyparty --network ${networkName} --restart always -v $PWD/ws/data:/w -v $PWD/ws/init:/cfg copyparty/ac:latest`,
+    copyparty_run: `docker run -d -p 3923:3923 --name copyparty --network ${networkName} --restart always -v ~/ws/data:/w -v ~/ws/init:/cfg copyparty/ac:latest`,
 
     // Optional Services
-    n8n_volume_create: `docker volume create n8n`,
+    n8n_volume_create: `docker volume create n8n || true`,
     n8n_run: `docker run -d --name n8n --network ${networkName} --restart always -p 5678:5678 -v n8n:/home/node/.n8n n8nio/n8n`,
 
-    rustfs_volume_create: `docker volume create rustfs_data`,
+    rustfs_volume_create: `docker volume create rustfs_data || true`,
     rustfs_run: `docker run -d -p 9000:9000 -p 9001:9001 --name rustfs --network ${networkName} --restart always -v rustfs_data:/data -e RUSTFS_ACCESS_KEY=rustfsadmin -e RUSTFS_SECRET_KEY=rustfsadmin -e RUSTFS_CONSOLE_ENABLE=true -e RUSTFS_SERVER_DOMAINS=${domain} -e RUSTFS_ADDRESS=:9000 -e RUSTFS_CONSOLE_ADDRESS=:9001 rustfs/rustfs:latest /data`,
 
-    postgres_volume_create: `docker volume create postgres`,
+    postgres_volume_create: `docker volume create postgres || true`,
     postgres_run: `docker run -d -p 5432:5432 --name postgres --network ${networkName} --restart always -v postgres:/var/lib/postgresql/data -e POSTGRES_PASSWORD=${postgresPassword} -e PGDATA=/var/lib/postgresql/data/pgdata postgres:17.6`,
 
-    redis_volume_create: `docker volume create redis`,
+    redis_volume_create: `docker volume create redis || true`,
     redis_run: `docker run -d -p 6379:6379 --name redis --network ${networkName} --restart always -v redis:/data redis:latest`,
 
-    mongodb_volume_create: `docker volume create mongodb`,
+    mongodb_volume_create: `docker volume create mongodb || true`,
     mongodb_run: `docker run -d -p 27017:27017 --name mongodb --network ${networkName} --restart always -v mongodb:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=homelab123 mongo:latest`,
 
-    infisical_volume_create: `docker volume create infisical_data`,
-    infisical_run: `docker run -d -p 8080:8080 --name infisical --network ${networkName} --restart always -e ENCRYPTION_KEY=admin -e AUTH_SECRET=homelab123 -e DB_CONNECTION_URI=postgresql://postgres:${postgresPassword}@postgresql:5432/infisical -e REDIS_URL=redis://redis:6379 -e SITE_URL=https://infisical.${domain} -e PORT=8080 infisical/infisical:latest`,
+    infisical_mkdir: `mkdir -p ~/ws/data/infisical`,
+    infisical_encryption_key: `[ -f ~/ws/data/infisical/encryption.key ] || openssl rand -hex 16 > ~/ws/data/infisical/encryption.key`,
+    infisical_volume_create: `docker volume create infisical_data || true`,
+    infisical_run: `docker run -d -p 8080:8080 --name infisical --network ${networkName} --restart always -e ENCRYPTION_KEY=$(cat ~/ws/data/infisical/encryption.key) -e AUTH_SECRET=Admin${yy}! -e DB_CONNECTION_URI=postgresql://postgres:${postgresPassword}@postgres:5432/infisical -e REDIS_URL=redis://redis:6379 -e SITE_URL=https://infisical.${domain} -e PORT=8080 infisical/infisical:latest`,
 
-    ollama_volume_create: `docker volume create ollama`,
+    ollama_volume_create: `docker volume create ollama || true`,
     ollama_run: `docker run -d -p 11434:11434 --name ollama --network ${networkName} --restart always -v ollama:/root/.ollama ollama/ollama`,
 
-    openwebui_volume_create: `docker volume create openwebui_data`,
+    openwebui_volume_create: `docker volume create openwebui_data || true`,
     openwebui_run: `docker run -d --name openwebui --network ${networkName} --restart always -p 3010:8080 -v openwebui_data:/app/backend/data -e OLLAMA_BASE_URL=http://ollama:11434 ghcr.io/open-webui/open-webui:main`,
 
     cloudflared_mkdir: `mkdir -p ~/.cloudflared`,
@@ -388,9 +391,9 @@ async function installHomeLab(config) {
     await runCommand(commands.caddy_run, "Starting Caddy container");
 
     console.log("🔐 Installing Caddy CA certificate...");
-    // Wait a bit for Caddy to generate certificates
+    // Wait for Caddy to generate certificates
     console.log("Waiting for Caddy to generate certificates...");
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 15000));
 
     try {
       await runCommand(
@@ -506,6 +509,14 @@ async function installHomeLab(config) {
 
     if (services.includes("infisical")) {
       console.log("\n🔐 Setting up Infisical...");
+      await runCommand(
+        commands.infisical_mkdir,
+        "Creating Infisical data directory",
+      );
+      await runCommand(
+        commands.infisical_encryption_key,
+        "Generating encryption key",
+      );
       await runCommand(
         commands.infisical_volume_create,
         "Creating Infisical volume",

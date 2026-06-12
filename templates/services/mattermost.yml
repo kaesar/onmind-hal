@@ -4,6 +4,8 @@ commands:
   install:
     - docker pull mattermost/mattermost-team-edition:latest
   setup:
+    - docker exec postgresql psql -U root -c "CREATE USER mattermost WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE mattermost OWNER mattermost;" 2>/dev/null || true
     - mkdir -p ~/{{CONFIG_PATH}}/mattermost
     - chmod 777 ~/{{CONFIG_PATH}}/mattermost
     - docker volume create mattermost_data
@@ -20,7 +22,7 @@ commands:
           -v mattermost_logs:/mattermost/logs \
           -v mattermost_plugins:/mattermost/plugins \
           -e MM_SQLSETTINGS_DRIVERNAME=postgres \
-          -e MM_SQLSETTINGS_DATASOURCE=postgres://root:{{STORAGE_PASSWORD}}@postgresql:5432/mattermost?sslmode=disable \
+          -e MM_SQLSETTINGS_DATASOURCE=postgres://mattermost:{{STORAGE_PASSWORD}}@postgresql:5432/mattermost?sslmode=disable \
           -e MM_SERVICESETTINGS_SITEURL=https://mattermost.{{DOMAIN}} \
           --restart unless-stopped \
           mattermost/mattermost-team-edition:latest

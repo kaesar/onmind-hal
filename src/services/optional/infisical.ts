@@ -18,6 +18,6 @@ export class InfisicalService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `https://infisical.${this.config.domain}`;
+    return `https://secrets.${this.config.domain}`;
   }
 }

@@ -4,6 +4,8 @@ commands:
   install:
     - docker pull node:18-slim
   setup:
+    - docker exec postgresql psql -U root -c "CREATE USER keystonejs WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE keystonejs OWNER keystonejs;" 2>/dev/null || true
     - mkdir -p ~/{{DATA_PATH}}/keystonejs
     - mkdir -p ~/{{DATA_PATH}}/keystonejs-build
     - cp templates/dockerfiles/keystonejs.dockerfile ~/{{DATA_PATH}}/keystonejs-build/Dockerfile
@@ -18,7 +20,7 @@ commands:
           --name keystonejs \
           --network {{NETWORK_NAME}} \
           -p 3090:3000 \
-          -e DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/keystonejs \
+          -e DATABASE_URL=postgresql://keystonejs:{{STORAGE_PASSWORD}}@postgresql:5432/keystonejs \
           -v ~/{{DATA_PATH}}/keystonejs:/app/data keystonejs:latest
 variables:
   - NETWORK_NAME

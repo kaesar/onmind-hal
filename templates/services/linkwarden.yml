@@ -4,6 +4,8 @@ commands:
   install:
     - docker pull ghcr.io/linkwarden/linkwarden:latest
   setup:
+    - docker exec postgresql psql -U root -c "CREATE USER linkwarden WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE linkwarden OWNER linkwarden;" 2>/dev/null || true
     - docker volume create linkwarden_data
   run: |-
     docker run \
@@ -12,7 +14,7 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 3101:3000 \
           -v linkwarden_data:/data/data \
-          -e DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/linkwarden \
+          -e DATABASE_URL=postgresql://linkwarden:{{STORAGE_PASSWORD}}@postgresql:5432/linkwarden \
           -e NEXTAUTH_SECRET={{STORAGE_PASSWORD}} \
           -e NEXTAUTH_URL=https://linkwarden.{{DOMAIN}} \
           --restart unless-stopped \

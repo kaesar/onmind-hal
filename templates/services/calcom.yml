@@ -5,6 +5,8 @@ commands:
   install:
     - docker pull calcom/cal.com:latest
   setup:
+    - docker exec postgresql psql -U root -c "CREATE USER calcom WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE calcom OWNER calcom;" 2>/dev/null || true
     - docker volume create calcom_data
   run: |
     docker run -d \
@@ -12,7 +14,7 @@ commands:
       --network {{NETWORK_NAME}} \
       -p 3040:3000 \
       -v calcom_data:/calcom/apps/web/.next \
-      -e DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/calcom \
+      -e DATABASE_URL=postgresql://calcom:{{STORAGE_PASSWORD}}@postgresql:5432/calcom \
       -e NEXTAUTH_SECRET={{STORAGE_PASSWORD}} \
       -e NEXTAUTH_URL=https://cal.{{DOMAIN}} \
       -e CALENDSO_ENCRYPTION_KEY={{STORAGE_PASSWORD}} \

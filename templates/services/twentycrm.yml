@@ -5,7 +5,8 @@ commands:
     - docker pull twentycrm/twenty:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/twentycrm
-    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE twenty OWNER postgres;" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE USER twentycrm WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE twenty OWNER twentycrm;" 2>/dev/null || true
   run: |-
     docker run \
           -d \
@@ -13,7 +14,7 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 3021:3000 \
           --restart unless-stopped \
-          -e PG_DATABASE_URL=postgres://root:{{STORAGE_PASSWORD}}@postgresql:5432/twenty \
+          -e PG_DATABASE_URL=postgres://twentycrm:{{STORAGE_PASSWORD}}@postgresql:5432/twenty \
           -e REDIS_URL=redis://redis:6379 \
           -e SERVER_URL=https://crm.{{DOMAIN}} \
           -e FRONT_BASE_URL=https://crm.{{DOMAIN}} \

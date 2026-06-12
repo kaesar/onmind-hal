@@ -4,6 +4,8 @@ commands:
   install:
     - docker pull semaphoreui/semaphore:latest
   setup:
+    - docker exec postgresql psql -U root -c "CREATE USER semaphore WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE semaphore OWNER semaphore;" 2>/dev/null || true
     - docker volume create semaphore_data
   run: |-
     docker run \
@@ -15,7 +17,7 @@ commands:
           -e SEMAPHORE_DB_DIALECT=postgres \
           -e SEMAPHORE_DB_HOST=postgresql \
           -e SEMAPHORE_DB_PORT=5432 \
-          -e SEMAPHORE_DB_USER=root \
+          -e SEMAPHORE_DB_USER=semaphore \
           -e SEMAPHORE_DB_PASS={{STORAGE_PASSWORD}} \
           -e SEMAPHORE_DB=semaphore \
           -e SEMAPHORE_ADMIN_PASSWORD=admin \

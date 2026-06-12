@@ -5,12 +5,8 @@ commands:
     - docker pull tooljet/tooljet-ce:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/tooljet/data
-    - |-
-      docker run --rm \
-        --network {{NETWORK_NAME}} \
-        -e PGPASSWORD={{STORAGE_PASSWORD}} \
-        postgres:latest \
-        psql -h postgresql -U root -d postgres -c "CREATE DATABASE tooljet;" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE USER tooljet WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE tooljet OWNER tooljet;" 2>/dev/null || true
   run: |-
     docker run \
       -d \
@@ -20,7 +16,7 @@ commands:
       -e TOOLJET_HOST=https://tooljet.{{DOMAIN}} \
       -e LOCKBOX_MASTER_KEY={{ADMIN_TOKEN}} \
       -e SECRET_KEY_BASE={{ADMIN_TOKEN}}{{ADMIN_TOKEN}} \
-      -e DATABASE_URL=postgres://root:{{STORAGE_PASSWORD}}@postgresql:5432/tooljet \
+      -e DATABASE_URL=postgres://tooljet:{{STORAGE_PASSWORD}}@postgresql:5432/tooljet \
       -e REDIS_URL=redis://redis:6379/0 \
       -e NODE_ENV=production \
       -e ENABLE_TOOLJET_DB=true \
@@ -42,7 +38,7 @@ environment:
   TOOLJET_HOST: https://tooljet.{{DOMAIN}}
   LOCKBOX_MASTER_KEY: "{{ADMIN_TOKEN}}"
   SECRET_KEY_BASE: "{{ADMIN_TOKEN}}{{ADMIN_TOKEN}}"
-  DATABASE_URL: postgres://root:{{STORAGE_PASSWORD}}@postgresql:5432/tooljet
+  DATABASE_URL: postgres://tooljet:{{STORAGE_PASSWORD}}@postgresql:5432/tooljet
   REDIS_URL: redis://redis:6379/0
   NODE_ENV: production
   ENABLE_TOOLJET_DB: "true"

@@ -15,6 +15,6 @@ export class KeystoneJSService extends BaseService {
   }
 
   getAccessUrl(): string {
-    return `https://keystonejs.${this.config.domain}`;
+    return `https://keystone.${this.config.domain}`;
   }
 }

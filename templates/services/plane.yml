@@ -6,20 +6,22 @@ commands:
     - docker pull makeplane/plane-backend:latest
     - docker pull makeplane/plane-worker:latest
   setup:
+    - docker exec postgresql psql -U root -c "CREATE USER plane WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE plane OWNER plane;" 2>/dev/null || true
     - docker volume create plane_uploads
   run: |-
     docker run \
           -d \
           --name plane-worker \
           --network {{NETWORK_NAME}} \
--e DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/plane \
+-e DATABASE_URL=postgresql://plane:{{STORAGE_PASSWORD}}@postgresql:5432/plane \
            -e REDIS_URL=redis://redis:6379/ \
            -e WEB_URL=https://plane.{{DOMAIN}} \
            --restart unless-stopped makeplane/plane-worker:latest && docker run \
            -d \
            --name plane-backend \
            --network {{NETWORK_NAME}} \
-           -e DATABASE_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/plane \
+           -e DATABASE_URL=postgresql://plane:{{STORAGE_PASSWORD}}@postgresql:5432/plane \
           -e REDIS_URL=redis://redis:6379/ \
           -e WEB_URL=https://plane.{{DOMAIN}} \
           -e CORS_ALLOWED_ORIGINS=https://plane.{{DOMAIN}} \

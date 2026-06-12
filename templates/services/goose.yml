@@ -3,33 +3,35 @@ description: Open-source AI agent for code, workflows, and automation (AAIF/Linu
 commands:
   install:
     - docker pull ghcr.io/aaif-goose/goose:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/goose
   run: |-
     docker run -d \
       --name goose \
       --network {{NETWORK_NAME}} \
       -p 8300:8300 \
-      -e GOOSE_HOST=0.0.0.0 \
-      -e GOOSE_PORT=8300 \
-      -e GOOSE_TLS=false \
+      -e GOOSE_HOME=/data \
       -e GOOSE_PROVIDER=ollama \
       -e GOOSE_MODEL=llama3 \
       -e OLLAMA_HOST=http://ollama:11434 \
       -e GOOSE_SERVER__SECRET_KEY={{ADMIN_TOKEN}} \
+      -v ~/{{DATA_PATH}}/goose:/data \
       --restart unless-stopped \
+      --entrypoint /usr/local/bin/goose \
       ghcr.io/aaif-goose/goose:latest \
-      goosed agent
+      serve
 variables:
   - NETWORK_NAME
   - ADMIN_TOKEN
 ports:
   - "8300:8300"
 environment:
-  GOOSE_HOST: "0.0.0.0"
-  GOOSE_PORT: "8300"
-  GOOSE_TLS: "false"
+  GOOSE_HOME: "/data"
   GOOSE_PROVIDER: "ollama"
+  GOOSE_MODEL: "llama3"
   OLLAMA_HOST: "http://ollama:11434"
   GOOSE_SERVER__SECRET_KEY: "{{ADMIN_TOKEN}}"
 accessUrl: https://goose.{{DOMAIN}}
-dependencies: []
+dependencies:
+  - Ollama
 isCore: false

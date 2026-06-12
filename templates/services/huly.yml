@@ -13,6 +13,8 @@ commands:
     - docker pull hardcoreeng/hulykvs:v0.7.423
     - docker pull nginx:1.21.3
   setup:
+    - docker exec postgresql psql -U root -c "CREATE USER huly WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
+    - docker exec postgresql psql -U root -c "CREATE DATABASE huly OWNER huly;" 2>/dev/null || true
     - mkdir -p ~/{{DATA_PATH}}/huly
     - |
       cat > ~/{{DATA_PATH}}/huly/nginx.conf << 'NGINX'
@@ -98,7 +100,7 @@ commands:
       --restart unless-stopped hardcoreeng/rekoni-service:v0.7.423 && \
     docker run -d --name huly-fulltext --network {{NETWORK_NAME}} \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
-      -e DB_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e FULLTEXT_DB_URL=http://opensearch:9200 \
       -e ELASTIC_INDEX_NAME=huly_storage_index \
       -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
@@ -112,13 +114,13 @@ commands:
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
       --restart unless-stopped hardcoreeng/stats:v0.7.423 && \
     docker run -d --name huly-kvs --network {{NETWORK_NAME}} \
-      -e HULY_DB_CONNECTION=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e HULY_DB_CONNECTION=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e HULY_TOKEN_SECRET={{ADMIN_TOKEN}} \
       --restart unless-stopped hardcoreeng/hulykvs:v0.7.423 && \
     docker run -d --name huly-transactor --network {{NETWORK_NAME}} \
       -e SERVER_PORT=3333 \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
-      -e DB_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
       -e FRONT_URL=https://huly.{{DOMAIN}} \
       -e ACCOUNTS_URL=http://huly-account:3000 \
@@ -136,19 +138,19 @@ commands:
       --restart unless-stopped hardcoreeng/collaborator:v0.7.423 && \
     docker run -d --name huly-workspace --network {{NETWORK_NAME}} \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
-      -e DB_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e TRANSACTOR_URL=ws://huly-transactor:3333 \
       -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
       -e MODEL_ENABLED=* \
       -e ACCOUNTS_URL=http://huly-account:3000 \
       -e STATS_URL=http://huly-stats:4900 \
       -e QUEUE_CONFIG=kafka:9092 \
-      -e ACCOUNTS_DB_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e ACCOUNTS_DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       --restart unless-stopped hardcoreeng/workspace:v0.7.423 && \
     docker run -d --name huly-account --network {{NETWORK_NAME}} \
       -e SERVER_PORT=3000 \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
-      -e DB_URL=postgresql://root:{{STORAGE_PASSWORD}}@postgresql:5432/homelab \
+      -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e TRANSACTOR_URL=ws://huly-transactor:3333 \
       -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
       -e FRONT_URL=https://huly.{{DOMAIN}} \
