@@ -29,7 +29,7 @@ commands:
           -d \
           --name plane-frontend \
           --network {{NETWORK_NAME}} \
-          -p 8084:3000 \
+          -p 8019:3000 \
           -e NEXT_PUBLIC_API_BASE_URL=https://plane.{{DOMAIN}} \
           --restart unless-stopped \
           makeplane/plane-frontend:latest

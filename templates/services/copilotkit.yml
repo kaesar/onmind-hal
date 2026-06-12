@@ -1,0 +1,27 @@
+name: CopilotKit
+description: Open-source AI agent runtime with multi-provider support
+commands:
+  install:
+    - docker pull node:20-alpine
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/copilotkit
+    - cp templates/dockerfiles/copilotkit-package.json ~/{{DATA_PATH}}/copilotkit/package.json
+    - cp templates/dockerfiles/copilotkit-server.js ~/{{DATA_PATH}}/copilotkit/server.js
+    - cp templates/dockerfiles/copilotkit.dockerfile ~/{{DATA_PATH}}/copilotkit/Dockerfile
+    - cd ~/{{DATA_PATH}}/copilotkit && docker build -t copilotkit:latest .
+  run: |-
+    docker run \
+          -d \
+          --name copilotkit \
+          --network {{NETWORK_NAME}} \
+          -p 4201:4201 \
+          -e PORT=4201 \
+          --restart unless-stopped \
+          copilotkit:latest
+variables:
+  - NETWORK_NAME
+ports:
+  - "4201:4201"
+accessUrl: https://copilotkit.{{DOMAIN}}
+dependencies: []
+isCore: false

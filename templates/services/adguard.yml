@@ -11,7 +11,7 @@ commands:
           -d \
           --name adguardhome \
           --network {{NETWORK_NAME}} \
-          -p 3000:3000 \
+          -p 3004:3000 \
           -p 53:53/udp \
           -v ~/{{DATA_PATH}}/adguard/work:/opt/adguardhome/work \
           -v ~/{{DATA_PATH}}/adguard/conf:/opt/adguardhome/conf \
@@ -21,7 +21,7 @@ variables:
   - NETWORK_NAME
   - DATA_PATH
 ports:
-  - "3000:3000"
+  - "3004:3000"
   - "53:53/udp"
 volumes:
   - ~/{{DATA_PATH}}/adguard/work:/opt/adguardhome/work

@@ -1,0 +1,40 @@
+name: Seafile
+description: Self-hosted file sync and share platform (Google Drive alternative)
+commands:
+  install:
+    - docker pull seafileltd/seafile-mc:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/seafile/{data,mysql}
+  run: |-
+    docker run \
+          -d \
+          --name seafile \
+          --network {{NETWORK_NAME}} \
+          -p 8016:8082 \
+          -e SEAFILE_SERVER_HOSTNAME=drive.{{DOMAIN}} \
+          -e SEAFILE_SERVER_PROTOCOL=https \
+          -e SEAFILE_ADMIN_EMAIL=admin@{{DOMAIN}} \
+          -e SEAFILE_ADMIN_PASSWORD={{STORAGE_PASSWORD}} \
+          -e SEAFILE_SERVER_LETSENCRYPT=false \
+          -e FORCE_HTTPS_IN_CONF=false \
+          -e JWT_PRIVATE_KEY={{ADMIN_TOKEN}} \
+          -e TIME_ZONE=UTC \
+          -v ~/{{DATA_PATH}}/seafile:/shared \
+          --restart unless-stopped \
+          seafileltd/seafile-mc:latest
+  postRun:
+    - echo "Seafile is initializing (may take 1-2 minutes on first run)..."
+    - sleep 10
+    - echo "Check progress: docker logs seafile"
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - STORAGE_PASSWORD
+  - ADMIN_TOKEN
+ports:
+  - "8016:8082"
+volumes:
+  - ~/{{DATA_PATH}}/seafile:/shared
+accessUrl: https://drive.{{DOMAIN}}
+dependencies: []
+isCore: false

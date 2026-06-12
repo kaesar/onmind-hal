@@ -11,7 +11,7 @@ commands:
           -d \
           --name jasperreports \
           --network {{NETWORK_NAME}} \
-          -p 8081:8080 \
+          -p 8014:8080 \
           -e CATALINA_OPTS='-Xmx2g \
           -Xms1g' \
           -v ~/{{DATA_PATH}}/jasperreports/data:/usr/local/tomcat/webapps tomcat:9-jdk11

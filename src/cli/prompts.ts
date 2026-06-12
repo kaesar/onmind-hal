@@ -400,6 +400,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Filestash'
     },
     {
+      name: 'Seafile - Self-hosted file sync and share platform (Google Drive alternative)',
+      value: ServiceType.SEAFILE,
+      short: 'Seafile'
+    },
+    {
       name: 'Excalidraw - Virtual whiteboard for sketching',
       value: ServiceType.EXCALIDRAW,
       short: 'Excalidraw'
@@ -440,9 +445,19 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Directus'
     },
     {
+      name: 'InsForge - Open-source backend platform for AI coding agents (database, auth, storage, AI gateway)',
+      value: ServiceType.INSFORGE,
+      short: 'InsForge'
+    },
+    {
       name: 'TwentyCRM - Modern open-source CRM platform',
       value: ServiceType.TWENTYCRM,
       short: 'TwentyCRM'
+    },
+    {
+      name: 'Chatwoot - Open-source customer engagement platform (Intercom/Zendesk alternative)',
+      value: ServiceType.CHATWOOT,
+      short: 'Chatwoot'
     },
     {
       name: 'MedusaJS - Headless e-commerce platform (Shopify alternative)',
@@ -475,6 +490,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'JasperReports'
     },
     {
+      name: 'DocuSeal - Open-source document signing and PDF form filling platform',
+      value: ServiceType.DOCUSEAL,
+      short: 'DocuSeal'
+    },
+    {
       name: 'Stirling-PDF - Powerful locally hosted PDF manipulation tool',
       value: ServiceType.STIRLINGPDF,
       short: 'Stirling-PDF'
@@ -498,6 +518,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'AnythingLLM - Multi-user AI platform with RAG, Agents, and local LLM support',
       value: ServiceType.ANYTHINGLLM,
       short: 'AnythingLLM'
+    },
+    {
+      name: 'CopilotKit - Open-source AI agent runtime with multi-provider support and AG-UI protocol',
+      value: ServiceType.COPILOTKIT,
+      short: 'CopilotKit'
     },
     {
       name: 'Goose - Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation)',

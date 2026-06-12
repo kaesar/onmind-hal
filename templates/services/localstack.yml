@@ -10,7 +10,7 @@ commands:
           -d \
           --name localstack \
           --network {{NETWORK_NAME}} \
-          -p 4566:4566 \
+          -p 4569:4566 \
           -p 4571:4571 \
           -v ~/{{DATA_PATH}}/localstack/data:/var/lib/localstack \
           -v /var/run/docker.sock:/var/run/docker.sock \

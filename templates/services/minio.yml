@@ -10,7 +10,7 @@ commands:
           -d \
           --name minio \
           --network {{NETWORK_NAME}} \
-          -p 9001:9001 \
+          -p 9005:9001 \
           -p 9090:9090 \
           -v minio_data:/data \
           -e MINIO_ROOT_USER=admin \

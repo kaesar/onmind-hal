@@ -15,7 +15,7 @@ commands:
           -d \
           --name firecrawl \
           --network {{NETWORK_NAME}} \
-          -p 3002:3002 \
+          -p 3008:3002 \
           -e PORT=3002 \
           -e HOST=0.0.0.0 \
           -e USE_DB_AUTHENTICATION=false \
@@ -39,7 +39,7 @@ commands:
           -d \
           --name firecrawl-playwright \
           --network {{NETWORK_NAME}} \
-          -p 3000:3000 \
+          -p 3006:3000 \
           -e PORT=3000 \
           -e PROXY_SERVER= \
           -e PROXY_USERNAME= \
@@ -53,8 +53,8 @@ variables:
   - STORAGE_PASSWORD
   - ADMIN_TOKEN
 ports:
-  - "3002:3002"
-  - "3000:3000"
+  - "3008:3002"
+  - "3006:3000"
 environment:
   PORT: "3002"
   HOST: "0.0.0.0"

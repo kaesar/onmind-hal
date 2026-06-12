@@ -1,0 +1,46 @@
+name: Chatwoot
+description: Open-source customer engagement platform (Intercom/Zendesk alternative)
+commands:
+  install:
+    - docker pull chatwoot/chatwoot:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/chatwoot
+    - docker exec postgresql psql -U root -tc "SELECT 1 FROM pg_roles WHERE rolname='chatwoot'" | grep -q 1 || docker exec postgresql psql -U root -c "CREATE USER chatwoot WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -tc "SELECT 1 FROM pg_database WHERE datname='chatwoot'" | grep -q 1 || docker exec postgresql psql -U root -c "CREATE DATABASE chatwoot OWNER chatwoot;"
+  run: |-
+    docker run \
+          -d \
+          --name chatwoot \
+          --network {{NETWORK_NAME}} \
+          -p 3092:3000 \
+          --restart unless-stopped \
+          -e POSTGRES_DATABASE=chatwoot \
+          -e POSTGRES_HOST=postgresql \
+          -e POSTGRES_USERNAME=chatwoot \
+          -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
+          -e REDIS_URL=redis://redis:6379 \
+          -e REDIS_PASSWORD= \
+          -e SECRET_KEY_BASE={{ADMIN_TOKEN}} \
+          -e FRONTEND_URL=https://chatwoot.{{DOMAIN}} \
+          -e INSTALLATION_ENV=Docker \
+          -e NODE_ENV=production \
+          -e RAILS_ENV=production \
+          -e RAILS_LOG_TO_STDOUT=true \
+          -v ~/{{DATA_PATH}}/chatwoot:/app/storage \
+          chatwoot/chatwoot:latest
+  postRun:
+    - sleep 15 && docker exec chatwoot bundle exec rails db:chatwoot_prepare 2>/dev/null || true
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - STORAGE_PASSWORD
+  - ADMIN_TOKEN
+ports:
+  - "3092:3000"
+volumes:
+  - ~/{{DATA_PATH}}/chatwoot:/app/storage
+accessUrl: https://chatwoot.{{DOMAIN}}
+dependencies:
+  - PostgreSQL
+  - Redis
+isCore: false

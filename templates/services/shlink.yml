@@ -10,7 +10,7 @@ commands:
           -d \
           --name shlink \
           --network {{NETWORK_NAME}} \
-          -p 8080:8080 \
+          -p 8012:8080 \
           -e DEFAULT_DOMAIN={{DOMAIN}} \
           -e IS_HTTPS_ENABLED=true \
           -v ~/{{DATA_PATH}}/shlink/data:/etc/shlink/data \
@@ -21,7 +21,7 @@ variables:
   - DOMAIN
   - DATA_PATH
 ports:
-  - "8080:8080"
+  - "8012:8080"
 volumes:
   - ~/{{DATA_PATH}}/shlink/data:/etc/shlink/data
 environment:

@@ -10,7 +10,7 @@ commands:
           -d \
           --name nocodb \
           --network {{NETWORK_NAME}} \
-          -p 8083:8080 \
+          -p 8018:8080 \
           -v ~/{{DATA_PATH}}/nocodb/data:/usr/app/data \
           --restart unless-stopped \
           nocodb/nocodb:latest

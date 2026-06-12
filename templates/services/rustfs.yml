@@ -11,7 +11,7 @@ commands:
           -d \
           --name rustfs \
           --network {{NETWORK_NAME}} \
-          -p 9000:9000 \
+          -p 9004:9000 \
           -p 9001:9001 \
           -e RUSTFS_ACCESS_KEY=rustfsadmin \
           -e RUSTFS_SECRET_KEY=rustfsadmin \
@@ -26,7 +26,7 @@ variables:
   - NETWORK_NAME
   - DOMAIN
 ports:
-  - "9000:9000"
+  - "9004:9000"
   - "9001:9001"
 volumes:
   - rustfs_data:/data

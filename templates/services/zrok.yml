@@ -73,7 +73,7 @@ commands:
           -d \
           --name zrok-frontend \
           --network {{NETWORK_NAME}} \
-          -p 8080:8080 \
+          -p 8013:8080 \
           -e ZROK2_FRONTEND_TOKEN={{ADMIN_TOKEN}} \
           -e ZROK2_CTRL_ENDPOINT=http://zrok-controller:18080 \
           -e ZROK2_FRONTEND_PORT=8080 \
@@ -86,8 +86,8 @@ commands:
           -d \
           --name zrok-caddy \
           --network {{NETWORK_NAME}} \
-          -p 8082:443 \
-          -p 8081:80 \
+          -p 8017:443 \
+          -p 8015:80 \
           -v ~/{{CONFIG_PATH}}/zrok/Caddyfile:/etc/caddy/Caddyfile \
           -v ~/{{DATA_PATH}}/zrok/caddy:/data \
           --restart unless-stopped \
@@ -101,9 +101,9 @@ ports:
   - "1280:1280"
   - "3022:3022"
   - "18080:18080"
-  - "8080:8080"
-  - "8081:80"
-  - "8082:443"
+  - "8013:8080"
+  - "8015:80"
+  - "8017:443"
 volumes:
   - zrok_postgres_data:/var/lib/postgresql/data
   - zrok_controller_data:/var/lib/zrok2-controller

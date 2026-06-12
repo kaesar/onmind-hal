@@ -59,6 +59,7 @@ import { LinkwardenService } from './optional/linkwarden.js';
 import { ShlinkService } from './optional/shlink.js';
 import { PsiTransferService } from './optional/psitransfer.js';
 import { FilestashService } from './optional/filestash.js';
+import { SeafileService } from './optional/seafile.js';
 import { ExcalidrawService } from './optional/excalidraw.js';
 import { DrawIOService } from './optional/drawio.js';
 import { WiseMappingService } from './optional/wisemapping.js';
@@ -67,11 +68,13 @@ import { OutlineService } from './optional/outline.js';
 import { GristService } from './optional/grist.js';
 import { NocoDBService } from './optional/nocodb.js';
 import { TwentyCRMService } from './optional/twentycrm.js';
+import { ChatwootService } from './optional/chatwoot.js';
 import { MedusaJSService } from './optional/medusajs.js';
 import { MattermostService } from './optional/mattermost.js';
 import { CaldiyService } from './optional/caldiy.js';
 import { AdGuardService } from './optional/adguard.js';
 import { JasperReportsService } from './optional/jasperreports.js';
+import { DocuSealService } from './optional/docuseal.js';
 import { StirlingPDFService } from './optional/stirlingpdf.js';
 import { PandocWebService } from './optional/pandocweb.js';
 import { CalibreWebService } from './optional/calibreweb.js';
@@ -91,6 +94,7 @@ import { FlociAZService } from './optional/flociaz.js';
 import { FlociGCPService } from './optional/flocigcp.js';
 import { LiteLLMService } from './optional/litellm.js';
 import { AnythingLLMService } from './optional/anythingllm.js';
+import { CopilotKitService } from './optional/copilotkit.js';
 import { OpenClawService } from './optional/openclaw.js';
 import { GooseService } from './optional/goose.js';
 import { HermesService } from './optional/hermes.js';
@@ -99,10 +103,10 @@ import { FirecrawlService } from './optional/firecrawl.js';
 import { SearXNGService } from './optional/searxng.js';
 import { PlausibleService } from './optional/plausible.js';
 import { DirectusService } from './optional/directus.js';
+import { InsForgeService } from './optional/insforge.js';
 import { OrcaRouterLiteService } from './optional/orcarouter-lite.js';
 import { DockhandService } from './core/dockhand.js';
 import { ZrokService } from './optional/zrok.js';
-import { OpenHumanService } from './optional/openhuman.js';
 import { RustDeskService } from './optional/rustdesk.js';
 
 /**
@@ -294,6 +298,9 @@ export class ServiceFactory {
       case ServiceType.FILESTASH:
         service = new FilestashService(config, this.templateEngine);
         break;
+      case ServiceType.SEAFILE:
+        service = new SeafileService(config, this.templateEngine);
+        break;
       case ServiceType.EXCALIDRAW:
         service = new ExcalidrawService(config, this.templateEngine);
         break;
@@ -318,6 +325,9 @@ export class ServiceFactory {
       case ServiceType.TWENTYCRM:
         service = new TwentyCRMService(config, this.templateEngine);
         break;
+      case ServiceType.CHATWOOT:
+        service = new ChatwootService(config, this.templateEngine);
+        break;
       case ServiceType.MEDUSAJS:
         service = new MedusaJSService(config, this.templateEngine);
         break;
@@ -332,6 +342,9 @@ export class ServiceFactory {
         break;
       case ServiceType.JASPERREPORTS:
         service = new JasperReportsService(config, this.templateEngine);
+        break;
+      case ServiceType.DOCUSEAL:
+        service = new DocuSealService(config, this.templateEngine);
         break;
       case ServiceType.STIRLINGPDF:
         service = new StirlingPDFService(config, this.templateEngine);
@@ -387,6 +400,9 @@ export class ServiceFactory {
       case ServiceType.ANYTHINGLLM:
         service = new AnythingLLMService(config, this.templateEngine);
         break;
+      case ServiceType.COPILOTKIT:
+        service = new CopilotKitService(config, this.templateEngine);
+        break;
       case ServiceType.GOOSE:
         service = new GooseService(config, this.templateEngine);
         break;
@@ -413,6 +429,9 @@ export class ServiceFactory {
         break;
       case ServiceType.DIRECTUS:
         service = new DirectusService(config, this.templateEngine);
+        break;
+      case ServiceType.INSFORGE:
+        service = new InsForgeService(config, this.templateEngine);
         break;
       case ServiceType.ORCAROUTERLITE:
         service = new OrcaRouterLiteService(config, this.templateEngine);
@@ -602,6 +621,7 @@ export class ServiceFactory {
       ServiceType.FLOCIGCP,
       ServiceType.LITELLM,
       ServiceType.ANYTHINGLLM,
+      ServiceType.COPILOTKIT,
       ServiceType.GOOSE,
       ServiceType.HERMES,
       ServiceType.OPENCLAW,
@@ -620,6 +640,7 @@ export class ServiceFactory {
       ServiceType.SHLINK,
       ServiceType.PSITRANSFER,
       ServiceType.FILESTASH,
+      ServiceType.SEAFILE,
       ServiceType.EXCALIDRAW,
       ServiceType.DRAWIO,
       ServiceType.WISEMAPPING,
@@ -628,17 +649,20 @@ export class ServiceFactory {
       ServiceType.GRIST,
       ServiceType.NOCODB,
       ServiceType.TWENTYCRM,
+      ServiceType.CHATWOOT,
       ServiceType.MEDUSAJS,
       ServiceType.MATTERMOST,
       ServiceType.CALDIY,
       ServiceType.ADGUARD,
       ServiceType.JASPERREPORTS,
+      ServiceType.DOCUSEAL,
       ServiceType.STIRLINGPDF,
       ServiceType.PANDOCWEB,
       ServiceType.CALIBREWEB,
       ServiceType.IMMICH,
       ServiceType.LIBRETRANSLATE,
       ServiceType.DIRECTUS,
+      ServiceType.INSFORGE,
       ServiceType.ORCAROUTERLITE,
       ServiceType.MAILSERVER,
       ServiceType.KURRIER,
@@ -750,6 +774,7 @@ export class ServiceFactory {
       'Shlink': ServiceType.SHLINK,
       'PsiTransfer': ServiceType.PSITRANSFER,
       'Filestash': ServiceType.FILESTASH,
+      'Seafile': ServiceType.SEAFILE,
       'Excalidraw': ServiceType.EXCALIDRAW,
       'Draw.io': ServiceType.DRAWIO,
       'WiseMapping': ServiceType.WISEMAPPING,
@@ -758,17 +783,20 @@ export class ServiceFactory {
       'Grist': ServiceType.GRIST,
       'NocoDB': ServiceType.NOCODB,
       'TwentyCRM': ServiceType.TWENTYCRM,
+      'Chatwoot': ServiceType.CHATWOOT,
       'MedusaJS': ServiceType.MEDUSAJS,
       'Mattermost': ServiceType.MATTERMOST,
       'Cal.diy': ServiceType.CALDIY,
       'AdGuard Home': ServiceType.ADGUARD,
       'JasperReports Server': ServiceType.JASPERREPORTS,
+      'DocuSeal': ServiceType.DOCUSEAL,
       'Stirling-PDF': ServiceType.STIRLINGPDF,
       'Pandoc-Web': ServiceType.PANDOCWEB,
       'Calibre Web': ServiceType.CALIBREWEB,
       'Immich': ServiceType.IMMICH,
       'LibreTranslate': ServiceType.LIBRETRANSLATE,
       'Directus': ServiceType.DIRECTUS,
+      'InsForge': ServiceType.INSFORGE,
       'OrcaRouter Lite': ServiceType.ORCAROUTERLITE,
       'Docker Mailserver': ServiceType.MAILSERVER,
       'Kurrier': ServiceType.KURRIER,
@@ -785,6 +813,7 @@ export class ServiceFactory {
       'Floci-GCP': ServiceType.FLOCIGCP,
       'LiteLLM': ServiceType.LITELLM,
       'AnythingLLM': ServiceType.ANYTHINGLLM,
+      'CopilotKit': ServiceType.COPILOTKIT,
       'Goose': ServiceType.GOOSE,
       'Hermes': ServiceType.HERMES,
       'OpenClaw': ServiceType.OPENCLAW,

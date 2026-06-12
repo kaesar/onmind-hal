@@ -596,6 +596,7 @@ export class HomelabApplication {
         'shlink',
         'psitransfer',
         'filestash',
+        'seafile',
         'excalidraw',
         'drawio',
         'kroki',
@@ -603,13 +604,16 @@ export class HomelabApplication {
         'grist',
         'nocodb',
         'directus',
+        'insforge',
         'twentycrm',
+        'chatwoot',
         'medusajs',
         'huly',
         'mattermost',
         'caldiy',
         'adguard',
         'jasperreports',
+        'docuseal',
         'stirlingpdf',
         'pandocweb',
         'calibreweb',
@@ -618,6 +622,7 @@ export class HomelabApplication {
         'orcarouterlite',
         'litellm',
         'anythingllm',
+        'copilotkit',
         'goose',
         'openclaw',
         'openhuman',
@@ -655,6 +660,7 @@ export class HomelabApplication {
           twentycrm: 'crm',
           medusajs: 'shop',
           caldiy: 'cal',
+          docuseal: 'sign', // DocuSeal uses 'sign' subdomain
           jasperreports: 'jasper',
           stirlingpdf: 'pdf',
           pandocweb: 'pandoc',
@@ -663,6 +669,7 @@ export class HomelabApplication {
           libretranslate: 'translate',
           orcarouterlite: 'orcarouter',
           plausible: 'analytics',
+          seafile: 'drive',
         };
 
         for (const service of this.installedServices) {

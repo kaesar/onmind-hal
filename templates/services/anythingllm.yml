@@ -12,7 +12,7 @@ commands:
           -d \
           --name anythingllm \
           --network {{NETWORK_NAME}} \
-          -p 3001:3001 \
+          -p 3007:3001 \
           --cap-add SYS_ADMIN \
           -e STORAGE_DIR=/app/server/storage \
           -e JWT_SECRET={{ADMIN_TOKEN}} \
@@ -32,7 +32,7 @@ variables:
   - NETWORK_NAME
   - ADMIN_TOKEN
 ports:
-  - "3001:3001"
+  - "3007:3001"
 volumes:
   - anythingllm_storage:/app/server/storage
 environment:

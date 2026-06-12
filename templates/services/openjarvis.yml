@@ -14,7 +14,7 @@ commands:
           -d \
           --name openjarvis-ollama \
           --network {{NETWORK_NAME}} \
-          -p 11434:11434 \
+          -p 11435:11434 \
           -v openjarvis_ollama_data:/root/.ollama \
           --restart=unless-stopped \
           ollama/ollama:latest
@@ -36,7 +36,7 @@ variables:
   - ADMIN_TOKEN
 ports:
   - "8010:8000"
-  - "11434:11434"
+  - "11435:11434"
 volumes:
   - openjarvis_data:/root/.openjarvis
   - openjarvis_ollama_data:/root/.ollama

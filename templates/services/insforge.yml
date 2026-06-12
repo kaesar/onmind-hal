@@ -1,0 +1,73 @@
+name: InsForge
+description: Open-source backend platform for AI coding agents with database, auth, storage, and AI gateway
+commands:
+  install:
+    - docker pull postgrest/postgrest:v12.2.12
+    - docker pull insforge/deno-runtime:latest
+    - docker pull insforge/insforge-oss:latest
+  setup:
+    - docker exec postgresql psql -U root -tc "SELECT 1 FROM pg_roles WHERE rolname='insforge'" | grep -q 1 || docker exec postgresql psql -U root -c "CREATE USER insforge WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -tc "SELECT 1 FROM pg_database WHERE datname='insforge'" | grep -q 1 || docker exec postgresql psql -U root -c "CREATE DATABASE insforge OWNER insforge;"
+    - docker exec postgresql psql -U root -d insforge -c "CREATE EXTENSION IF NOT EXISTS vector;" 2>/dev/null || true
+    - mkdir -p ~/{{DATA_PATH}}/insforge/storage
+    - mkdir -p ~/{{DATA_PATH}}/insforge/logs
+  run: |-
+    docker run \
+          -d \
+          --name insforge-postgrest \
+          --network {{NETWORK_NAME}} \
+          --restart unless-stopped \
+          -e PGRST_DB_URI=postgres://insforge:{{STORAGE_PASSWORD}}@postgresql:5432/insforge \
+          -e PGRST_DB_SCHEMA=public \
+          -e PGRST_DB_ANON_ROLE=anon \
+          -e PGRST_JWT_SECRET={{ADMIN_TOKEN}} \
+          -e PGRST_DB_CHANNEL_ENABLED=true \
+          postgrest/postgrest:v12.2.12 && \
+    docker run \
+          -d \
+          --name insforge-deno \
+          --network {{NETWORK_NAME}} \
+          --restart unless-stopped \
+          -e DENO_ENV=production \
+          -e PORT=7133 \
+          -e POSTGRES_HOST=postgresql \
+          -e POSTGRES_PORT=5432 \
+          -e POSTGRES_DB=insforge \
+          -e POSTGRES_USER=insforge \
+          -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
+          -e POSTGREST_BASE_URL=http://insforge-postgrest:3000 \
+          -e JWT_SECRET={{ADMIN_TOKEN}} \
+          insforge/deno-runtime:latest && \
+    docker run \
+          -d \
+          --name insforge \
+          --network {{NETWORK_NAME}} \
+          --restart unless-stopped \
+          -p 7130:7130 \
+          -e PORT=7130 \
+          -e API_BASE_URL=https://insforge.{{DOMAIN}} \
+          -e VITE_API_BASE_URL=https://insforge.{{DOMAIN}} \
+          -e DATABASE_URL=postgresql://insforge:{{STORAGE_PASSWORD}}@postgresql:5432/insforge \
+          -e POSTGREST_BASE_URL=http://insforge-postgrest:3000 \
+          -e DENO_RUNTIME_URL=http://insforge-deno:7133 \
+          -e JWT_SECRET={{ADMIN_TOKEN}} \
+          -e ENCRYPTION_KEY={{ADMIN_TOKEN}} \
+          -e ADMIN_EMAIL=admin@{{DOMAIN}} \
+          -e ADMIN_PASSWORD={{STORAGE_PASSWORD}} \
+          -v ~/{{DATA_PATH}}/insforge/storage:/insforge-storage \
+          -v ~/{{DATA_PATH}}/insforge/logs:/insforge-logs \
+          insforge/insforge-oss:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - STORAGE_PASSWORD
+  - ADMIN_TOKEN
+ports:
+  - "7130:7130"
+volumes:
+  - ~/{{DATA_PATH}}/insforge/storage:/insforge-storage
+  - ~/{{DATA_PATH}}/insforge/logs:/insforge-logs
+accessUrl: https://insforge.{{DOMAIN}}
+dependencies:
+  - PostgreSQL
+isCore: false

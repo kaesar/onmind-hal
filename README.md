@@ -1,18 +1,20 @@
 # OnMind-HAL (Home Apps Labs)
 
-**Home Apps Labs (OnMind-HAL)** is a comprehensive HomeLab setup or automation tool that deploys and manages a collection of open-source (or similiar) applications using Docker containers (chosen based on my expertise). It's designed for Virtual Machines, Cloud Instances, or Virtual Private Servers (VPS). Thinked for professionals or techie individuals, as well, IT area and infraestucture (CloudOps or DevSecOps), architecture and software development environments. That's the reason to include first serveral services for infra (IT), but also some services for HomeLab (around 90). 
+**Home Apps Labs (OnMind-HAL)** is a comprehensive HomeLab setup or automation tool that deploys and manages a collection of open-source (or similiar) applications using Docker containers (chosen based on my expertise). It's designed for Virtual Machines, Cloud Instances, or Virtual Private Servers (VPS).
+
+Thinked for professionals or techie individuals, as well, IT area and infraestucture (CloudOps or DevSecOps), architecture and software development environments. That's the reason to include first serveral services for infra (IT), but also some services for HomeLab (around 90+). 
 
 > This started from my Article about making your HomeLab: [here](https://onmind.net/devops/es/YourHomeLab)  
 > See other repos from my portfolio: [here](https://github.com/kaesar) 
 
 ## Features
 
-- **Automated Installation**: One-command setup for multiple services, around 90 (even try `ufw` and `dnsmasq`)
+- **Automated Installation**: One-command setup for multiple services, around 90+ (even try `ufw` and `dnsmasq`)
 - **Multi-Platform Support**: Ubuntu/Debian (even WSL2: Windows Subsystem for Linux), Arch Linux, Amazon Linux 2023, macOS, Windows (MINGW64/Git Bash - experimental)
 - **Container Runtime Flexibility**: Docker, Colima, or Podman support on macOS and Linux
 - **Template-Based Configuration**: YAML templates for easy technical service customization
 - **Comprehensive Logging**: Detailed execution tracking for debugging
-- **Podman as Alternative**: Docker-first but `podman` could be replace `docker` commands if you don't use Docker (experimental).
+- **Podman as Alternative**: Docker-first but `podman` could replace `docker` commands if you don't use Docker (experimental).
 
 > Many services couldn't fit in a machine, then consider it's limits.  
 > For all services you need a serious machine (like a server) at least with 32GB+.
@@ -97,7 +99,7 @@ bun run src/main.ts --list postgresql,redis
 
 | # | Service | Code | Description | Port |
 |---|---------|------|-------------|------|
-| 1 | **RustFS** | `rustfs` | High-performance S3-compatible distributed object storage | 9001 |
+| 1 | **RustFS** | `rustfs` | High-performance S3-compatible distributed object storage | 9004 |
 | 2 | **DuckDB** | `duckdb` | In-memory analytical database with web UI | 4214 |
 | 3 | **PostgreSQL** | `postgresql` | Relational database server | 5432 |
 | 4 | **Redis** | `redis` | In-memory data store and cache | 6379 |
@@ -110,7 +112,7 @@ bun run src/main.ts --list postgresql,redis
 | 11 | **RabbitMQ** | `rabbitmq` | Message broker for distributed systems | 15672 |
 | 12 | **Ollama** | `ollama` | Server for your LLM | 11434 |
 | 13 | **Open-WebUI** | `openwebui` | User-friendly web interface for Ollama | 3010 |
-| 14 | **Open-NotebookLM** | `opennotebooklm` | Open-source alternative to Google NotebookLM | 3090 |
+| 14 | **Open-NotebookLM** | `opennotebooklm` | Open-source alternative to Google NotebookLM | 3091 |
 | 15 | **n8n** | `n8n` | Workflow automation platform | 5678 |
 | 16 | **ToolJet** | `tooljet` | Open-source low-code platform for building internal tools | 3084 |
 | 17 | **Kestra** | `kestra` | Orchestration and scheduling platform | 8089 |
@@ -141,55 +143,60 @@ bun run src/main.ts --list postgresql,redis
 | 42 | **Fluent-Bit** | `fluentbit` | Lightweight log processor and forwarder | 2020 |
 | 43 | **Uptime-Kuma** | `uptimekuma` | Self-hosted uptime monitoring tool | 3003 |
 | 44 | **Dozzle** | `dozzle` | Lightweight Docker log viewer and monitor | 8097 |
-| 45 | **Registry** | `registry` | Private Docker container registry | 5000 |
+| 45 | **Registry** | `registry` | Private Docker container registry | 5002 |
 | 46 | **Nexus-Repository** | `nexus` | Universal artifact repository manager | 8098 |
 | 47 | **Infisical** | `infisical` | Open-source secret management platform | 8096 |
 | 48 | **Vault** | `vault` | Secrets and encryption management (HashiCorp) | 8200 |
 | 49 | **Consul** | `consul` | Service discovery and configuration (HashiCorp) | 8500 |
 | 50 | **Vaultwarden** | `vaultwarden` | Self-hosted Bitwarden-compatible password manager | 8222 |
 | 51 | **Linkwarden** | `linkwarden` | Self-hosted bookmark manager with tagging and archiving | 3101 |
-| 52 | **Shlink** | `shlink` | URL shortener with REST API and web interface | 8080 |
+| 52 | **Shlink** | `shlink` | URL shortener with REST API and web interface | 8012 |
 | 53 | **PsiTransfer** | `psitransfer` | File sharing platform (like WeTransfer) | 3005 |
 | 54 | **Filestash** | `filestash` | Web-based file manager for any storage backend | 8334 |
-| 55 | **Excalidraw** | `excalidraw` | Virtual whiteboard for sketching diagrams | 8082 |
-| 56 | **Draw.io** | `drawio` | Web-based diagramming application | 8084 |
-| 57 | **WiseMapping** | `wisemapping` | Web-based mind mapping tool (requires PostgreSQL) | 8095 |
-| 58 | **Kroki** | `kroki` | API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.) | 8086 |
-| 59 | **Outline** | `outline` | Team knowledge base and wiki | 3030 |
-| 60 | **Grist** | `grist` | Modern spreadsheet with relational database capabilities | 8484 |
-| 61 | **NocoDB** | `nocodb` | Open-source Airtable alternative - Smart spreadsheet | 8083 |
-| 62 | **Directus** | `directus` | Open-source headless CMS and backend-as-a-service | 8055 |
-| 63 | **TwentyCRM** | `twentycrm` | Modern open-source CRM platform | 3021 |
-| 64 | **MedusaJS** | `medusajs` | Headless e-commerce platform (Shopify alternative) | 9003 |
-| 65 | **Huly** | `huly` | All-in-one project management platform (like Jira + Notion + Slack) | 8087 |
-| 66 | **Mattermost** | `mattermost` | Open-source team collaboration and messaging platform (like Slack) | 8065 |
-| 67 | **Cal.diy** | `caldiy` | Open-source scheduling platform (MIT licensed, community edition) | 3040 |
-| 68 | **AdGuard-Home** | `adguard` | Network-wide ad and tracker blocking DNS server | 3000 |
-| 69 | **JasperReports** | `jasperreports` | Business intelligence and reporting platform | 8081 |
-| 70 | **Stirling-PDF** | `stirlingpdf` | Powerful locally hosted PDF manipulation tool | 8090 |
-| 71 | **Pandoc-Web** | `pandocweb` | Web interface for Pandoc document converter | 8094 |
-| 72 | **Calibre-Web** | `calibreweb` | Web-based ebook library management and reader | 8083 |
-| 73 | **Immich** | `immich` | Self-hosted photo and video backup and management platform | 2283 |
-| 74 | **LibreTranslate** | `libretranslate` | Free and open source machine translation API | 5001 |
-| 75 | **OrcaRouter-Lite** | `orcarouterlite` | Lightweight LLM router with multi-provider support | 8000 |
-| 76 | **LiteLLM** | `litellm` | LLM proxy with unified API for 100+ LLMs | 4000 |
-| 77 | **AnythingLLM** | `anythingllm` | Multi-user AI platform with RAG, Agents, and local LLM support | 3001 |
-| 78 | **Goose** | `goose` | Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation) | 8300 |
-| 79 | **Hermes** | `hermes` | Self-improving AI agent with persistent memory (Nous Research) | 8642 |
-| 80 | **OpenClaw** | `openclaw` | AI agent gateway for Claude Code, OpenAI Codex and more | 18789 |
-| 81 | **OpenHuman** | `openhuman` | Open-source AI agent platform with Rust core | 7788 |
-| 82 | **OpenJarvis** | `openjarvis` | AI assistant platform with Ollama backend | 8010 |
-| 83 | **Firecrawl** | `firecrawl` | Open-source web scraping API with JavaScript rendering | 3002 |
-| 84 | **SearXNG** | `searxng` | Privacy-respecting metasearch engine | 8080 |
-| 85 | **Plausible** | `plausible` | Open-source web analytics platform (ClickHouse + PostgreSQL) | 3200 |
-| 86 | **Docker-Mailserver** | `mailserver` | Full-featured mail server (SMTP, IMAP, antispam, antivirus) | 25 |
-| 87 | **Kurrier** | `kurrier` | Self-hosted email marketing and newsletter platform | 3031 |
-| 88 | **Zrok** | `zrok` | Zero-trust tunneling platform (NGROK alternative) with OpenZiti | 18080, 8081, 8082 |
-| 89 | **Cloudflare-Tunnel** | `cloudflared` | Secure tunnel to expose services without opening ports ⚠️ | — |
-| 90 | **Wetty** | `wetty` | Web-based SSH terminal for secure host access | 3033 |
-| 91 | **RustDesk-Server** | `rustdesk` | Open-source remote desktop server | 21115 |
+| 55 | **Seafile** | `seafile` | Self-hosted file sync and share platform (Google Drive alternative) | 8016 |
+| 56 | **Excalidraw** | `excalidraw` | Virtual whiteboard for sketching diagrams | 8082 |
+| 57 | **Draw.io** | `drawio` | Web-based diagramming application | 8084 |
+| 58 | **WiseMapping** | `wisemapping` | Web-based mind mapping tool (requires PostgreSQL) | 8095 |
+| 59 | **Kroki** | `kroki` | API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.) | 8086 |
+| 60 | **Outline** | `outline` | Team knowledge base and wiki | 3030 |
+| 61 | **Grist** | `grist` | Modern spreadsheet with relational database capabilities | 8484 |
+| 62 | **NocoDB** | `nocodb` | Open-source Airtable alternative - Smart spreadsheet | 8018 |
+| 63 | **Directus** | `directus` | Open-source headless CMS and backend-as-a-service | 8055 |
+| 64 | **InsForge** | `insforge` | Open-source backend platform for AI coding agents with database, auth, storage, and AI gateway | 7130 |
+| 65 | **TwentyCRM** | `twentycrm` | Modern open-source CRM platform | 3021 |
+| 66 | **Chatwoot** | `chatwoot` | Open-source customer engagement platform (Intercom/Zendesk alternative) | 3092 |
+| 67 | **MedusaJS** | `medusajs` | Headless e-commerce platform (Shopify alternative) | 9003 |
+| 68 | **Huly** | `huly` | All-in-one project management platform (like Jira + Notion + Slack) | 8087 |
+| 69 | **Mattermost** | `mattermost` | Open-source team collaboration and messaging platform (like Slack) | 8065 |
+| 70 | **Cal.diy** | `caldiy` | Open-source scheduling platform (MIT licensed, community edition) | 3040 |
+| 71 | **AdGuard-Home** | `adguard` | Network-wide ad and tracker blocking DNS server | 3004 |
+| 72 | **JasperReports** | `jasperreports` | Business intelligence and reporting platform | 8014 |
+| 73 | **DocuSeal** | `docuseal` | Open-source document signing and PDF form filling platform | 3009 |
+| 74 | **Stirling-PDF** | `stirlingpdf` | Powerful locally hosted PDF manipulation tool | 8090 |
+| 75 | **Pandoc-Web** | `pandocweb` | Web interface for Pandoc document converter | 8094 |
+| 76 | **Calibre-Web** | `calibreweb` | Web-based ebook library management and reader | 8083 |
+| 77 | **Immich** | `immich` | Self-hosted photo and video backup and management platform | 2283 |
+| 78 | **LibreTranslate** | `libretranslate` | Free and open source machine translation API | 5001 |
+| 79 | **OrcaRouter-Lite** | `orcarouterlite` | Lightweight LLM router with multi-provider support | 8000 |
+| 80 | **LiteLLM** | `litellm` | LLM proxy with unified API for 100+ LLMs | 4000 |
+| 81 | **AnythingLLM** | `anythingllm` | Multi-user AI platform with RAG, Agents, and local LLM support | 3007 |
+| 82 | **CopilotKit** | `copilotkit` | Open-source AI agent runtime with multi-provider support | 4201 |
+| 83 | **Goose** | `goose` | Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation) | 8300 |
+| 84 | **Hermes** | `hermes` | Self-improving AI agent with persistent memory (Nous Research) | 8642 |
+| 85 | **OpenClaw** | `openclaw` | AI agent gateway for Claude Code, OpenAI Codex and more | 18789 |
+| 86 | **OpenHuman** | `openhuman` | Open-source AI agent platform with Rust core | 7788 |
+| 87 | **OpenJarvis** | `openjarvis` | AI assistant platform with Ollama backend | 8010 |
+| 88 | **Firecrawl** | `firecrawl` | Open-source web scraping API with JavaScript rendering | 3008 |
+| 89 | **SearXNG** | `searxng` | Privacy-respecting metasearch engine | 8011 |
+| 90 | **Plausible** | `plausible` | Open-source web analytics platform (ClickHouse + PostgreSQL) | 3200 |
+| 91 | **Docker-Mailserver** | `mailserver` | Full-featured mail server (SMTP, IMAP, antispam, antivirus) | 25 |
+| 92 | **Kurrier** | `kurrier` | Self-hosted email marketing and newsletter platform | 3031 |
+| 93 | **Zrok** | `zrok` | Zero-trust tunneling platform (NGROK alternative) with OpenZiti | 18080, 8015, 8017 |
+| 94 | **Cloudflare-Tunnel** | `cloudflared` | Secure tunnel to expose services without opening ports | — |
+| 95 | **Wetty** | `wetty` | Web-based SSH terminal for secure host access | 3033 |
+| 96 | **RustDesk-Server** | `rustdesk` | Open-source remote desktop server | 21115 |
 
-> *Perhaps, I will consider includes in a future*: Seafile, Jitsi, DocuSeal, PeerTube, Mastodon, Plane, FRP, Backstage, Ignite, Locust, Beszel, BackVault, Koffan
+> *Perhaps, I will consider includes in a future*: Jitsi, PeerTube, Mastodon, Plane, FRP, Backstage, Ignite, Locust, BackVault, Koffan
 
 ## Project Structure
 

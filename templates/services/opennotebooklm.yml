@@ -13,7 +13,7 @@ commands:
           -d \
           --name surrealdb \
           --network {{NETWORK_NAME}} \
-          -p 8000:8000 \
+          -p 8001:8000 \
           -e SURREAL_EXPERIMENTAL_GRAPHQL=true \
           -v surrealdb_data:/mydata \
           --restart unless-stopped \
@@ -36,7 +36,7 @@ variables:
   - DOMAIN
   - SECRET_KEY
 ports:
-  - "8000:8000"
+  - "8001:8000"
   - "3091:8502"
 volumes:
   - surrealdb_data

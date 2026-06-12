@@ -1,0 +1,18 @@
+name: DocuSeal Document Signing Platform
+description: Open-source document signing and PDF form filling platform
+commands:
+  install:
+    - docker pull docuseal/docuseal:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/docuseal/data
+  run: |-
+    docker run \
+          -d \
+          --name docuseal \
+          --network {{NETWORK_NAME}} \
+          -p 3009:3000 \
+          -v ~/{{DATA_PATH}}/docuseal/data:/data \
+          docuseal/docuseal:latest
+variables:
+  - NETWORK_NAME
+dependencies: []
