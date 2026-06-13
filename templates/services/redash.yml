@@ -4,9 +4,8 @@ commands:
   install:
     - docker pull redash/redash:latest
   setup:
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='redash'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER redash WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -c "ALTER USER redash WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='redash'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE redash OWNER redash;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='redash') THEN CREATE USER redash WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER redash WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE redash OWNER redash" 2>/dev/null || true
     - mkdir -p ~/{{DATA_PATH}}/redash
   run: |-
     docker rm -f redash-server 2>/dev/null; docker run \

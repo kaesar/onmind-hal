@@ -6,9 +6,8 @@ commands:
   setup:
     - mkdir -p ~/{{CONFIG_PATH}}/listmonk
     - docker volume create listmonk_data
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='listmonk'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER listmonk WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -c "ALTER USER listmonk WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='listmonk'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE listmonk OWNER listmonk;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='listmonk') THEN CREATE USER listmonk WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER listmonk WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE listmonk OWNER listmonk" 2>/dev/null || true
   run: |-
     docker rm -f listmonk 2>/dev/null; docker run \
           -d \

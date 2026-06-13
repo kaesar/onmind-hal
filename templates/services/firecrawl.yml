@@ -6,9 +6,8 @@ commands:
     - docker pull ghcr.io/firecrawl/playwright-service:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/firecrawl/data
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='firecrawl'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER firecrawl WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -c "ALTER USER firecrawl WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='firecrawl'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE firecrawl OWNER firecrawl;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='firecrawl') THEN CREATE USER firecrawl WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER firecrawl WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE firecrawl OWNER firecrawl" 2>/dev/null || true
     - docker exec rabbitmq rabbitmqctl add_user firecrawl {{STORAGE_PASSWORD}} 2>/dev/null || true
     - docker exec rabbitmq rabbitmqctl set_permissions -p / firecrawl ".*" ".*" ".*" 2>/dev/null || true
   run: |-

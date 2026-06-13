@@ -6,9 +6,8 @@ commands:
     - docker pull makeplane/plane-backend:latest
     - docker pull makeplane/plane-worker:latest
   setup:
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='plane'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER plane WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -c "ALTER USER plane WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='plane'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE plane OWNER plane;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='plane') THEN CREATE USER plane WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER plane WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE plane OWNER plane" 2>/dev/null || true
     - docker volume create plane_uploads
   run: |-
     docker run \

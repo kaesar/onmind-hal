@@ -13,9 +13,8 @@ commands:
     - docker pull hardcoreeng/hulykvs:v0.7.423
     - docker pull nginx:1.21.3
   setup:
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='huly'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER huly WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -c "ALTER USER huly WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='huly'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE huly OWNER huly;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='huly') THEN CREATE USER huly WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER huly WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE huly OWNER huly" 2>/dev/null || true
     - mkdir -p ~/{{DATA_PATH}}/huly
     - |
       cat > ~/{{DATA_PATH}}/huly/nginx.conf << 'NGINX'

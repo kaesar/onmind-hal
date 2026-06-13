@@ -2,7 +2,7 @@ name: Backstage
 description: Developer portal platform by Spotify
 commands:
   install:
-    - docker pull spotify/backstage:latest
+    - docker pull roadiehq/community-backstage-image
   setup:
     - mkdir -p ~/{{CONFIG_PATH}}/backstage
     - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='backstage') THEN CREATE USER backstage WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER backstage WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
@@ -20,9 +20,9 @@ commands:
           -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
           -e POSTGRES_DB=backstage \
           --restart unless-stopped \
-          spotify/backstage:latest
+          roadiehq/community-backstage-image
 variables:
   - NETWORK_NAME
   - STORAGE_PASSWORD
 dependencies:
-  - postgresql
+  - PostgreSQL

@@ -11,9 +11,8 @@ commands:
         sleep 5
       done
     - mkdir -p ~/{{DATA_PATH}}/chatwoot
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='chatwoot'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER chatwoot WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -c "ALTER USER chatwoot WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='chatwoot'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE chatwoot OWNER chatwoot;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='chatwoot') THEN CREATE USER chatwoot WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER chatwoot WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE chatwoot OWNER chatwoot" 2>/dev/null || true
   run: |-
     docker rm -f chatwoot 2>/dev/null; docker run \
           -d \

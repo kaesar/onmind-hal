@@ -4,9 +4,8 @@ commands:
   install:
     - docker pull ghcr.io/linkwarden/linkwarden:latest
   setup:
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='linkwarden'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER linkwarden WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -c "ALTER USER linkwarden WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='linkwarden'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE linkwarden OWNER linkwarden;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='linkwarden') THEN CREATE USER linkwarden WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER linkwarden WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE linkwarden OWNER linkwarden" 2>/dev/null || true
     - docker volume create linkwarden_data
   run: |-
     docker rm -f linkwarden 2>/dev/null; docker run \

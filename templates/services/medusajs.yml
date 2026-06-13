@@ -5,9 +5,8 @@ commands:
     - docker pull node:20-alpine
   setup:
     - mkdir -p ~/{{DATA_PATH}}/medusajs
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='medusajs'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER medusajs WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -c "ALTER USER medusajs WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='medusa'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE medusa OWNER medusajs;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='medusajs') THEN CREATE USER medusajs WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER medusajs WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE medusa OWNER medusajs" 2>/dev/null || true
     - git clone --depth=1 https://github.com/medusajs/medusa-starter-default ~/{{DATA_PATH}}/medusajs-starter 2>/dev/null || true
     - cp templates/dockerfiles/medusajs.dockerfile ~/{{DATA_PATH}}/medusajs-starter/Dockerfile
     - cd ~/{{DATA_PATH}}/medusajs-starter && docker build -t medusajs:latest .

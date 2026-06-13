@@ -4,9 +4,8 @@ commands:
   install:
     - docker pull semaphoreui/semaphore:latest
   setup:
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='semaphore'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER semaphore WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -c "ALTER USER semaphore WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='semaphore'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE semaphore OWNER semaphore;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='semaphore') THEN CREATE USER semaphore WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER semaphore WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE semaphore OWNER semaphore" 2>/dev/null || true
     - docker volume create semaphore_data
   run: |-
     docker rm -f semaphore 2>/dev/null; docker run \

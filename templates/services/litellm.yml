@@ -8,6 +8,8 @@ commands:
     - mkdir -p ~/{{CONFIG_PATH}}/litellm
     - docker volume create litellm_data
     - docker volume create litellm_postgres_data
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='llmproxy') THEN CREATE USER llmproxy WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER llmproxy WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE litellm OWNER llmproxy" 2>/dev/null || true
   run: |-
     docker run \
           -d \
