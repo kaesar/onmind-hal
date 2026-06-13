@@ -377,8 +377,10 @@ docker network rm homelab-network 2>/dev/null || true
 rm -rf ~/ws/data
 
 # Remove Docker volumes (optional)
-docker volume ls --filter "name=postgres_data|redis_data|rabbitmq_data|grafana_data" --format "{{.Name}}" | xargs -r docker volume rm
+docker volume ls --filter "name=_data" --format "{{.Name}}" | xargs -r docker volume rm
 ```
+
+> Removes volumes and data directories are actions with focus just in cleanup, because you lose data
 
 ## Platform-Specific Notes
 

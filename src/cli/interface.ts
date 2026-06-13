@@ -97,9 +97,13 @@ export class CLIInterface {
   private async runNonInteractive(): Promise<HomelabConfig> {
     console.log('⚙️  Non-interactive mode: using provided arguments and defaults.\n');
 
-    // If no --list provided, try to restore from previous state
-    let services = this.args.list;
-    if (!services) {
+    // --nolist takes priority over --list
+    let services = this.args.nolist ? undefined : this.args.list;
+    let excludeMode = !!this.args.nolist;
+
+    if (excludeMode) {
+      console.log(`   📋 Excluding ${this.args.nolist!.length} services, installing all others`);
+    } else if (!services) {
       const prevState = await StateManager.load();
       if (prevState) {
         const coreTypes = [ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.PORTAINER];
@@ -114,6 +118,7 @@ export class CLIInterface {
       this.args.domain,
       services,
       this.args.password,
+      excludeMode ? this.args.nolist : undefined,
     );
 
     await this.displayConfigurationSummary();

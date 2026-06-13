@@ -746,11 +746,16 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
   };
 }
 
+const ALL_OPTIONAL_SERVICES: ServiceType[] = Object.values(ServiceType).filter(
+  s => ![ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.PORTAINER].includes(s),
+);
+
 export async function collectUserConfigurationFromArgs(
   ip: string | undefined,
   domain?: string,
   serviceNames?: string[],
   password?: string,
+  excludedServices?: string[],
 ): Promise<Partial<HomelabConfig>> {
   let managementUI: ServiceType;
   try {
@@ -775,7 +780,11 @@ export async function collectUserConfigurationFromArgs(
   }
 
   let optionalServices: ServiceType[];
-  if (serviceNames && serviceNames.length > 0) {
+  if (excludedServices) {
+    const excludeSet = new Set(excludedServices);
+    optionalServices = ALL_OPTIONAL_SERVICES.filter(s => !excludeSet.has(s));
+    console.log(`   ✓ Installing ${optionalServices.length} optional services (excluded ${excludedServices.length})`);
+  } else if (serviceNames && serviceNames.length > 0) {
     optionalServices = serviceNames
       .map(name => Object.values(ServiceType).find(v => v === name))
       .filter((s): s is ServiceType => s !== undefined);

@@ -8,9 +8,12 @@ Usage: hal [options]
 Options:
   --ip <address>       Server IP address (auto-detected if omitted)
   --domain <domain>    Domain name (default: homelab.lan)
-  --list <services>    Comma-separated list of optional services
+  --list <services>    Comma-separated list of optional services to include
+  --nolist <services>  Comma-separated list of optional services to exclude (all others included)
   --password <base64>  Database password (base64-encoded)
   --help               Show this help message
+
+Note: --list and --nolist are mutually exclusive. --nolist takes priority.
 `;
 
 export { USAGE };
@@ -19,6 +22,7 @@ export interface CliArgs {
   ip?: string;
   domain?: string;
   list?: string[];
+  nolist?: string[];
   password?: string;
   scriptMode?: boolean;
   help?: boolean;
@@ -67,7 +71,15 @@ export function parseArgs(argv: string[]): CliArgs {
   }
 
   const list = flagValue(raw, '--list');
-  if (list) {
+  const nolist = flagValue(raw, '--nolist');
+
+  if (nolist) {
+    result.nolist = nolist
+      .split(',')
+      .map(s => sanitizeUserInput(s.trim().toLowerCase()))
+      .filter(s => s.length > 0 && Object.values(ServiceType).includes(s as ServiceType));
+    result.list = undefined;
+  } else if (list) {
     result.list = list
       .split(',')
       .map(s => sanitizeUserInput(s.trim().toLowerCase()))

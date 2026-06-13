@@ -6,20 +6,17 @@ commands:
   setup:
     - |
       for i in $(seq 1 12); do
-        docker exec postgresql pg_isready -U postgres >/dev/null 2>&1 && break
+        docker exec postgresql pg_isready -U root >/dev/null 2>&1 && break
         echo "  Waiting for PostgreSQL to be ready... ($i/12)"
         sleep 5
       done
-    - docker exec postgresql psql -U postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='infisical'" | grep -q 1 || docker exec postgresql psql -U postgres -c "CREATE USER infisical WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U postgres -c "ALTER USER infisical WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname='infisical'" | grep -q 1 || docker exec postgresql psql -U postgres -c "CREATE DATABASE infisical OWNER infisical;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='infisical') THEN CREATE USER infisical WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER infisical WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE infisical OWNER infisical" 2>/dev/null || true
     - mkdir -p ~/{{DATA_PATH}}/infisical/data
     - docker volume rm infisical_data 2>/dev/null || true
     - docker volume create infisical_data
   run: |-
-    docker rm -f infisical 2>/dev/null; docker run \
-          -d \
-          --name infisical \
+    docker run -d --name infisical \
           --network {{NETWORK_NAME}} \
           -p 8096:8080 \
           -e ENCRYPTION_KEY={{ADMIN_TOKEN}} \

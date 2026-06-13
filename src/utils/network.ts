@@ -87,6 +87,30 @@ export class NetworkUtils {
       }
     } catch {}
 
+    // Method 4 (macOS): route get default + ifconfig
+    try {
+      const routeResult = await $`route get default`.quiet();
+      const ifaceMatch = routeResult.stdout.toString().match(/interface:\s+(\S+)/);
+      if (ifaceMatch) {
+        const iface = ifaceMatch[1];
+        const ifconfigResult = await $`ifconfig ${iface}`.quiet();
+        const ipMatch = ifconfigResult.stdout.toString().match(/inet\s+(\S+)/);
+        if (ipMatch) ips.push(ipMatch[1]);
+      }
+    } catch {}
+
+    // Method 5 (macOS): ifconfig all interfaces
+    try {
+      const result = await $`ifconfig`.quiet();
+      const matches = result.stdout.toString().matchAll(/inet\s+(\S+)/g);
+      for (const m of matches) {
+        const ip = m[1].split(' ')[0];
+        if (ip && !ip.startsWith('127.') && !ips.includes(ip)) {
+          ips.push(ip);
+        }
+      }
+    } catch {}
+
     return ips;
   }
 }
