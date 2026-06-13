@@ -10,7 +10,7 @@ commands:
     - cp templates/dockerfiles/copilotkit.dockerfile ~/{{DATA_PATH}}/copilotkit/Dockerfile
     - cd ~/{{DATA_PATH}}/copilotkit && docker build -t copilotkit:latest .
   run: |-
-    docker run \
+    docker rm -f copilotkit 2>/dev/null; docker run \
           -d \
           --name copilotkit \
           --network {{NETWORK_NAME}} \

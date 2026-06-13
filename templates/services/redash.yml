@@ -4,11 +4,12 @@ commands:
   install:
     - docker pull redash/redash:latest
   setup:
-    - docker exec postgresql psql -U root -c "CREATE USER redash WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
-    - docker exec postgresql psql -U root -c "CREATE DATABASE redash OWNER redash;" 2>/dev/null || true
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='redash'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER redash WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER redash WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='redash'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE redash OWNER redash;"
     - mkdir -p ~/{{DATA_PATH}}/redash
   run: |-
-    docker run \
+    docker rm -f redash-server 2>/dev/null; docker run \
           -d \
           --name redash-server \
           --network {{NETWORK_NAME}} \
@@ -23,9 +24,8 @@ commands:
           -e REDASH_WEB_WORKERS=4 \
           --restart=unless-stopped \
           redash/redash:latest \
-          server
-
-    docker run \
+          server && \
+    docker rm -f redash-scheduler 2>/dev/null; docker run \
           -d \
           --name redash-scheduler \
           --network {{NETWORK_NAME}} \
@@ -39,9 +39,8 @@ commands:
           -e WORKERS_COUNT=1 \
           --restart=unless-stopped \
           redash/redash:latest \
-          scheduler
-
-    docker run \
+          scheduler && \
+    docker rm -f redash-worker 2>/dev/null; docker run \
           -d \
           --name redash-worker \
           --network {{NETWORK_NAME}} \

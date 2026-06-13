@@ -10,10 +10,9 @@ commands:
           -d \
           --name liquibase \
           --network {{NETWORK_NAME}} \
-          -p 8091:8080 \
           -v liquibase_data:/liquibase/changelog \
           --restart=always liquibase/liquibase:latest \
-          --defaultsFile=/liquibase/liquibase.properties
+          update --defaultsFile=/liquibase/liquibase.properties
 variables:
   - NETWORK_NAME
 dependencies: []

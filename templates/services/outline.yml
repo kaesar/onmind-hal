@@ -4,8 +4,9 @@ commands:
   install:
     - docker pull outlinewiki/outline:latest
   setup:
-    - docker exec postgresql psql -U root -c "CREATE USER outline WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
-    - docker exec postgresql psql -U root -c "CREATE DATABASE outline OWNER outline;" 2>/dev/null || true
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='outline'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER outline WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER outline WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='outline'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE outline OWNER outline;"
     - mkdir -p ~/{{DATA_PATH}}/outline/data
   run: |-
     docker run \

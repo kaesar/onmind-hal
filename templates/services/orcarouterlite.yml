@@ -9,9 +9,9 @@ commands:
     - cp templates/dockerfiles/orcarouterlite.dockerfile ~/{{DATA_PATH}}/orcarouter/repo/Dockerfile
     - cd ~/{{DATA_PATH}}/orcarouter/repo && docker build -t orcarouter-lite:latest .
   run: |-
-    docker run \
+    docker rm -f orcarouterlite 2>/dev/null; docker run \
           -d \
-          --name orcarouter-lite \
+          --name orcarouterlite \
           --network {{NETWORK_NAME}} \
           -p 8000:8000 \
           -e DATABASE_URL=sqlite+aiosqlite:////data/orca.db \

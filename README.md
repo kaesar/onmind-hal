@@ -168,7 +168,7 @@ bun run src/main.ts --list postgresql,redis
 | 67 | **MedusaJS** | `medusajs` | Headless e-commerce platform (Shopify alternative) | 9003 |
 | 68 | **Huly** | `huly` | All-in-one project management platform (like Jira + Notion + Slack) | 8087 |
 | 69 | **Mattermost** | `mattermost` | Open-source team collaboration and messaging platform (like Slack) | 8065 |
-| 70 | **Cal.diy** | `caldiy` | Open-source scheduling platform (MIT licensed, community edition) | 3040 |
+| 70 | **Cal.com** | `calcom` | Open-source scheduling platform (Calendly alternative) | 3040 |
 | 71 | **AdGuard-Home** | `adguard` | Network-wide ad and tracker blocking DNS server | 3004 |
 | 72 | **JasperReports** | `jasperreports` | Business intelligence and reporting platform | 8014 |
 | 73 | **DocuSeal** | `docuseal` | Open-source document signing and PDF form filling platform | 3009 |
@@ -185,12 +185,11 @@ bun run src/main.ts --list postgresql,redis
 | 84 | **Hermes** | `hermes` | Self-improving AI agent with persistent memory (Nous Research) | 8642 |
 | 85 | **OpenClaw** | `openclaw` | AI agent gateway for Claude Code, OpenAI Codex and more | 18789 |
 | 86 | **OpenHuman** | `openhuman` | Open-source AI agent platform with Rust core | 7788 |
-| 87 | **OpenJarvis** | `openjarvis` | AI assistant platform with Ollama backend | 8010 |
 | 88 | **Firecrawl** | `firecrawl` | Open-source web scraping API with JavaScript rendering | 3008 |
 | 89 | **SearXNG** | `searxng` | Privacy-respecting metasearch engine | 8011 |
 | 90 | **Plausible** | `plausible` | Open-source web analytics platform (ClickHouse + PostgreSQL) | 3200 |
 | 91 | **Docker-Mailserver** | `mailserver` | Full-featured mail server (SMTP, IMAP, antispam, antivirus) | 25 |
-| 92 | **Kurrier** | `kurrier` | Self-hosted email marketing and newsletter platform | 3031 |
+| 92 | **Listmonk** | `listmonk` | Self-hosted newsletter and mailing list manager | 9000 |
 | 93 | **Zrok** | `zrok` | Zero-trust tunneling platform (NGROK alternative) with OpenZiti | 18080, 8015, 8017 |
 | 94 | **Cloudflare-Tunnel** | `cloudflared` | Secure tunnel to expose services without opening ports | — |
 | 95 | **Wetty** | `wetty` | Web-based SSH terminal for secure host access | 3033 |

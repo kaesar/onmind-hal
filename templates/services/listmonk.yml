@@ -1,0 +1,47 @@
+name: Listmonk
+description: Self-hosted newsletter and mailing list manager with PostgreSQL
+commands:
+  install:
+    - docker pull listmonk/listmonk:latest
+  setup:
+    - mkdir -p ~/{{CONFIG_PATH}}/listmonk
+    - docker volume create listmonk_data
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='listmonk'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER listmonk WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER listmonk WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='listmonk'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE listmonk OWNER listmonk;"
+  run: |-
+    docker rm -f listmonk 2>/dev/null; docker run \
+          -d \
+          --name listmonk \
+          --network {{NETWORK_NAME}} \
+          -p 9000:9000 \
+          -e LISTMONK_app__address=0.0.0.0:9000 \
+          -e LISTMONK_db__host=postgresql \
+          -e LISTMONK_db__port=5432 \
+          -e LISTMONK_db__user=listmonk \
+          -e LISTMONK_db__password={{STORAGE_PASSWORD}} \
+          -e LISTMONK_db__database=listmonk \
+          -e LISTMONK_db__ssl_mode=disable \
+          -v listmonk_data:/listmonk \
+          --restart unless-stopped \
+          listmonk/listmonk:latest \
+          sh -c "./listmonk --install --idempotent && ./listmonk serve"
+variables:
+  - NETWORK_NAME
+  - STORAGE_PASSWORD
+dependencies:
+  - PostgreSQL
+ports:
+  - "9000:9000"
+volumes:
+  - listmonk_data:/listmonk
+environment:
+  LISTMONK_app__address: "0.0.0.0:9000"
+  LISTMONK_db__host: "postgresql"
+  LISTMONK_db__port: "5432"
+  LISTMONK_db__user: "homelab"
+  LISTMONK_db__password: "{{STORAGE_PASSWORD}}"
+  LISTMONK_db__database: "listmonk"
+  LISTMONK_db__ssl_mode: "disable"
+accessUrl: https://listmonk.{{DOMAIN}}
+isCore: false

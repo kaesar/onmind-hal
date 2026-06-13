@@ -7,9 +7,9 @@ commands:
     - mkdir -p ~/{{DATA_PATH}}/openhuman/workspace
     - docker volume create openhuman_workspace
   run: |-
-    docker run \
+    docker rm -f openhuman 2>/dev/null; docker run \
           -d \
-          --name openhuman-core \
+          --name openhuman \
           --network {{NETWORK_NAME}} \
           -p 7788:7788 \
           -e OPENHUMAN_CORE_TOKEN={{ADMIN_TOKEN}} \

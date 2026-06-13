@@ -4,9 +4,11 @@ commands:
   install:
     - docker pull tooljet/tooljet-ce:latest
   setup:
-    - mkdir -p ~/{{DATA_PATH}}/tooljet/data
-    - docker exec postgresql psql -U root -c "CREATE USER tooljet WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
-    - docker exec postgresql psql -U root -c "CREATE DATABASE tooljet OWNER tooljet;" 2>/dev/null || true
+    - mkdir -p ~/{{DATA_PATH}}/tooljet
+    - touch ~/{{DATA_PATH}}/tooljet/.env
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='tooljet'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER tooljet WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER tooljet WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='tooljet'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE tooljet OWNER tooljet;"
   run: |-
     docker run \
       -d \
@@ -21,7 +23,7 @@ commands:
       -e NODE_ENV=production \
       -e ENABLE_TOOLJET_DB=true \
       -e TOOLJET_SERVER_URL=https://tooljet.{{DOMAIN}} \
-      -v ~/{{DATA_PATH}}/tooljet/data:/app/.env \
+      -v ~/{{DATA_PATH}}/tooljet/.env:/app/.env \
       --restart unless-stopped \
       tooljet/tooljet-ce:latest
 variables:

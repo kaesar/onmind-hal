@@ -5,6 +5,7 @@ commands:
     - docker pull shlinkio/shlink:stable
   setup:
     - mkdir -p ~/{{DATA_PATH}}/shlink/data
+    - chmod 777 ~/{{DATA_PATH}}/shlink/data
   run: |-
     docker run \
           -d \

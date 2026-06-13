@@ -475,9 +475,9 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Mattermost'
     },
     {
-      name: 'Cal.diy - Open-source scheduling platform (MIT licensed, community edition, requires PostgreSQL)',
-      value: ServiceType.CALDIY,
-      short: 'Cal.diy'
+      name: 'Cal.com - Open-source scheduling platform (Calendly alternative, requires PostgreSQL)',
+      value: ServiceType.CALCOM,
+      short: 'Cal.com'
     },
     {
       name: 'AdGuard Home - Network-wide ad and tracker blocking DNS server',
@@ -545,11 +545,6 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'OpenHuman'
     },
     {
-      name: 'OpenJarvis - AI assistant platform with Ollama backend',
-      value: ServiceType.OPENJARVIS,
-      short: 'OpenJarvis'
-    },
-    {
       name: 'Firecrawl - Open-source web scraping API with JavaScript rendering',
       value: ServiceType.FIRECRAWL,
       short: 'Firecrawl'
@@ -571,9 +566,9 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       checked: true
     },
     {
-      name: 'Kurrier - Self-hosted email marketing and newsletter platform',
-      value: ServiceType.KURRIER,
-      short: 'Kurrier'
+      name: 'Listmonk - Self-hosted newsletter and mailing list manager',
+      value: ServiceType.LISTMONK,
+      short: 'Listmonk'
     },
     {
       name: 'Zrok - Zero-trust tunneling platform (NGROK alternative) with OpenZiti',

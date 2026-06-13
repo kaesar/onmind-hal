@@ -9,9 +9,9 @@ commands:
     - docker volume create openclaw_config
     - docker volume create openclaw_workspace
   run: |-
-    docker run \
+    docker rm -f openclaw 2>/dev/null; docker run \
           -d \
-          --name openclaw-gateway \
+          --name openclaw \
           --network {{NETWORK_NAME}} \
           -p 18789:18789 \
           -p 18790:18790 \

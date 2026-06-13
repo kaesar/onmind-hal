@@ -15,7 +15,6 @@ import { MongoDBService } from './optional/mongodb.js';
 import { MariaDBService } from './optional/mariadb.js';
 import { ScyllaDBService } from './optional/scylladb.js';
 import { IgniteService } from './optional/ignite.js';
-import { OpenJarvisService } from './optional/openjarvis.js';
 import { KafkaService } from './optional/kafka.js';
 import { KafkauiService } from './optional/kafkaui.js';
 import { RabbitMQService } from './optional/rabbitmq.js';
@@ -71,7 +70,7 @@ import { TwentyCRMService } from './optional/twentycrm.js';
 import { ChatwootService } from './optional/chatwoot.js';
 import { MedusaJSService } from './optional/medusajs.js';
 import { MattermostService } from './optional/mattermost.js';
-import { CaldiyService } from './optional/caldiy.js';
+import { CalcomService } from './optional/calcom.js';
 import { AdGuardService } from './optional/adguard.js';
 import { JasperReportsService } from './optional/jasperreports.js';
 import { DocuSealService } from './optional/docuseal.js';
@@ -81,7 +80,7 @@ import { CalibreWebService } from './optional/calibreweb.js';
 import { ImmichService } from './optional/immich.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
 import { MailserverService } from './optional/mailserver.js';
-import { KurrierService } from './optional/kurrier.js';
+import { ListmonkService } from './optional/listmonk.js';
 import { CloudflaredService } from './optional/cloudflared.js';
 import { WettyService } from './optional/wetty.js';
 import { UptimeKumaService } from './optional/uptimekuma.js';
@@ -334,8 +333,8 @@ export class ServiceFactory {
       case ServiceType.MATTERMOST:
         service = new MattermostService(config, this.templateEngine);
         break;
-      case ServiceType.CALDIY:
-        service = new CaldiyService(config, this.templateEngine);
+      case ServiceType.CALCOM:
+        service = new CalcomService(config, this.templateEngine);
         break;
       case ServiceType.ADGUARD:
         service = new AdGuardService(config, this.templateEngine);
@@ -364,8 +363,8 @@ export class ServiceFactory {
       case ServiceType.MAILSERVER:
         service = new MailserverService(config, this.templateEngine);
         break;
-      case ServiceType.KURRIER:
-        service = new KurrierService(config, this.templateEngine);
+      case ServiceType.LISTMONK:
+        service = new ListmonkService(config, this.templateEngine);
         break;
       case ServiceType.CLOUDFLARED:
         service = new CloudflaredService(config, this.templateEngine);
@@ -414,9 +413,6 @@ export class ServiceFactory {
         break;
       case ServiceType.OPENHUMAN:
         service = new OpenHumanService(config, this.templateEngine);
-        break;
-      case ServiceType.OPENJARVIS:
-        service = new OpenJarvisService(config, this.templateEngine);
         break;
       case ServiceType.FIRECRAWL:
         service = new FirecrawlService(config, this.templateEngine);
@@ -626,7 +622,6 @@ export class ServiceFactory {
       ServiceType.HERMES,
       ServiceType.OPENCLAW,
       ServiceType.OPENHUMAN,
-      ServiceType.OPENJARVIS,
       ServiceType.FIRECRAWL,
       ServiceType.SEARXNG,
       ServiceType.PLAUSIBLE,
@@ -652,7 +647,7 @@ export class ServiceFactory {
       ServiceType.CHATWOOT,
       ServiceType.MEDUSAJS,
       ServiceType.MATTERMOST,
-      ServiceType.CALDIY,
+      ServiceType.CALCOM,
       ServiceType.ADGUARD,
       ServiceType.JASPERREPORTS,
       ServiceType.DOCUSEAL,
@@ -665,7 +660,7 @@ export class ServiceFactory {
       ServiceType.INSFORGE,
       ServiceType.ORCAROUTERLITE,
       ServiceType.MAILSERVER,
-      ServiceType.KURRIER,
+      ServiceType.LISTMONK,
       ServiceType.ZROK,
       ServiceType.CLOUDFLARED,
       ServiceType.WETTY,
@@ -786,7 +781,7 @@ export class ServiceFactory {
       'Chatwoot': ServiceType.CHATWOOT,
       'MedusaJS': ServiceType.MEDUSAJS,
       'Mattermost': ServiceType.MATTERMOST,
-      'Cal.diy': ServiceType.CALDIY,
+      'Cal.com': ServiceType.CALCOM,
       'AdGuard Home': ServiceType.ADGUARD,
       'JasperReports Server': ServiceType.JASPERREPORTS,
       'DocuSeal': ServiceType.DOCUSEAL,
@@ -799,7 +794,7 @@ export class ServiceFactory {
       'InsForge': ServiceType.INSFORGE,
       'OrcaRouter Lite': ServiceType.ORCAROUTERLITE,
       'Docker Mailserver': ServiceType.MAILSERVER,
-      'Kurrier': ServiceType.KURRIER,
+      'Listmonk': ServiceType.LISTMONK,
       'Zrok': ServiceType.ZROK,
       'Cloudflare Tunnel': ServiceType.CLOUDFLARED,
       'Wetty': ServiceType.WETTY,

@@ -184,12 +184,12 @@ export abstract class BaseService implements Service {
   protected async isContainerRunning(): Promise<boolean> {
     try {
       const runtime = await ContainerRuntimeUtils.detectRuntime();
-      const command = `${runtime} ps -a --format {{.Names}}`;
+      const command = `${runtime} ps --format {{.Names}}`;
       const result = await $`sh -c ${command}`.quiet();
       const output = result.stdout.toString().trim();
       if (!output) return false;
       const containers = output.split('\n');
-      return containers.includes(this.type);
+      return containers.some(name => name === this.type || name.startsWith(this.type + '-'));
     } catch {
       return false;
     }
@@ -206,6 +206,7 @@ export abstract class BaseService implements Service {
     // Check if container already exists
     if (await this.isContainerRunning()) {
       console.log(`⏭️  ${this.name} container already exists, skipping installation...`);
+      this.installationFailed = false;
       return;
     }
 

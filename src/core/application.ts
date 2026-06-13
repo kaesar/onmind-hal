@@ -506,9 +506,17 @@ export class HomelabApplication {
     const isMacOS = this.config.distribution === DistributionType.MACOS;
     const usingSelfSigned = isMacOS || isLocalDomain;
 
+    const isInstalled = (s: Service): boolean =>
+      'isInstalled' in s && typeof s.isInstalled === 'function'
+        ? s.isInstalled()
+        : true;
+
+    const successful = this.installedServices.filter(isInstalled);
+    const skipped = this.installedServices.filter((s) => !isInstalled(s));
+
     console.log('\n📋 Installed Services:');
 
-    for (const service of this.installedServices) {
+    for (const service of successful) {
       let accessUrl = service.getAccessUrl();
 
       // For self-signed certificates, show URLs with appropriate note
@@ -525,6 +533,13 @@ export class HomelabApplication {
       }
 
       console.log(`   ✓ ${service.name}: ${accessUrl}`);
+    }
+
+    if (skipped.length > 0) {
+      console.log('\n⚠️  Skipped / Failed:');
+      for (const service of skipped) {
+        console.log(`   ✗ ${service.name}`);
+      }
     }
 
     console.log('\n📚 Next Steps:');
@@ -610,7 +625,7 @@ export class HomelabApplication {
         'medusajs',
         'huly',
         'mattermost',
-        'caldiy',
+        'calcom',
         'adguard',
         'jasperreports',
         'docuseal',
@@ -626,11 +641,10 @@ export class HomelabApplication {
         'goose',
         'openclaw',
         'openhuman',
-        'openjarvis',
         'firecrawl',
         'searxng',
         'plausible',
-        'kurrier',
+        'listmonk',
         'zrok',
         'wetty',
         'rustdesk',
@@ -659,7 +673,7 @@ export class HomelabApplication {
           keystonejs: 'keystone',
           twentycrm: 'crm',
           medusajs: 'shop',
-          caldiy: 'cal',
+          calcom: 'cal',
           docuseal: 'sign', // DocuSeal uses 'sign' subdomain
           jasperreports: 'jasper',
           stirlingpdf: 'pdf',

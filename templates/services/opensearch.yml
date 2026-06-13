@@ -15,7 +15,7 @@ commands:
           -p 9600:9600 \
           -e "discovery.type=single-node" \
           -e "OPENSEARCH_INITIAL_ADMIN_PASSWORD={{STORAGE_PASSWORD}}" \
-          -e "DISABLE_SECURITY_PLUGIN=false" \
+          -e "DISABLE_SECURITY_PLUGIN=true" \
           -e "bootstrap.memory_lock=true" \
           -e "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" \
           --ulimit nofile=65536:65536 \

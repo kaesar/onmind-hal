@@ -5,6 +5,7 @@ commands:
     - docker pull ghcr.io/coroot/coroot:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/coroot/data
+    - chmod 777 ~/{{DATA_PATH}}/coroot/data
   run: |-
     docker run \
           -d \

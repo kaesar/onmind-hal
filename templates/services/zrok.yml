@@ -5,13 +5,11 @@ commands:
     - docker pull openziti/zrok2:latest
     - docker pull openziti/ziti-controller:latest
     - docker pull openziti/ziti-router:latest
-    - docker pull postgres:16-alpine
     - docker pull caddy:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/zrok/data
     - mkdir -p ~/{{DATA_PATH}}/zrok/caddy
     - mkdir -p ~/{{CONFIG_PATH}}/zrok
-    - docker volume create zrok_postgres_data
     - docker volume create zrok_controller_data
     - docker volume create zrok_frontend_data
     - docker volume create ziti_controller_data
@@ -19,22 +17,13 @@ commands:
   run: |-
     docker run \
           -d \
-          --name zrok-postgres \
-          --network {{NETWORK_NAME}} \
-          -e POSTGRES_DB=zrok2 \
-          -e POSTGRES_USER=zrok2 \
-          -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
-          -v zrok_postgres_data:/var/lib/postgresql/data \
-          --restart unless-stopped \
-          postgres:16-alpine || true
-
-    docker run \
-          -d \
           --name ziti-controller \
           --network {{NETWORK_NAME}} \
           -p 1280:1280 \
           -e ZITI_PWD={{ADMIN_TOKEN}} \
           -e ZITI_USER=admin \
+          -e ZITI_CTRL_ADVERTISED_ADDRESS=ziti-controller \
+          -e ZITI_BOOTSTRAP_CLUSTER=false \
           -v ziti_controller_data:/var/lib/ziti-controller \
           --restart unless-stopped \
           openziti/ziti-controller:latest || true
@@ -56,8 +45,7 @@ commands:
           --name zrok-controller \
           --network {{NETWORK_NAME}} \
           -p 18080:18080 \
-          -e ZROK2_STORE_TYPE=postgres \
-          -e ZROK2_DB_PASSWORD={{STORAGE_PASSWORD}} \
+          -e ZROK2_STORE_TYPE=sqlite3 \
           -e ZROK2_DNS_ZONE={{DOMAIN}} \
           -e ZROK2_ADMIN_TOKEN={{ADMIN_TOKEN}} \
           -e ZITI_API_ENDPOINT=https://ziti-controller:1280 \
@@ -67,7 +55,7 @@ commands:
           -e ZROK2_INSECURE_INTERFACE=0.0.0.0 \
           -v zrok_controller_data:/var/lib/zrok2-controller \
           --restart unless-stopped \
-          openziti/zrok2:latest controller start || true
+          openziti/zrok2:latest controller start
 
     docker run \
           -d \
@@ -80,7 +68,7 @@ commands:
           -e ZROK2_DNS_ZONE={{DOMAIN}} \
           -v zrok_frontend_data:/var/lib/zrok2-frontend \
           --restart unless-stopped \
-          openziti/zrok2:latest frontend start || true
+          openziti/zrok2:latest frontend start
 
     docker run \
           -d \
@@ -95,7 +83,6 @@ commands:
 variables:
   - NETWORK_NAME
   - DOMAIN
-  - STORAGE_PASSWORD
   - ADMIN_TOKEN
 ports:
   - "1280:1280"
@@ -105,7 +92,6 @@ ports:
   - "8015:80"
   - "8017:443"
 volumes:
-  - zrok_postgres_data:/var/lib/postgresql/data
   - zrok_controller_data:/var/lib/zrok2-controller
   - zrok_frontend_data:/var/lib/zrok2-frontend
   - ziti_controller_data:/var/lib/ziti-controller
@@ -113,16 +99,13 @@ volumes:
   - ~/{{CONFIG_PATH}}/zrok/Caddyfile:/etc/caddy/Caddyfile
   - ~/{{DATA_PATH}}/zrok/caddy:/data
 environment:
-  POSTGRES_DB: "zrok2"
-  POSTGRES_USER: "zrok2"
-  POSTGRES_PASSWORD: "{{STORAGE_PASSWORD}}"
   ZITI_PWD: "{{ADMIN_TOKEN}}"
   ZITI_USER: "admin"
   ZITI_ROUTER_NAME: "edge-router"
   ZITI_CTRL_ADVERTISED_HOST: "ziti-controller"
   ZITI_CTRL_ADVERTISED_PORT: "1280"
-  ZROK2_STORE_TYPE: "postgres"
-  ZROK2_DB_PASSWORD: "{{STORAGE_PASSWORD}}"
+  ZITI_CTRL_ADVERTISED_ADDRESS: "ziti-controller"
+  ZROK2_STORE_TYPE: "sqlite3"
   ZROK2_DNS_ZONE: "{{DOMAIN}}"
   ZROK2_ADMIN_TOKEN: "{{ADMIN_TOKEN}}"
   ZITI_API_ENDPOINT: "https://ziti-controller:1280"
@@ -133,6 +116,4 @@ environment:
   ZROK2_FRONTEND_TOKEN: "{{ADMIN_TOKEN}}"
   ZROK2_CTRL_ENDPOINT: "http://zrok-controller:18080"
 accessUrl: https://zrok.{{DOMAIN}}
-dependencies:
-  - PostgreSQL
 isCore: false

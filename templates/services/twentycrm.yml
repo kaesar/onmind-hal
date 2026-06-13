@@ -5,8 +5,9 @@ commands:
     - docker pull twentycrm/twenty:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/twentycrm
-    - docker exec postgresql psql -U root -c "CREATE USER twentycrm WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
-    - docker exec postgresql psql -U root -c "CREATE DATABASE twenty OWNER twentycrm;" 2>/dev/null || true
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='twentycrm'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER twentycrm WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER twentycrm WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='twenty'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE twenty OWNER twentycrm;"
   run: |-
     docker run \
           -d \

@@ -28,13 +28,13 @@ commands:
           -e SURREAL_PASSWORD=root \
           -e SURREAL_NAMESPACE=open_notebook \
           -e SURREAL_DATABASE=open_notebook \
-          -e OPEN_NOTEBOOK_ENCRYPTION_KEY={{SECRET_KEY}} \
+           -e OPEN_NOTEBOOK_ENCRYPTION_KEY={{ADMIN_TOKEN}} \
           -v ~/{{DATA_PATH}}/opennotebooklm:/app/data \
           opennotebooklm:latest
 variables:
   - NETWORK_NAME
   - DOMAIN
-  - SECRET_KEY
+  - ADMIN_TOKEN
 ports:
   - "8001:8000"
   - "3091:8502"

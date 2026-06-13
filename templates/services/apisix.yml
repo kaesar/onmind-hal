@@ -9,6 +9,20 @@ commands:
     - mkdir -p ~/{{CONFIG_PATH}}/apisix
     - docker volume create apisix_data
     - docker volume create etcd_data
+    - |-
+      cat > ~/{{CONFIG_PATH}}/apisix/config.yaml << 'APISIX_EOF'
+      apisix:
+        node_listen: 9080
+        enable_admin: true
+        admin_key: admin
+      deployment:
+        role: traditional
+        role_traditional:
+          config_provider: etcd
+        etcd:
+          host:
+            - http://etcd:2379
+      APISIX_EOF
   run: |-
     docker run \
           -d \
@@ -26,7 +40,7 @@ commands:
           -p 9080:9080 \
           -p 9443:9443 \
           -e APISIX_STAND_ALONE=false \
-          -e APISIX_DEPLOYMENT_ETCD_HOST=http://etcd:2379 \
+          -e APISIX_DEPLOYMENT_ETCD_HOST='["http://etcd:2379"]' \
           -v ~/{{CONFIG_PATH}}/apisix:/usr/local/apisix/conf \
           -v apisix_data:/usr/local/apisix/logs \
           --restart unless-stopped \

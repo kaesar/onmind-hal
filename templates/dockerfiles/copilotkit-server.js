@@ -1,14 +1,13 @@
 import express from "express";
 import cors from "cors";
-import { CopilotRuntime } from "@copilotkit/runtime";
-import { copilotRuntimeNodeHttpEndpoint } from "@copilotkit/runtime/express";
+import { CopilotRuntime, copilotRuntimeNodeHttpEndpoint } from "@copilotkit/runtime";
 
 const app = express();
 app.use(cors());
 
 const runtime = new CopilotRuntime();
 
-app.use("/api/copilotkit", copilotRuntimeNodeHttpEndpoint({ runtime }));
+app.use("/api/copilotkit", copilotRuntimeNodeHttpEndpoint({ runtime, basePath: "/api/copilotkit" }));
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });

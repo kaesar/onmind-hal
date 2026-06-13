@@ -13,8 +13,9 @@ commands:
     - docker pull hardcoreeng/hulykvs:v0.7.423
     - docker pull nginx:1.21.3
   setup:
-    - docker exec postgresql psql -U root -c "CREATE USER huly WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
-    - docker exec postgresql psql -U root -c "CREATE DATABASE huly OWNER huly;" 2>/dev/null || true
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='huly'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER huly WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER huly WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='huly'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE huly OWNER huly;"
     - mkdir -p ~/{{DATA_PATH}}/huly
     - |
       cat > ~/{{DATA_PATH}}/huly/nginx.conf << 'NGINX'
@@ -95,10 +96,10 @@ commands:
       }
       NGINX
   run: |-
-    docker run -d --name huly-rekoni --network {{NETWORK_NAME}} \
+    docker rm -f huly-rekoni 2>/dev/null || true && docker run -d --name huly-rekoni --network {{NETWORK_NAME}} \
       -e SECRET={{ADMIN_TOKEN}} \
-      --restart unless-stopped hardcoreeng/rekoni-service:v0.7.423 && \
-    docker run -d --name huly-fulltext --network {{NETWORK_NAME}} \
+      --restart unless-stopped hardcoreeng/rekoni-service:v0.7.423 || true && \
+    docker rm -f huly-fulltext 2>/dev/null || true && docker run -d --name huly-fulltext --network {{NETWORK_NAME}} \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
       -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e FULLTEXT_DB_URL=http://opensearch:9200 \
@@ -108,16 +109,16 @@ commands:
       -e ACCOUNTS_URL=http://huly-account:3000 \
       -e STATS_URL=http://huly-stats:4900 \
       -e QUEUE_CONFIG=kafka:9092 \
-      --restart unless-stopped hardcoreeng/fulltext:v0.7.423 && \
-    docker run -d --name huly-stats --network {{NETWORK_NAME}} \
+      --restart unless-stopped hardcoreeng/fulltext:v0.7.423 || true && \
+    docker rm -f huly-stats 2>/dev/null || true && docker run -d --name huly-stats --network {{NETWORK_NAME}} \
       -e PORT=4900 \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
-      --restart unless-stopped hardcoreeng/stats:v0.7.423 && \
-    docker run -d --name huly-kvs --network {{NETWORK_NAME}} \
+      --restart unless-stopped hardcoreeng/stats:v0.7.423 || true && \
+    docker rm -f huly-kvs 2>/dev/null || true && docker run -d --name huly-kvs --network {{NETWORK_NAME}} \
       -e HULY_DB_CONNECTION=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e HULY_TOKEN_SECRET={{ADMIN_TOKEN}} \
-      --restart unless-stopped hardcoreeng/hulykvs:v0.7.423 && \
-    docker run -d --name huly-transactor --network {{NETWORK_NAME}} \
+      --restart unless-stopped hardcoreeng/hulykvs:v0.7.423 || true && \
+    docker rm -f huly-transactor 2>/dev/null || true && docker run -d --name huly-transactor --network {{NETWORK_NAME}} \
       -e SERVER_PORT=3333 \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
       -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
@@ -128,15 +129,15 @@ commands:
       -e STATS_URL=http://huly-stats:4900 \
       -e LAST_NAME_FIRST=true \
       -e QUEUE_CONFIG=kafka:9092 \
-      --restart unless-stopped hardcoreeng/transactor:v0.7.423 && \
-    docker run -d --name huly-collaborator --network {{NETWORK_NAME}} \
+      --restart unless-stopped hardcoreeng/transactor:v0.7.423 || true && \
+    docker rm -f huly-collaborator 2>/dev/null || true && docker run -d --name huly-collaborator --network {{NETWORK_NAME}} \
       -e COLLABORATOR_PORT=3078 \
       -e SECRET={{ADMIN_TOKEN}} \
       -e ACCOUNTS_URL=http://huly-account:3000 \
       -e STATS_URL=http://huly-stats:4900 \
       -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
-      --restart unless-stopped hardcoreeng/collaborator:v0.7.423 && \
-    docker run -d --name huly-workspace --network {{NETWORK_NAME}} \
+      --restart unless-stopped hardcoreeng/collaborator:v0.7.423 || true && \
+    docker rm -f huly-workspace 2>/dev/null || true && docker run -d --name huly-workspace --network {{NETWORK_NAME}} \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
       -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e TRANSACTOR_URL=ws://huly-transactor:3333 \
@@ -146,8 +147,8 @@ commands:
       -e STATS_URL=http://huly-stats:4900 \
       -e QUEUE_CONFIG=kafka:9092 \
       -e ACCOUNTS_DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
-      --restart unless-stopped hardcoreeng/workspace:v0.7.423 && \
-    docker run -d --name huly-account --network {{NETWORK_NAME}} \
+      --restart unless-stopped hardcoreeng/workspace:v0.7.423 || true && \
+    docker rm -f huly-account 2>/dev/null || true && docker run -d --name huly-account --network {{NETWORK_NAME}} \
       -e SERVER_PORT=3000 \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
       -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
@@ -159,8 +160,8 @@ commands:
       -e ACCOUNTS_URL=https://huly.{{DOMAIN}}/_accounts \
       -e ACCOUNT_PORT=3000 \
       -e QUEUE_CONFIG=kafka:9092 \
-      --restart unless-stopped hardcoreeng/account:v0.7.423 && \
-    docker run -d --name huly-front --network {{NETWORK_NAME}} \
+      --restart unless-stopped hardcoreeng/account:v0.7.423 || true && \
+    docker rm -f huly-front 2>/dev/null || true && docker run -d --name huly-front --network {{NETWORK_NAME}} \
       -e SERVER_PORT=8080 \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
       -e LOVE_ENDPOINT=https://huly.{{DOMAIN}}/_love \
@@ -179,11 +180,11 @@ commands:
       -e DEFAULT_LANGUAGE=en \
       -e LAST_NAME_FIRST=true \
       -e DISABLED_FEATURES=auto-translate,mailboxes \
-      --restart unless-stopped hardcoreeng/front:v0.7.423 && \
-    docker run -d --name huly --network {{NETWORK_NAME}} \
+      --restart unless-stopped hardcoreeng/front:v0.7.423 || true && \
+    docker rm -f huly 2>/dev/null || true && docker run -d --name huly --network {{NETWORK_NAME}} \
       -p 8087:80 \
       -v ~/{{DATA_PATH}}/huly/nginx.conf:/etc/nginx/conf.d/default.conf \
-      --restart unless-stopped nginx:1.21.3
+      --restart unless-stopped nginx:1.21.3 || true
 variables:
   - NETWORK_NAME
   - DOMAIN

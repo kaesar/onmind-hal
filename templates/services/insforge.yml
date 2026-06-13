@@ -6,13 +6,20 @@ commands:
     - docker pull insforge/deno-runtime:latest
     - docker pull insforge/insforge-oss:latest
   setup:
-    - docker exec postgresql psql -U root -tc "SELECT 1 FROM pg_roles WHERE rolname='insforge'" | grep -q 1 || docker exec postgresql psql -U root -c "CREATE USER insforge WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -tc "SELECT 1 FROM pg_database WHERE datname='insforge'" | grep -q 1 || docker exec postgresql psql -U root -c "CREATE DATABASE insforge OWNER insforge;"
+    - |
+      for i in $(seq 1 12); do
+        docker exec postgresql pg_isready -d postgres -U postgres >/dev/null 2>&1 && break
+        echo "  Waiting for PostgreSQL to be ready... ($i/12)"
+        sleep 5
+      done
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='insforge'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER insforge WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER insforge WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='insforge'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE insforge OWNER insforge;"
     - docker exec postgresql psql -U root -d insforge -c "CREATE EXTENSION IF NOT EXISTS vector;" 2>/dev/null || true
     - mkdir -p ~/{{DATA_PATH}}/insforge/storage
     - mkdir -p ~/{{DATA_PATH}}/insforge/logs
   run: |-
-    docker run \
+    docker rm -f insforge-postgrest 2>/dev/null || true && docker run \
           -d \
           --name insforge-postgrest \
           --network {{NETWORK_NAME}} \
@@ -22,8 +29,8 @@ commands:
           -e PGRST_DB_ANON_ROLE=anon \
           -e PGRST_JWT_SECRET={{ADMIN_TOKEN}} \
           -e PGRST_DB_CHANNEL_ENABLED=true \
-          postgrest/postgrest:v12.2.12 && \
-    docker run \
+          postgrest/postgrest:v12.2.12 || true && \
+    docker rm -f insforge-deno 2>/dev/null || true && docker run \
           -d \
           --name insforge-deno \
           --network {{NETWORK_NAME}} \
@@ -37,10 +44,8 @@ commands:
           -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
           -e POSTGREST_BASE_URL=http://insforge-postgrest:3000 \
           -e JWT_SECRET={{ADMIN_TOKEN}} \
-          insforge/deno-runtime:latest && \
-    docker run \
-          -d \
-          --name insforge \
+          insforge/deno-runtime:latest || true && \
+    docker rm -f insforge 2>/dev/null || true && docker run \
           --network {{NETWORK_NAME}} \
           --restart unless-stopped \
           -p 7130:7130 \
@@ -57,6 +62,9 @@ commands:
           -v ~/{{DATA_PATH}}/insforge/storage:/insforge-storage \
           -v ~/{{DATA_PATH}}/insforge/logs:/insforge-logs \
           insforge/insforge-oss:latest
+  postRun:
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='authenticated'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE ROLE authenticated NOINHERIT;"
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='anon'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE ROLE anon NOINHERIT;"
 variables:
   - NETWORK_NAME
   - DOMAIN

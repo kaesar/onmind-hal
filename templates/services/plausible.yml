@@ -6,22 +6,30 @@ commands:
     - docker pull clickhouse/clickhouse-server:latest-alpine
   setup:
     - mkdir -p ~/{{DATA_PATH}}/plausible/clickhouse
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='plausible_db'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE plausible_db OWNER postgres;"
   run: |-
-    docker run -d \
+    docker rm -f plausible_clickhouse 2>/dev/null; docker run -d \
       --name plausible_clickhouse \
       --network {{NETWORK_NAME}} \
       -v ~/{{DATA_PATH}}/plausible/clickhouse:/var/lib/clickhouse \
+      -e CLICKHOUSE_USER=plausible \
+      -e CLICKHOUSE_PASSWORD={{STORAGE_PASSWORD}} \
       --restart=unless-stopped \
-      clickhouse/clickhouse-server:latest-alpine && \
-    sleep 3 && \
-    docker run -d \
+      clickhouse/clickhouse-server:latest-alpine || true
+    for i in $(seq 1 12); do
+      docker exec plausible_clickhouse clickhouse-client --user plausible --password '{{STORAGE_PASSWORD}}' --query "SELECT 1" >/dev/null 2>&1 && break
+      echo "  Waiting for ClickHouse to be ready... ($i/12)"
+      sleep 5
+    done
+    docker exec plausible_clickhouse clickhouse-client --user plausible --password '{{STORAGE_PASSWORD}}' --query "CREATE DATABASE IF NOT EXISTS plausible"
+    docker rm -f plausible 2>/dev/null; docker run -d \
       --name plausible \
       --network {{NETWORK_NAME}} \
       -p 3200:8000 \
       -e BASE_URL=https://analytics.{{DOMAIN}} \
       -e SECRET_KEY_BASE={{ADMIN_TOKEN}}{{ADMIN_TOKEN}} \
       -e DATABASE_URL=postgres://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/plausible_db \
-      -e CLICKHOUSE_DATABASE_URL=http://plausible_clickhouse:8123/plausible \
+      -e CLICKHOUSE_DATABASE_URL=http://plausible:{{STORAGE_PASSWORD}}@plausible_clickhouse:8123/plausible \
       --restart=unless-stopped \
       plausible/analytics:latest
 variables:
@@ -38,7 +46,9 @@ environment:
   BASE_URL: "https://analytics.{{DOMAIN}}"
   SECRET_KEY_BASE: "{{ADMIN_TOKEN}}{{ADMIN_TOKEN}}"
   DATABASE_URL: "postgres://postgres:{{STORAGE_PASSWORD}}@postgresql:5432/plausible_db"
-  CLICKHOUSE_DATABASE_URL: "http://plausible_clickhouse:8123/plausible"
+  CLICKHOUSE_USER: "plausible"
+  CLICKHOUSE_PASSWORD: "{{STORAGE_PASSWORD}}"
+  CLICKHOUSE_DATABASE_URL: "http://plausible:{{STORAGE_PASSWORD}}@plausible_clickhouse:8123/plausible"
 accessUrl: https://analytics.{{DOMAIN}}
 dependencies: []
 isCore: false

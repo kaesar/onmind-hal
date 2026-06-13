@@ -7,12 +7,12 @@ commands:
     - mkdir -p ~/{{DATA_PATH}}/adguard/work
     - mkdir -p ~/{{DATA_PATH}}/adguard/conf
   run: |-
-    docker run \
+    docker rm -f adguard 2>/dev/null; docker run \
           -d \
-          --name adguardhome \
+          --name adguard \
           --network {{NETWORK_NAME}} \
           -p 3004:3000 \
-          -p 53:53/udp \
+          -p 5300:53/udp \
           -v ~/{{DATA_PATH}}/adguard/work:/opt/adguardhome/work \
           -v ~/{{DATA_PATH}}/adguard/conf:/opt/adguardhome/conf \
           --restart=unless-stopped \
@@ -22,7 +22,7 @@ variables:
   - DATA_PATH
 ports:
   - "3004:3000"
-  - "53:53/udp"
+  - "5300:53/udp"
 volumes:
   - ~/{{DATA_PATH}}/adguard/work:/opt/adguardhome/work
   - ~/{{DATA_PATH}}/adguard/conf:/opt/adguardhome/conf

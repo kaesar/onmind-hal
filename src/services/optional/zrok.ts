@@ -11,7 +11,7 @@ export class ZrokService extends BaseService {
       'Zrok',
       ServiceType.ZROK,
       false,
-      ['PostgreSQL'],
+      [],
       config,
       templateEngine
     );

@@ -368,7 +368,7 @@ If you need to remove all HAL services and start fresh:
 
 ```bash
 # Stop and remove all HAL containers
-docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|kafka|rabbitmq|ollama|openwebui|n8n|tooljet|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|onedev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|linkwarden|shlink|psitransfer|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|twentycrm|keystonejs|caldiy|huly|mattermost|jasperreports|stirlingpdf|libretranslate|orcarouter|litellm|anythingllm|opennotebooklm|hermes|goose|openclaw|openhuman|firecrawl|searxng|plausible|plausible_clickhouse|mailserver|zrok|ziti|cloudflared|wetty" --format "{{.Names}}" | xargs -r docker rm -f
+docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|kafka|rabbitmq|ollama|openwebui|n8n|tooljet|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|onedev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|linkwarden|shlink|psitransfer|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|twentycrm|keystonejs|calcom|huly|mattermost|jasperreports|stirlingpdf|libretranslate|orcarouter|litellm|anythingllm|opennotebooklm|hermes|goose|openclaw|openhuman|firecrawl|searxng|plausible|mailserver|zrok|ziti|cloudflared|wetty|rustdesk|seafile|medusa|insforge|copilot|surreal|docuseal|chat|adguard|listmonk" --format "{{.Names}}" | xargs -r docker rm -f
 
 # Remove HAL network
 docker network rm homelab-network 2>/dev/null || true
@@ -1066,7 +1066,7 @@ Las variables son proporcionadas por el usuario durante la configuración intera
 - **`CONFIG_PATH`**: Prompt `Enter config path` (default: `ws/init`)
 - **`IP`**: Detectado automáticamente o prompt `Enter server IP address`
 - **`ADMIN_TOKEN`**: Generado automáticamente (32 caracteres alfanuméricos)
-- **`SECRET_KEY`**, **`UTILS_SECRET`**: Generados automáticamente para servicio de Outline
+- **`SECRET_KEY`**, **`UTILS_SECRET`**: Hata ahora, exclusivos del servicio Outline — generados con `openssl rand -hex 32` en su propia sobrecarga (de `getTemplateContext()`).
 - **`MAIL_USER`**: Prompt `Enter mail user` para Docker Mailserver (ej. `admin@mini.lan`)
 - **`MAIL_PASSWORD`**: Prompt `Enter mail password` para Docker Mailserver
 

@@ -5,8 +5,9 @@ commands:
   install:
     - docker pull calcom/cal.com:latest
   setup:
-    - docker exec postgresql psql -U root -c "CREATE USER calcom WITH PASSWORD '{{STORAGE_PASSWORD}}';" 2>/dev/null || true
-    - docker exec postgresql psql -U root -c "CREATE DATABASE calcom OWNER calcom;" 2>/dev/null || true
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='calcom'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER calcom WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER calcom WITH PASSWORD '{{STORAGE_PASSWORD}}';"
+    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='calcom'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE calcom OWNER calcom;"
     - docker volume create calcom_data
   run: |
     docker run -d \
