@@ -8,13 +8,12 @@ commands:
   setup:
     - |
       for i in $(seq 1 12); do
-        docker exec postgresql pg_isready -d postgres -U postgres >/dev/null 2>&1 && break
+        docker exec postgresql pg_isready -U root >/dev/null 2>&1 && break
         echo "  Waiting for PostgreSQL to be ready... ($i/12)"
         sleep 5
       done
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='insforge'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE USER insforge WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -c "ALTER USER insforge WITH PASSWORD '{{STORAGE_PASSWORD}}';"
-    - docker exec postgresql psql -U root -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='insforge'" | grep -q 1 || docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE insforge OWNER insforge;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='insforge') THEN CREATE USER insforge WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER insforge WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE insforge OWNER insforge" 2>/dev/null || true
     - docker exec postgresql psql -U root -d insforge -c "CREATE EXTENSION IF NOT EXISTS vector;" 2>/dev/null || true
     - mkdir -p ~/{{DATA_PATH}}/insforge/storage
     - mkdir -p ~/{{DATA_PATH}}/insforge/logs
@@ -46,6 +45,8 @@ commands:
           -e JWT_SECRET={{ADMIN_TOKEN}} \
           insforge/deno-runtime:latest || true && \
     docker rm -f insforge 2>/dev/null || true && docker run \
+          -d \
+          --name insforge \
           --network {{NETWORK_NAME}} \
           --restart unless-stopped \
           -p 7130:7130 \

@@ -14,7 +14,6 @@ import { RedisService } from './optional/redis.js';
 import { MongoDBService } from './optional/mongodb.js';
 import { MariaDBService } from './optional/mariadb.js';
 import { ScyllaDBService } from './optional/scylladb.js';
-import { IgniteService } from './optional/ignite.js';
 import { KafkaService } from './optional/kafka.js';
 import { KafkauiService } from './optional/kafkaui.js';
 import { RabbitMQService } from './optional/rabbitmq.js';
@@ -29,19 +28,18 @@ import { KeycloakService } from './optional/keycloak.js';
 import { AutheliaService } from './optional/authelia.js';
 import { PocketIDService } from './optional/pocketid.js';
 import { ApisixService } from './optional/apisix.js';
-import { LocalStackService } from './optional/localstack.js';
 import { K3dService } from './optional/k3d.js';
 import { CodeServerService } from './optional/codeserver.js';
 import { JupyterLabService } from './optional/jupyterlab.js';
 import { OneDevService } from './optional/onedev.js';
 import { SemaphoreService } from './optional/semaphore.js';
+import { BackstageService } from './optional/backstage.js';
 import { LiquibaseService } from './optional/liquibase.js';
 import { SonarQubeService } from './optional/sonarqube.js';
 import { TrivyService } from './optional/trivy.js';
 import { KarateService } from './optional/karate.js';
 import { RapiDocService } from './optional/rapidoc.js';
 import { HoppscotchService } from './optional/hoppscotch.js';
-import { LocustService } from './optional/locust.js';
 import { K6Service } from './optional/k6.js';
 import { GrafanaService } from './optional/grafana.js';
 import { LokiService } from './optional/loki.js';
@@ -165,9 +163,6 @@ export class ServiceFactory {
       case ServiceType.SCYLLADB:
         service = new ScyllaDBService(config, this.templateEngine);
         break;
-      case ServiceType.IGNITE:
-        service = new IgniteService(config, this.templateEngine);
-        break;
       case ServiceType.KAFKA:
         service = new KafkaService(config, this.templateEngine);
         break;
@@ -210,9 +205,6 @@ export class ServiceFactory {
       case ServiceType.APISIX:
         service = new ApisixService(config, this.templateEngine);
         break;
-      case ServiceType.LOCALSTACK:
-        service = new LocalStackService(config, this.templateEngine);
-        break;
       case ServiceType.K3D:
         service = new K3dService(config, this.templateEngine);
         break;
@@ -227,6 +219,9 @@ export class ServiceFactory {
         break;
       case ServiceType.SEMAPHORE:
         service = new SemaphoreService(config, this.templateEngine);
+        break;
+      case ServiceType.BACKSTAGE:
+        service = new BackstageService(config, this.templateEngine);
         break;
       case ServiceType.LIQUIBASE:
         service = new LiquibaseService(config, this.templateEngine);
@@ -245,9 +240,6 @@ export class ServiceFactory {
         break;
       case ServiceType.HOPPSCOTCH:
         service = new HoppscotchService(config, this.templateEngine);
-        break;
-      case ServiceType.LOCUST:
-        service = new LocustService(config, this.templateEngine);
         break;
       case ServiceType.K6:
         service = new K6Service(config, this.templateEngine);
@@ -596,6 +588,7 @@ export class ServiceFactory {
       ServiceType.JUPYTERLAB,
       ServiceType.ONEDEV,
       ServiceType.SEMAPHORE,
+      ServiceType.BACKSTAGE,
       ServiceType.LIQUIBASE,
       ServiceType.SONARQUBE,
       ServiceType.TRIVY,
@@ -748,6 +741,7 @@ export class ServiceFactory {
       'JupyterLab': ServiceType.JUPYTERLAB,
       'OneDev': ServiceType.ONEDEV,
       'Semaphore UI': ServiceType.SEMAPHORE,
+      'Backstage': ServiceType.BACKSTAGE,
       'Liquibase': ServiceType.LIQUIBASE,
       'SonarQube': ServiceType.SONARQUBE,
       'Trivy': ServiceType.TRIVY,

@@ -116,6 +116,7 @@ describe('ServiceFactory', () => {
       ServiceType.JUPYTERLAB,
       ServiceType.ONEDEV,
       ServiceType.SEMAPHORE,
+      ServiceType.BACKSTAGE,
       ServiceType.LIQUIBASE,
       ServiceType.SONARQUBE,
       ServiceType.TRIVY,

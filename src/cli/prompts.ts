@@ -284,6 +284,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Semaphore'
     },
     {
+      name: 'Backstage - Developer portal platform (Developer Portal by Spotify)',
+      value: ServiceType.BACKSTAGE,
+      short: 'Backstage'
+    },
+    {
       name: 'Liquibase - Database schema change management',
       value: ServiceType.LIQUIBASE,
       short: 'Liquibase'

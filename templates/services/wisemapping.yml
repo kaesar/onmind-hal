@@ -5,6 +5,8 @@ commands:
     - docker pull wisemapping/wisemapping:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/wisemapping/data
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='wisemapping') THEN CREATE USER wisemapping WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER wisemapping WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE wisemapping OWNER wisemapping" 2>/dev/null || true
   run: |-
     docker run \
           -d \
@@ -12,7 +14,7 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 8095:8080 \
           -e WISE_DATABASE_URL=jdbc:postgresql://postgresql:5432/wisemapping \
-          -e WISE_DATABASE_USER=postgres \
+          -e WISE_DATABASE_USER=wisemapping \
           -e WISE_DATABASE_PASSWORD={{STORAGE_PASSWORD}} \
           -e WISE_DATABASE_SCHEMA=wisemapping \
           --restart unless-stopped \

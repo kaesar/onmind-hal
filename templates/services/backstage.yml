@@ -5,6 +5,8 @@ commands:
     - docker pull spotify/backstage:latest
   setup:
     - mkdir -p ~/{{CONFIG_PATH}}/backstage
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='backstage') THEN CREATE USER backstage WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER backstage WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE backstage OWNER backstage" 2>/dev/null || true
   run: |-
     docker run \
           -d \
@@ -14,8 +16,9 @@ commands:
           -v ~/{{CONFIG_PATH}}/backstage:/app/config \
           -e POSTGRES_HOST=postgresql \
           -e POSTGRES_PORT=5432 \
-          -e POSTGRES_USER=postgres \
+          -e POSTGRES_USER=backstage \
           -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
+          -e POSTGRES_DB=backstage \
           --restart unless-stopped \
           spotify/backstage:latest
 variables:

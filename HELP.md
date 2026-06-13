@@ -368,13 +368,13 @@ If you need to remove all HAL services and start fresh:
 
 ```bash
 # Stop and remove all HAL containers
-docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|kafka|rabbitmq|ollama|openwebui|n8n|tooljet|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|onedev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|linkwarden|shlink|psitransfer|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|twentycrm|keystonejs|calcom|huly|mattermost|jasperreports|stirlingpdf|libretranslate|orcarouter|litellm|anythingllm|opennotebooklm|hermes|goose|openclaw|openhuman|firecrawl|searxng|plausible|mailserver|zrok|ziti|cloudflared|wetty|rustdesk|seafile|medusa|insforge|copilot|surreal|docuseal|chat|adguard|listmonk" --format "{{.Names}}" | xargs -r docker rm -f
+docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|kafka|rabbitmq|ollama|web|n8n|tooljet|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|onedev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|linkwarden|shlink|psitransfer|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|keystonejs|insforge|medusa|twentycrm|calcom|huly|mattermost|jasperreports|stirlingpdf|libretranslate|orcarouter|litellm|anythingllm|opennotebooklm|hermes|goose|openclaw|openhuman|firecrawl|searxng|plausible|mailserver|zrok|ziti|cloudflared|wetty|rustdesk|seafile|copilot|surreal|docuseal|chat|adguard|listmonk" --format "{{.Names}}" | xargs -r docker rm -f
 
 # Remove HAL network
 docker network rm homelab-network 2>/dev/null || true
 
 # Remove data directories (optional)
-rm -rf ~/ws/data
+sudo rm -rf ~/ws/data
 
 # Remove Docker volumes (optional)
 docker volume ls --filter "name=_data" --format "{{.Name}}" | xargs -r docker volume rm

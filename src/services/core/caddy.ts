@@ -130,7 +130,6 @@ export class CaddyService extends BaseService {
       [ServiceType.MONGODB]: null,
       [ServiceType.MARIADB]: null,
       [ServiceType.SCYLLADB]: null,
-      [ServiceType.IGNITE]: null, // No web UI - JDBC/SQL only
       [ServiceType.RUSTFS]: { subdomain: 'rustfs', port: 9001, container: 'rustfs' },
       [ServiceType.KAFKA]: null, // No web UI
       [ServiceType.RABBITMQ]: { subdomain: 'rabbitmq', port: 15672, container: 'rabbitmq' },
@@ -146,17 +145,16 @@ export class CaddyService extends BaseService {
       [ServiceType.POCKETID]: { subdomain: 'auth', port: 80, container: 'pocketid' },
       [ServiceType.APISIX]: { subdomain: 'apisix', port: 9000, container: 'apisix-dashboard' },
       [ServiceType.FLOCI]: { subdomain: 'floci', port: 4566, container: 'floci' },
-      [ServiceType.LOCALSTACK]: { subdomain: 'localstack', port: 4566, container: 'localstack' },
       [ServiceType.K3D]: { subdomain: 'k3d', port: 6444, container: 'k3d' },
       [ServiceType.ONEDEV]: { subdomain: 'onedev', port: 6610, container: 'onedev' },
       [ServiceType.SEMAPHORE]: { subdomain: 'semaphore', port: 3002, container: 'semaphore' },
+      [ServiceType.BACKSTAGE]: { subdomain: 'backstage', port: 7007, container: 'backstage' },
       [ServiceType.LIQUIBASE]: { subdomain: 'liquibase', port: 8091, container: 'liquibase' },
       [ServiceType.SONARQUBE]: { subdomain: 'sonarqube', port: 9000, container: 'sonarqube' },
       [ServiceType.TRIVY]: { subdomain: 'trivy', port: 8080, container: 'trivy' },
       [ServiceType.KARATE]: null, // VNC-based (port 5901), no HTTP UI
       [ServiceType.RAPIDOC]: { subdomain: 'rapidoc', port: 80, container: 'rapidoc' },
       [ServiceType.HOPPSCOTCH]: { subdomain: 'hoppscotch', port: 3000, container: 'hoppscotch' },
-      [ServiceType.LOCUST]: { subdomain: 'locust', port: 8089, container: 'locust' },
       [ServiceType.GRAFANA]: { subdomain: 'grafana', port: 3000, container: 'grafana' },
       [ServiceType.LOKI]: { subdomain: 'loki', port: 3100, container: 'loki' },
       [ServiceType.OPENSEARCH]: { subdomain: 'opensearch', port: 5601, container: 'opensearch-dashboards' },

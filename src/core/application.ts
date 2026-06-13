@@ -591,6 +591,7 @@ export class HomelabApplication {
         'jupyterlab',
         'onedev',
         'semaphore',
+        'backstage',
         'liquibase',
         'sonarqube',
         'trivy',

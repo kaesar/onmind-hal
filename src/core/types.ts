@@ -31,7 +31,6 @@ export enum ServiceType {
   MONGODB = 'mongodb',
   MARIADB = 'mariadb',
   SCYLLADB = 'scylladb',
-  IGNITE = 'ignite',
   KAFKA = 'kafka',
   KAFKAUI = 'kafkaui',
   RABBITMQ = 'rabbitmq',
@@ -46,7 +45,6 @@ export enum ServiceType {
   AUTHELIA = 'authelia',
   POCKETID = 'pocketid',
   APISIX = 'apisix',
-  LOCALSTACK = 'localstack',
   K3D = 'k3d',
   CODESERVER = 'codeserver',
   JUPYTERLAB = 'jupyterlab',
@@ -58,7 +56,6 @@ export enum ServiceType {
   KARATE = 'karate',
   RAPIDOC = 'rapidoc',
   HOPPSCOTCH = 'hoppscotch',
-  LOCUST = 'locust',
   K6 = 'k6',
   GRAFANA = 'grafana',
   LOKI = 'loki',
@@ -122,6 +119,7 @@ export enum ServiceType {
   FILESTASH = 'filestash',
   SEAFILE = 'seafile',
   RUSTDESK = 'rustdesk',
+  BACKSTAGE = 'backstage',
 }
 
 // Configuration interface
