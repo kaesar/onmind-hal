@@ -5,14 +5,23 @@ commands:
     - docker pull liquibase/liquibase:latest
   setup:
     - docker volume create liquibase_data
+    - docker run --rm -v liquibase_data:/liquibase/changelog alpine sh -c "cat > /liquibase/changelog/liquibase.properties << 'EOF'
+changelogFile=changelog/db.changelog.yaml
+url=jdbc:postgresql://postgresql:5432/postgres
+username=root
+password=Admin26!
+driver=org.postgresql.Driver
+EOF"
   run: |-
     docker run \
           -d \
           --name liquibase \
           --network {{NETWORK_NAME}} \
           -v liquibase_data:/liquibase/changelog \
+          -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
           --restart=always liquibase/liquibase:latest \
-          update --defaultsFile=/liquibase/liquibase.properties
+          --classpath=/liquibase/changelog update --defaultsFile=/liquibase/changelog/liquibase.properties
 variables:
   - NETWORK_NAME
+  - STORAGE_PASSWORD
 dependencies: []

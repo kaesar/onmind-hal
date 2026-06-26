@@ -23,6 +23,12 @@ commands:
       sleep 5
     done
     docker exec plausible_clickhouse clickhouse-client --user plausible --password '{{STORAGE_PASSWORD}}' --query "CREATE DATABASE IF NOT EXISTS plausible"
+    docker run --rm --network {{NETWORK_NAME}} \
+      -e DATABASE_URL=postgres://plausible:{{STORAGE_PASSWORD}}@postgresql:5432/plausible_db \
+      -e CLICKHOUSE_DATABASE_URL=http://plausible:{{STORAGE_PASSWORD}}@plausible_clickhouse:8123/plausible \
+      -e SECRET_KEY_BASE={{ADMIN_TOKEN}}{{ADMIN_TOKEN}} \
+      -e BASE_URL=https://analytics.{{DOMAIN}} \
+      plausible/analytics:latest db migrate
     docker rm -f plausible 2>/dev/null; docker run -d \
       --name plausible \
       --network {{NETWORK_NAME}} \
@@ -32,14 +38,7 @@ commands:
       -e DATABASE_URL=postgres://plausible:{{STORAGE_PASSWORD}}@postgresql:5432/plausible_db \
       -e CLICKHOUSE_DATABASE_URL=http://plausible:{{STORAGE_PASSWORD}}@plausible_clickhouse:8123/plausible \
       --restart=unless-stopped \
-      plausible/analytics:latest
-  postRun:
-    - |
-      for i in $(seq 1 6); do
-        docker exec plausible plausible eval 'Plausible.Release.migrate()' 2>/dev/null && break
-        echo "  Waiting for Plausible to be ready for migration... ($i/6)"
-        sleep 10
-      done
+      plausible/analytics:latest run
 variables:
   - NETWORK_NAME
   - DOMAIN

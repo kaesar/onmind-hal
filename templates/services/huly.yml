@@ -22,25 +22,30 @@ commands:
           listen 80;
           server_name _;
           client_max_body_size 100M;
+          resolver 127.0.0.11 valid=30s;
 
           location / {
+              set $upstream_huly_front http://huly-front:8080;
+              proxy_pass $upstream_huly_front;
               proxy_set_header Host $host;
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
               proxy_set_header X-Forwarded-Proto $scheme;
-              proxy_pass http://huly-front:8080;
           }
 
           location /_accounts {
+              set $upstream_huly_account http://huly-account:3000;
+              proxy_pass $upstream_huly_account;
               proxy_set_header Host $host;
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
               proxy_set_header X-Forwarded-Proto $scheme;
               rewrite ^/_accounts(/.*)$ $1 break;
-              proxy_pass http://huly-account:3000/;
           }
 
           location /_collaborator {
+              set $upstream_huly_collaborator http://huly-collaborator:3078;
+              proxy_pass $upstream_huly_collaborator;
               proxy_set_header Host $host;
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -49,10 +54,11 @@ commands:
               proxy_set_header Upgrade $http_upgrade;
               proxy_set_header Connection "upgrade";
               rewrite ^/_collaborator(/.*)$ $1 break;
-              proxy_pass http://huly-collaborator:3078/;
           }
 
           location /_transactor {
+              set $upstream_huly_transactor http://huly-transactor:3333;
+              proxy_pass $upstream_huly_transactor;
               proxy_set_header Host $host;
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -61,10 +67,11 @@ commands:
               proxy_set_header Upgrade $http_upgrade;
               proxy_set_header Connection "upgrade";
               rewrite ^/_transactor(/.*)$ $1 break;
-              proxy_pass http://huly-transactor:3333/;
           }
 
           location ~ ^/eyJ {
+              set $upstream_huly_transactor http://huly-transactor:3333;
+              proxy_pass $upstream_huly_transactor;
               proxy_set_header Host $host;
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -72,25 +79,26 @@ commands:
               proxy_http_version 1.1;
               proxy_set_header Upgrade $http_upgrade;
               proxy_set_header Connection "upgrade";
-              proxy_pass http://huly-transactor:3333;
           }
 
           location /_rekoni {
+              set $upstream_huly_rekoni http://huly-rekoni:4004;
+              proxy_pass $upstream_huly_rekoni;
               proxy_set_header Host $host;
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
               proxy_set_header X-Forwarded-Proto $scheme;
               rewrite ^/_rekoni(/.*)$ $1 break;
-              proxy_pass http://huly-rekoni:4004/;
           }
 
           location /_stats {
+              set $upstream_huly_stats http://huly-stats:4900;
+              proxy_pass $upstream_huly_stats;
               proxy_set_header Host $host;
               proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
               proxy_set_header X-Forwarded-Proto $scheme;
               rewrite ^/_stats(/.*)$ $1 break;
-              proxy_pass http://huly-stats:4900/;
           }
       }
       NGINX
@@ -103,7 +111,10 @@ commands:
       -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e FULLTEXT_DB_URL=http://opensearch:9200 \
       -e ELASTIC_INDEX_NAME=huly_storage_index \
-      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin\&secretKey=rustfsadmin \
+      -e MINIO_ENDPOINT=http://rustfs:9000 \
+      -e MINIO_ACCESS_KEY=rustfsadmin \
+      -e MINIO_SECRET_KEY=rustfsadmin \
       -e REKONI_URL=http://huly-rekoni:4004 \
       -e ACCOUNTS_URL=http://huly-account:3000 \
       -e STATS_URL=http://huly-stats:4900 \
@@ -121,7 +132,10 @@ commands:
       -e SERVER_PORT=3333 \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
       -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
-      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin\&secretKey=rustfsadmin \
+      -e MINIO_ENDPOINT=http://rustfs:9000 \
+      -e MINIO_ACCESS_KEY=rustfsadmin \
+      -e MINIO_SECRET_KEY=rustfsadmin \
       -e FRONT_URL=https://huly.{{DOMAIN}} \
       -e ACCOUNTS_URL=http://huly-account:3000 \
       -e FULLTEXT_URL=http://huly-fulltext:4700 \
@@ -134,13 +148,19 @@ commands:
       -e SECRET={{ADMIN_TOKEN}} \
       -e ACCOUNTS_URL=http://huly-account:3000 \
       -e STATS_URL=http://huly-stats:4900 \
-      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin\&secretKey=rustfsadmin \
+      -e MINIO_ENDPOINT=http://rustfs:9000 \
+      -e MINIO_ACCESS_KEY=rustfsadmin \
+      -e MINIO_SECRET_KEY=rustfsadmin \
       --restart unless-stopped hardcoreeng/collaborator:v0.7.423 || true && \
     docker rm -f huly-workspace 2>/dev/null || true && docker run -d --name huly-workspace --network {{NETWORK_NAME}} \
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
       -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e TRANSACTOR_URL=ws://huly-transactor:3333 \
-      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin\&secretKey=rustfsadmin \
+      -e MINIO_ENDPOINT=http://rustfs:9000 \
+      -e MINIO_ACCESS_KEY=rustfsadmin \
+      -e MINIO_SECRET_KEY=rustfsadmin \
       -e MODEL_ENABLED=* \
       -e ACCOUNTS_URL=http://huly-account:3000 \
       -e STATS_URL=http://huly-stats:4900 \
@@ -152,7 +172,10 @@ commands:
       -e SERVER_SECRET={{ADMIN_TOKEN}} \
       -e DB_URL=postgresql://huly:{{STORAGE_PASSWORD}}@postgresql:5432/huly \
       -e TRANSACTOR_URL=ws://huly-transactor:3333 \
-      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin\&secretKey=rustfsadmin \
+      -e MINIO_ENDPOINT=http://rustfs:9000 \
+      -e MINIO_ACCESS_KEY=rustfsadmin \
+      -e MINIO_SECRET_KEY=rustfsadmin \
       -e FRONT_URL=https://huly.{{DOMAIN}} \
       -e STATS_URL=https://huly.{{DOMAIN}}/_stats \
       -e MODEL_ENABLED=* \
@@ -174,7 +197,10 @@ commands:
       -e UPLOAD_URL=/files \
       -e ELASTIC_URL=http://opensearch:9200 \
       -e COLLABORATOR_URL=wss://huly.{{DOMAIN}}/_collaborator \
-      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin&secretKey=rustfsadmin \
+      -e STORAGE_CONFIG=minio|rustfs:9000?accessKey=rustfsadmin\&secretKey=rustfsadmin \
+      -e MINIO_ENDPOINT=http://rustfs:9000 \
+      -e MINIO_ACCESS_KEY=rustfsadmin \
+      -e MINIO_SECRET_KEY=rustfsadmin \
       -e TITLE=Huly \
       -e DEFAULT_LANGUAGE=en \
       -e LAST_NAME_FIRST=true \

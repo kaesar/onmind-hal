@@ -32,7 +32,7 @@ commands:
       -e PGSSLMODE=disable \
       -v ~/{{DATA_PATH}}/tooljet/.env:/app/.env \
       --restart unless-stopped \
-      tooljet/tooljet-ce:latest
+      tooljet/tooljet-ce:latest npm --prefix server run start:prod
 variables:
   - NETWORK_NAME
   - DOMAIN

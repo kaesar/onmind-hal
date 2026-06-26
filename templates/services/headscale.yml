@@ -5,6 +5,7 @@ commands:
     - docker pull headscale/headscale:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/headscale
+    - mkdir -p ~/{{CONFIG_PATH}}/headscale
     - |-
       cat > ~/{{CONFIG_PATH}}/headscale/config.yaml << 'HEADSCALE_EOF'
       server_url: https://headscale.{{DOMAIN}}
@@ -12,14 +13,33 @@ commands:
       private_key_path: /var/lib/headscale/private.key
       noise:
         private_key_path: /var/lib/headscale/noise_private.key
+      prefixes:
+        v4: 100.64.0.0/10
+        v6: fd7a:115c:a1e0::/48
+      derp:
+        server:
+          enabled: true
+          region_id: 999
+          region_code: "headscale"
+          region_name: "Headscale Embedded DERP"
+          stun_listen_addr: "0.0.0.0:3478"
+          private_key_path: /var/lib/headscale/derp_server_private.key
+        urls:
+          - https://controlplane.tailscale.com/derpmap/default
+        paths: []
+        auto_update_enabled: true
       dns:
         magic_dns: true
+        base_domain: tailnet.{{DOMAIN}}
+        override_local_dns: true
         nameservers:
           global:
             - 1.1.1.1
             - 8.8.8.8
-      db_type: sqlite3
-      db_path: /var/lib/headscale/db.sqlite
+      database:
+        type: sqlite
+        sqlite:
+          path: /var/lib/headscale/db.sqlite
       log:
         level: info
       HEADSCALE_EOF
@@ -28,14 +48,15 @@ commands:
           --name headscale \
           --network {{NETWORK_NAME}} \
           -p 8019:8019 \
+          -p 3478:3478/udp \
           -v ~/{{CONFIG_PATH}}/headscale/config.yaml:/etc/headscale/config.yaml:ro \
           -v ~/{{DATA_PATH}}/headscale:/var/lib/headscale \
           --restart unless-stopped \
-          headscale/headscale:latest headscale serve
+          headscale/headscale:latest serve
   postRun:
     - |
       for i in $(seq 1 6); do
-        docker exec headscale headscale namespaces create default 2>/dev/null && break
+        docker exec headscale namespaces create default 2>/dev/null && break
         echo "  Waiting for Headscale to be ready... ($i/6)"
         sleep 5
       done
@@ -46,6 +67,7 @@ variables:
   - CONFIG_PATH
 ports:
   - "8019:8019"
+  - "3478:3478/udp"
 volumes:
   - ~/{{DATA_PATH}}/headscale:/var/lib/headscale
   - ~/{{CONFIG_PATH}}/headscale/config.yaml:/etc/headscale/config.yaml:ro

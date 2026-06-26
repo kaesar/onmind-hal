@@ -6,6 +6,7 @@ commands:
   setup:
     - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='hoppscotch') THEN CREATE USER hoppscotch WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER hoppscotch WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE hoppscotch OWNER hoppscotch" 2>/dev/null || true
+    - openssl rand -hex 32 > ~/{{DATA_PATH}}/hoppscotch/.encryption_key
   run: |-
     docker rm -f hoppscotch 2>/dev/null; docker run \
           -d \
@@ -17,19 +18,15 @@ commands:
           -e VITE_BASE_URL=https://hoppscotch.{{DOMAIN}} \
           -e VITE_BACKEND_API_URL=https://hoppscotch.{{DOMAIN}} \
           -e WHITELISTED_ORIGINS=https://hoppscotch.{{DOMAIN}} \
-          -e DATA_ENCRYPTION_KEY={{ADMIN_TOKEN}} \
+          -e DATA_ENCRYPTION_KEY=$(cat ~/{{DATA_PATH}}/hoppscotch/.encryption_key) \
           --restart unless-stopped \
           hoppscotch/hoppscotch:latest
   postRun:
-    - |
-      for i in $(seq 1 6); do
-        docker exec hoppscotch sh -c 'cd /dist/backend && node_modules/.pnpm/prisma@7.8.0/node_modules/.bin/prisma migrate deploy' 2>/dev/null && break
-        echo "  Waiting for Hoppscotch to be ready for migration... ($i/6)"
-        sleep 10
-      done
+    - docker run --rm --network {{NETWORK_NAME}} -e DATABASE_URL=postgresql://hoppscotch:{{STORAGE_PASSWORD}}@postgresql:5432/hoppscotch -e PGSSLMODE=disable --entrypoint sh hoppscotch/hoppscotch:latest -c 'cd /dist/backend && ./node_modules/.bin/prisma migrate deploy'
 variables:
   - NETWORK_NAME
   - DOMAIN
   - STORAGE_PASSWORD
+  - DATA_PATH
 dependencies:
   - PostgreSQL

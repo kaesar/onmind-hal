@@ -9,6 +9,8 @@ Options:
   --ip <address>       Server IP address (auto-detected if omitted)
   --domain <domain>    Domain name (default: homelab.lan)
   --list <services>    Comma-separated list of optional services to include
+                       Use 'defaults' to include default optional services
+                       Example: --list defaults,n8n,goose
   --nolist <services>  Comma-separated list of optional services to exclude (all others included)
   --password <base64>  Database password (base64-encoded)
   --help               Show this help message
@@ -83,7 +85,7 @@ export function parseArgs(argv: string[]): CliArgs {
     result.list = list
       .split(',')
       .map(s => sanitizeUserInput(s.trim().toLowerCase()))
-      .filter(s => s.length > 0 && Object.values(ServiceType).includes(s as ServiceType));
+      .filter(s => s.length > 0 && (s === 'defaults' || Object.values(ServiceType).includes(s as ServiceType)));
   }
 
   const password = flagValue(raw, '--password');

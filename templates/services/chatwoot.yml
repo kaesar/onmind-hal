@@ -12,7 +12,10 @@ commands:
       done
     - mkdir -p ~/{{DATA_PATH}}/chatwoot
     - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='chatwoot') THEN CREATE USER chatwoot WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER chatwoot WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER chatwoot WITH SUPERUSER;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE EXTENSION IF NOT EXISTS pg_stat_statements;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE chatwoot OWNER chatwoot" 2>/dev/null || true
+    - docker run --rm --network {{NETWORK_NAME}} -e POSTGRES_DATABASE=chatwoot -e POSTGRES_HOST=postgresql -e POSTGRES_USERNAME=chatwoot -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} -e REDIS_URL=redis://redis:6379 -e SECRET_KEY_BASE=test -e RAILS_ENV=production chatwoot/chatwoot:latest bundle exec rails db:chatwoot_prepare
   run: |-
     docker rm -f chatwoot 2>/dev/null; docker run \
           -d \
@@ -33,9 +36,7 @@ commands:
           -e RAILS_ENV=production \
           -e RAILS_LOG_TO_STDOUT=true \
           -v ~/{{DATA_PATH}}/chatwoot:/app/storage \
-          chatwoot/chatwoot:latest
-  postRun:
-    - sleep 15 && docker exec chatwoot bundle exec rails db:chatwoot_prepare 2>/dev/null || true
+          chatwoot/chatwoot:latest bundle exec rails s -p 3000 -b 0.0.0.0
 variables:
   - NETWORK_NAME
   - DOMAIN

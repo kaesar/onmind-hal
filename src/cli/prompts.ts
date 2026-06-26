@@ -831,9 +831,17 @@ export async function collectUserConfigurationFromArgs(
     optionalServices = ALL_OPTIONAL_SERVICES.filter(s => !excludeSet.has(s));
     console.log(`   ✓ Installing ${optionalServices.length} optional services (excluded ${excludedServices.length})`);
   } else if (serviceNames && serviceNames.length > 0) {
-    optionalServices = serviceNames
-      .map(name => Object.values(ServiceType).find(v => v === name))
-      .filter((s): s is ServiceType => s !== undefined);
+    const result: ServiceType[] = [];
+    for (const name of serviceNames) {
+      if (name === 'defaults') {
+        result.push(...DEFAULT_OPTIONAL_SERVICES);
+      } else {
+        const service = Object.values(ServiceType).find(v => v === name);
+        if (service) result.push(service);
+      }
+    }
+    optionalServices = [...new Set(result)];
+    console.log(`   ✓ Installing ${optionalServices.length} optional services from --list`);
   } else {
     optionalServices = [...DEFAULT_OPTIONAL_SERVICES];
   }

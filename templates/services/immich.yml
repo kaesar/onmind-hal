@@ -7,7 +7,6 @@ commands:
   setup:
     - mkdir -p ~/{{DATA_PATH}}/immich/data
     - mkdir -p ~/{{DATA_PATH}}/immich/model-cache
-    - docker exec postgresql sh -c "psql -U root -d postgres -tAc \"SELECT 1 FROM pg_extension WHERE extname='vector'\" | grep -q 1 || (apk add --no-cache build-base postgresql-dev git && cd /tmp && git clone --branch v0.8.0 https://github.com/pgvector/pgvector.git && cd pgvector && make && cp vector.so /usr/local/lib/postgresql/ && cp sql/vector--0.8.0.sql /usr/local/share/postgresql/extension/ && cp vector.control /usr/local/share/postgresql/extension/ && cd / && rm -rf /tmp/pgvector && apk del build-base git postgresql-dev)"
     - docker exec postgresql psql -U root -d postgres -c "CREATE EXTENSION IF NOT EXISTS vector"
     - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='immich') THEN CREATE USER immich WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER immich WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE immich OWNER immich" 2>/dev/null || true

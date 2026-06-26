@@ -30,12 +30,36 @@ commands:
         listen:
           host: 0.0.0.0
           port: 9000
-      etcd:
-        endpoints:
-          - http://etcd:2379
+        allow_list:
+          - 0.0.0.0/0
+        etcd:
+          endpoints:
+            - http://etcd:2379
+        log:
+          error_log:
+            level: warn
+            file_path: /dev/stderr
+          access_log:
+            file_path: /dev/stdout
+      authentication:
+        secret: "admin-secret-key-change-me"
+        expire_time: 3600
+        users:
+          - username: admin
+            password: admin
       DASHBOARD_EOF
   run: |-
-    docker run \
+    docker rm -f etcd 2>/dev/null || true && docker run -d \
+          --name etcd \
+          --network {{NETWORK_NAME}} \
+          -e ALLOW_NONE_AUTHENTICATION=yes \
+          -e ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379 \
+          -e ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379 \
+          -v etcd_data:/bitnami/etcd \
+          --restart unless-stopped \
+          bitnamilegacy/etcd:latest && \
+    sleep 3 && \
+    docker rm -f apisix-dashboard 2>/dev/null || true && docker run \
           -d \
           --name apisix-dashboard \
           --network {{NETWORK_NAME}} \
