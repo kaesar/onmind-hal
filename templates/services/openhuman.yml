@@ -5,7 +5,7 @@ commands:
     - docker pull ghcr.io/tinyhumansai/openhuman-core:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/openhuman/workspace
-    - docker volume create openhuman_workspace
+    - docker volume create openhuman_data
   run: |-
     docker rm -f openhuman 2>/dev/null; docker run \
           -d \
@@ -19,7 +19,7 @@ commands:
           -e OPENHUMAN_CORE_PORT=7788 \
           -e OPENHUMAN_WORKSPACE=/home/openhuman/.openhuman \
           -e RUST_LOG=info \
-          -v openhuman_workspace:/home/openhuman/.openhuman \
+          -v openhuman_data:/home/openhuman/.openhuman \
           --restart=unless-stopped \
           ghcr.io/tinyhumansai/openhuman-core:latest
 variables:
@@ -28,7 +28,7 @@ variables:
 ports:
   - "7788:7788"
 volumes:
-  - openhuman_workspace:/home/openhuman/.openhuman
+  - openhuman_data:/home/openhuman/.openhuman
 environment:
   OPENHUMAN_CORE_TOKEN: "{{ADMIN_TOKEN}}"
   BACKEND_URL: "https://api.tinyhumans.ai"

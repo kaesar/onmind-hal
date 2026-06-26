@@ -1,0 +1,27 @@
+name: Voicebox
+description: Open-source AI voice studio - clone voices, generate speech, dictate
+commands:
+  install:
+    - rm -rf ~/{{DATA_PATH}}/voicebox/repo
+    - git clone --depth 1 https://github.com/jamiepine/voicebox.git ~/{{DATA_PATH}}/voicebox/repo
+    - docker build -t voicebox:latest ~/{{DATA_PATH}}/voicebox/repo
+  setup:
+    - docker volume create voicebox_data
+    - docker volume create huggingface_data
+    - mkdir -p ~/{{DATA_PATH}}/voicebox/output
+  run: |-
+    docker run \
+          -d \
+          --name voicebox \
+          --network {{NETWORK_NAME}} \
+          -p 17493:17493 \
+          -v ~/{{DATA_PATH}}/voicebox/output:/app/data/generations \
+          -v voicebox_data:/app/data \
+          -v huggingface_data:/home/voicebox/.cache/huggingface \
+          -e LOG_LEVEL=info \
+          --restart=always \
+          voicebox:latest
+variables:
+  - DATA_PATH
+  - NETWORK_NAME
+dependencies: []

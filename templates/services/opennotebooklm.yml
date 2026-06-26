@@ -7,6 +7,7 @@ commands:
   setup:
     - mkdir -p ~/{{DATA_PATH}}/opennotebooklm
     - docker volume create surrealdb_data
+    - docker run --rm -v surrealdb_data:/mydata alpine:latest chown -R 1000:1000 /mydata
     - docker build -f templates/dockerfiles/opennotebooklm.dockerfile -t opennotebooklm:latest .
   run: |-
     docker run \

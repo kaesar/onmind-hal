@@ -10,6 +10,8 @@ commands:
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE firecrawl OWNER firecrawl" 2>/dev/null || true
     - docker exec rabbitmq rabbitmqctl add_user firecrawl {{STORAGE_PASSWORD}} 2>/dev/null || true
     - docker exec rabbitmq rabbitmqctl set_permissions -p / firecrawl ".*" ".*" ".*" 2>/dev/null || true
+    - curl -sL https://raw.githubusercontent.com/firecrawl/firecrawl/main/apps/nuq-postgres/nuq.sql | docker exec -i postgresql psql -U root -d firecrawl 2>/dev/null || true
+    - docker exec postgresql psql -U root -d firecrawl -c "GRANT ALL ON SCHEMA nuq TO firecrawl; GRANT ALL ON ALL TABLES IN SCHEMA nuq TO firecrawl; GRANT ALL ON ALL SEQUENCES IN SCHEMA nuq TO firecrawl; ALTER DEFAULT PRIVILEGES IN SCHEMA nuq GRANT ALL ON TABLES TO firecrawl; ALTER DEFAULT PRIVILEGES IN SCHEMA nuq GRANT ALL ON SEQUENCES TO firecrawl"
   run: |-
     docker rm -f firecrawl 2>/dev/null; docker run \
           -d \

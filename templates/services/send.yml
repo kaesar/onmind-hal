@@ -1,0 +1,30 @@
+name: Send
+description: Simple, private file sharing with end-to-end encryption (Firefox Send fork)
+commands:
+  install:
+    - docker pull registry.gitlab.com/timvisee/send:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/send/uploads
+  run: |-
+    docker run \
+          -d \
+          --name send \
+          --network {{NETWORK_NAME}} \
+          -p 1880:1443 \
+          -v ~/{{DATA_PATH}}/send/uploads:/uploads \
+          -e BASE_URL=https://send.{{DOMAIN}} \
+          -e REDIS_HOST=redis \
+          -e REDIS_PORT=6379 \
+          -e FILE_DIR=/uploads \
+          -e MAX_FILE_SIZE=5368709120 \
+          -e MAX_EXPIRE_SECONDS=604800 \
+          -e MAX_DOWNLOADS=100 \
+          -e DEFAULT_DOWNLOADS=5 \
+          -e DEFAULT_EXPIRE_SECONDS=86400 \
+          --restart=always \
+          registry.gitlab.com/timvisee/send:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+dependencies:
+  - Redis

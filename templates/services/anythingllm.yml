@@ -6,7 +6,7 @@ commands:
   setup:
     - mkdir -p ~/{{DATA_PATH}}/anythingllm/storage
     - mkdir -p ~/{{DATA_PATH}}/anythingllm/env
-    - docker volume create anythingllm_storage
+    - docker volume create anythingllm_data
   run: |-
     docker run \
           -d \
@@ -26,7 +26,7 @@ commands:
           -e VECTOR_DB=lancedb \
           -e WHISPER_PROVIDER=local \
           -e TTS_PROVIDER=native \
-          -v anythingllm_storage:/app/server/storage \
+          -v anythingllm_data:/app/server/storage \
           mintplexlabs/anythingllm:latest
 variables:
   - NETWORK_NAME
@@ -34,7 +34,7 @@ variables:
 ports:
   - "3007:3001"
 volumes:
-  - anythingllm_storage:/app/server/storage
+  - anythingllm_data:/app/server/storage
 environment:
   STORAGE_DIR: "/app/server/storage"
   JWT_SECRET: "{{ADMIN_TOKEN}}"

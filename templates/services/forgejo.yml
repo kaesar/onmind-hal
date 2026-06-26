@@ -1,0 +1,20 @@
+name: Forgejo
+description: Self-hosted lightweight Git server with CI/CD (Gitea fork)
+commands:
+  install:
+    - docker pull codeberg.org/forgejo/forgejo:10
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/forgejo
+  run: |-
+    docker run \
+          -d \
+          --name forgejo \
+          --network {{NETWORK_NAME}} \
+          -p 3083:3000 \
+          -v ~/{{DATA_PATH}}/forgejo:/data \
+          --restart=always \
+          codeberg.org/forgejo/forgejo:10
+variables:
+  - DATA_PATH
+  - NETWORK_NAME
+dependencies: []

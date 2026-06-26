@@ -8,14 +8,14 @@ commands:
     - mkdir -p ~/{{DATA_PATH}}/openjarvis/data
     - mkdir -p ~/{{DATA_PATH}}/openjarvis/ollama
     - docker volume create openjarvis_data
-    - docker volume create openjarvis_ollama_data
+    - docker volume create openjarvis_data_2
   run: |-
     docker run \
           -d \
           --name openjarvis-ollama \
           --network {{NETWORK_NAME}} \
           -p 11435:11434 \
-          -v openjarvis_ollama_data:/root/.ollama \
+          -v openjarvis_data_2:/root/.ollama \
           --restart=unless-stopped \
           ollama/ollama:latest
 
@@ -39,7 +39,7 @@ ports:
   - "11435:11434"
 volumes:
   - openjarvis_data:/root/.openjarvis
-  - openjarvis_ollama_data:/root/.ollama
+  - openjarvis_data_2:/root/.ollama
 environment:
   OPENJARVIS_ENGINE_DEFAULT: "ollama"
   OPENJARVIS_OLLAMA_HOST: "http://openjarvis-ollama:11434"

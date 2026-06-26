@@ -1,0 +1,54 @@
+name: Headscale
+description: Self-hosted VPN server (Tailscale control server) with WireGuard
+commands:
+  install:
+    - docker pull headscale/headscale:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/headscale
+    - |-
+      cat > ~/{{CONFIG_PATH}}/headscale/config.yaml << 'HEADSCALE_EOF'
+      server_url: https://headscale.{{DOMAIN}}
+      listen_addr: 0.0.0.0:8019
+      private_key_path: /var/lib/headscale/private.key
+      noise:
+        private_key_path: /var/lib/headscale/noise_private.key
+      dns:
+        magic_dns: true
+        nameservers:
+          global:
+            - 1.1.1.1
+            - 8.8.8.8
+      db_type: sqlite3
+      db_path: /var/lib/headscale/db.sqlite
+      log:
+        level: info
+      HEADSCALE_EOF
+  run: |-
+    docker run -d \
+          --name headscale \
+          --network {{NETWORK_NAME}} \
+          -p 8019:8019 \
+          -v ~/{{CONFIG_PATH}}/headscale/config.yaml:/etc/headscale/config.yaml:ro \
+          -v ~/{{DATA_PATH}}/headscale:/var/lib/headscale \
+          --restart unless-stopped \
+          headscale/headscale:latest headscale serve
+  postRun:
+    - |
+      for i in $(seq 1 6); do
+        docker exec headscale headscale namespaces create default 2>/dev/null && break
+        echo "  Waiting for Headscale to be ready... ($i/6)"
+        sleep 5
+      done
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - DATA_PATH
+  - CONFIG_PATH
+ports:
+  - "8019:8019"
+volumes:
+  - ~/{{DATA_PATH}}/headscale:/var/lib/headscale
+  - ~/{{CONFIG_PATH}}/headscale/config.yaml:/etc/headscale/config.yaml:ro
+accessUrl: https://headscale.{{DOMAIN}}
+dependencies: []
+isCore: false

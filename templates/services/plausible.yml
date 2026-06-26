@@ -33,6 +33,13 @@ commands:
       -e CLICKHOUSE_DATABASE_URL=http://plausible:{{STORAGE_PASSWORD}}@plausible_clickhouse:8123/plausible \
       --restart=unless-stopped \
       plausible/analytics:latest
+  postRun:
+    - |
+      for i in $(seq 1 6); do
+        docker exec plausible plausible eval 'Plausible.Release.migrate()' 2>/dev/null && break
+        echo "  Waiting for Plausible to be ready for migration... ($i/6)"
+        sleep 10
+      done
 variables:
   - NETWORK_NAME
   - DOMAIN

@@ -11,9 +11,31 @@ commands:
     - mkdir -p ~/{{DATA_PATH}}/zrok/caddy
     - mkdir -p ~/{{CONFIG_PATH}}/zrok
     - docker volume create zrok_controller_data
-    - docker volume create zrok_frontend_data
     - docker volume create ziti_controller_data
     - docker volume create ziti_router_data
+    - |-
+      cat > ~/{{CONFIG_PATH}}/zrok/Caddyfile << 'CADDY_EOF'
+      :80 {
+          reverse_proxy zrok-controller:18080
+      }
+      CADDY_EOF
+    - |-
+      cat > ~/{{CONFIG_PATH}}/zrok/controller.yaml << 'ZROK_EOF'
+      v: 4
+      admin:
+        secrets:
+          - {{ADMIN_TOKEN}}
+      endpoint:
+        host: 0.0.0.0
+        port: 18080
+      store:
+        path: zrok.db
+        type: sqlite3
+      ziti:
+        api_endpoint: https://ziti-controller:1280
+        username: admin
+        password: {{ADMIN_TOKEN}}
+      ZROK_EOF
   run: |-
     docker run \
           -d \
@@ -23,10 +45,22 @@ commands:
           -e ZITI_PWD={{ADMIN_TOKEN}} \
           -e ZITI_USER=admin \
           -e ZITI_CTRL_ADVERTISED_ADDRESS=ziti-controller \
-          -e ZITI_BOOTSTRAP_CLUSTER=false \
+          -e ZITI_BOOTSTRAP=true \
+          -e ZITI_BOOTSTRAP_PKI=true \
+          -e ZITI_BOOTSTRAP_CONFIG=true \
+          -e ZITI_BOOTSTRAP_DATABASE=true \
+          -e ZITI_BOOTSTRAP_CLUSTER=true \
+          -e ZITI_CLUSTER_TRUST_DOMAIN=minilab \
+          -e ZITI_CLUSTER_NODE_NAME=ctrl \
           -v ziti_controller_data:/var/lib/ziti-controller \
           --restart unless-stopped \
-          openziti/ziti-controller:latest || true
+          openziti/ziti-controller:latest
+
+    for i in $(seq 1 12); do
+      docker exec ziti-controller ziti edge status 2>/dev/null && break
+      echo "  Waiting for ziti-controller to be ready... ($i/12)"
+      sleep 10
+    done
 
     docker run \
           -d \
@@ -34,41 +68,21 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 3022:3022 \
           -e ZITI_ROUTER_NAME=edge-router \
-          -e ZITI_CTRL_ADVERTISED_HOST=ziti-controller \
+          -e ZITI_ROUTER_ADVERTISED_ADDRESS=ziti-router \
+          -e ZITI_CTRL_ADVERTISED_ADDRESS=ziti-controller \
           -e ZITI_CTRL_ADVERTISED_PORT=1280 \
           -v ziti_router_data:/var/lib/ziti-router \
           --restart unless-stopped \
-          openziti/ziti-router:latest || true
+          openziti/ziti-router:latest
 
     docker run \
           -d \
           --name zrok-controller \
           --network {{NETWORK_NAME}} \
           -p 18080:18080 \
-          -e ZROK2_STORE_TYPE=sqlite3 \
-          -e ZROK2_DNS_ZONE={{DOMAIN}} \
-          -e ZROK2_ADMIN_TOKEN={{ADMIN_TOKEN}} \
-          -e ZITI_API_ENDPOINT=https://ziti-controller:1280 \
-          -e ZITI_ADMIN_PASSWORD={{ADMIN_TOKEN}} \
-          -e ZROK2_CTRL_PORT=18080 \
-          -e ZROK2_FRONTEND_PORT=8080 \
-          -e ZROK2_INSECURE_INTERFACE=0.0.0.0 \
-          -v zrok_controller_data:/var/lib/zrok2-controller \
+          -v ~/{{CONFIG_PATH}}/zrok/controller.yaml:/etc/zrok/controller.yaml \
           --restart unless-stopped \
-          openziti/zrok2:latest controller start
-
-    docker run \
-          -d \
-          --name zrok-frontend \
-          --network {{NETWORK_NAME}} \
-          -p 8013:8080 \
-          -e ZROK2_FRONTEND_TOKEN={{ADMIN_TOKEN}} \
-          -e ZROK2_CTRL_ENDPOINT=http://zrok-controller:18080 \
-          -e ZROK2_FRONTEND_PORT=8080 \
-          -e ZROK2_DNS_ZONE={{DOMAIN}} \
-          -v zrok_frontend_data:/var/lib/zrok2-frontend \
-          --restart unless-stopped \
-          openziti/zrok2:latest frontend start
+          openziti/zrok2:latest controller /etc/zrok/controller.yaml
 
     docker run \
           -d \
@@ -79,7 +93,10 @@ commands:
           -v ~/{{CONFIG_PATH}}/zrok/Caddyfile:/etc/caddy/Caddyfile \
           -v ~/{{DATA_PATH}}/zrok/caddy:/data \
           --restart unless-stopped \
-          caddy:latest || true
+          caddy:latest
+  postRun:
+    - |
+      docker exec ziti-controller sh -c 'ziti edge login localhost:1280 -u admin -p {{ADMIN_TOKEN}} -y 2>/dev/null; ziti edge create config-type zrok.proxy.v1 2>/dev/null; ziti edge create config zrok-proxy zrok.proxy.v1 "{\"address\": \"127.0.0.1\", \"port\": 0}" 2>/dev/null'
 variables:
   - NETWORK_NAME
   - DOMAIN
@@ -88,32 +105,14 @@ ports:
   - "1280:1280"
   - "3022:3022"
   - "18080:18080"
-  - "8013:8080"
   - "8015:80"
   - "8017:443"
 volumes:
   - zrok_controller_data:/var/lib/zrok2-controller
-  - zrok_frontend_data:/var/lib/zrok2-frontend
   - ziti_controller_data:/var/lib/ziti-controller
   - ziti_router_data:/var/lib/ziti-router
   - ~/{{CONFIG_PATH}}/zrok/Caddyfile:/etc/caddy/Caddyfile
   - ~/{{DATA_PATH}}/zrok/caddy:/data
-environment:
-  ZITI_PWD: "{{ADMIN_TOKEN}}"
-  ZITI_USER: "admin"
-  ZITI_ROUTER_NAME: "edge-router"
-  ZITI_CTRL_ADVERTISED_HOST: "ziti-controller"
-  ZITI_CTRL_ADVERTISED_PORT: "1280"
-  ZITI_CTRL_ADVERTISED_ADDRESS: "ziti-controller"
-  ZROK2_STORE_TYPE: "sqlite3"
-  ZROK2_DNS_ZONE: "{{DOMAIN}}"
-  ZROK2_ADMIN_TOKEN: "{{ADMIN_TOKEN}}"
-  ZITI_API_ENDPOINT: "https://ziti-controller:1280"
-  ZITI_ADMIN_PASSWORD: "{{ADMIN_TOKEN}}"
-  ZROK2_CTRL_PORT: "18080"
-  ZROK2_FRONTEND_PORT: "8080"
-  ZROK2_INSECURE_INTERFACE: "0.0.0.0"
-  ZROK2_FRONTEND_TOKEN: "{{ADMIN_TOKEN}}"
-  ZROK2_CTRL_ENDPOINT: "http://zrok-controller:18080"
+  - ~/{{CONFIG_PATH}}/zrok/controller.yaml:/etc/zrok/controller.yaml
 accessUrl: https://zrok.{{DOMAIN}}
 isCore: false

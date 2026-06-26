@@ -24,7 +24,7 @@ commands:
           -v listmonk_data:/listmonk \
           --restart unless-stopped \
           listmonk/listmonk:latest \
-          sh -c "./listmonk --install --idempotent && ./listmonk serve"
+          sh -c "yes | ./listmonk --install && ./listmonk serve"
 variables:
   - NETWORK_NAME
   - STORAGE_PASSWORD

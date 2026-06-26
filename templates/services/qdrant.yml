@@ -1,0 +1,29 @@
+name: Qdrant
+description: Vector database for AI and RAG applications
+commands:
+  install:
+    - docker pull qdrant/qdrant:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/qdrant/storage
+    - mkdir -p ~/{{DATA_PATH}}/qdrant/snapshots
+    - docker volume create qdrant_data
+  run: |-
+    docker run -d \
+          --name qdrant \
+          --network {{NETWORK_NAME}} \
+          -p 6333:6333 \
+          -p 6334:6334 \
+          -v qdrant_data:/qdrant/storage \
+          -v ~/{{DATA_PATH}}/qdrant/snapshots:/qdrant/snapshots \
+          -e QDRANT__SERVICE__GRPC_PORT=6334 \
+          --restart unless-stopped \
+          qdrant/qdrant:latest
+variables:
+  - NETWORK_NAME
+  - DATA_PATH
+ports:
+  - "6333:6333"
+  - "6334:6334"
+volumes:
+  - qdrant_data:/qdrant/storage
+dependencies: []

@@ -31,6 +31,7 @@ import { ApisixService } from './optional/apisix.js';
 import { K3dService } from './optional/k3d.js';
 import { CodeServerService } from './optional/codeserver.js';
 import { JupyterLabService } from './optional/jupyterlab.js';
+import { ForgejoService } from './optional/forgejo.js';
 import { OneDevService } from './optional/onedev.js';
 import { SemaphoreService } from './optional/semaphore.js';
 import { BackstageService } from './optional/backstage.js';
@@ -43,10 +44,12 @@ import { HoppscotchService } from './optional/hoppscotch.js';
 import { K6Service } from './optional/k6.js';
 import { GrafanaService } from './optional/grafana.js';
 import { LokiService } from './optional/loki.js';
+import { PrometheusService } from './optional/prometheus.js';
+import { FluentBitService } from './optional/fluentbit.js';
 import { OpenSearchService } from './optional/opensearch.js';
+import { QdrantService } from './optional/qdrant.js';
 import { CorootService } from './optional/coroot.js';
 import { RedashService } from './optional/redash.js';
-import { FluentBitService } from './optional/fluentbit.js';
 import { RegistryService } from './optional/registry.js';
 import { NexusService } from './optional/nexus.js';
 import { VaultService } from './optional/vault.js';
@@ -55,12 +58,15 @@ import { VaultwardenService } from './optional/vaultwarden.js';
 import { LinkwardenService } from './optional/linkwarden.js';
 import { ShlinkService } from './optional/shlink.js';
 import { PsiTransferService } from './optional/psitransfer.js';
+import { SendService } from './optional/send.js';
 import { FilestashService } from './optional/filestash.js';
 import { SeafileService } from './optional/seafile.js';
 import { ExcalidrawService } from './optional/excalidraw.js';
 import { DrawIOService } from './optional/drawio.js';
 import { WiseMappingService } from './optional/wisemapping.js';
 import { KrokiService } from './optional/kroki.js';
+import { PresentonService } from './optional/presenton.js';
+import { SlidevService } from './optional/slidev.js';
 import { OutlineService } from './optional/outline.js';
 import { GristService } from './optional/grist.js';
 import { NocoDBService } from './optional/nocodb.js';
@@ -77,6 +83,7 @@ import { PandocWebService } from './optional/pandocweb.js';
 import { CalibreWebService } from './optional/calibreweb.js';
 import { ImmichService } from './optional/immich.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
+import { NtfyService } from './optional/ntfy.js';
 import { MailserverService } from './optional/mailserver.js';
 import { ListmonkService } from './optional/listmonk.js';
 import { CloudflaredService } from './optional/cloudflared.js';
@@ -91,6 +98,7 @@ import { FlociAZService } from './optional/flociaz.js';
 import { FlociGCPService } from './optional/flocigcp.js';
 import { LiteLLMService } from './optional/litellm.js';
 import { AnythingLLMService } from './optional/anythingllm.js';
+import { VoiceboxService } from './optional/voicebox.js';
 import { CopilotKitService } from './optional/copilotkit.js';
 import { OpenClawService } from './optional/openclaw.js';
 import { GooseService } from './optional/goose.js';
@@ -101,10 +109,12 @@ import { SearXNGService } from './optional/searxng.js';
 import { PlausibleService } from './optional/plausible.js';
 import { DirectusService } from './optional/directus.js';
 import { InsForgeService } from './optional/insforge.js';
+import { SparkService } from './optional/spark.js';
 import { OrcaRouterLiteService } from './optional/orcarouter-lite.js';
 import { DockhandService } from './core/dockhand.js';
-import { ZrokService } from './optional/zrok.js';
+import { HeadscaleService } from './optional/headscale.js';
 import { RustDeskService } from './optional/rustdesk.js';
+import { NtfyService } from './optional/ntfy.js';
 
 /**
  * Service factory for creating service instances based on configuration
@@ -214,6 +224,9 @@ export class ServiceFactory {
       case ServiceType.JUPYTERLAB:
         service = new JupyterLabService(config, this.templateEngine);
         break;
+      case ServiceType.FORGEJO:
+        service = new ForgejoService(config, this.templateEngine);
+        break;
       case ServiceType.ONEDEV:
         service = new OneDevService(config, this.templateEngine);
         break;
@@ -250,17 +263,23 @@ export class ServiceFactory {
       case ServiceType.LOKI:
         service = new LokiService(config, this.templateEngine);
         break;
+      case ServiceType.PROMETHEUS:
+        service = new PrometheusService(config, this.templateEngine);
+        break;
+      case ServiceType.FLUENTBIT:
+        service = new FluentBitService(config, this.templateEngine);
+        break;
       case ServiceType.OPENSEARCH:
         service = new OpenSearchService(config, this.templateEngine);
+        break;
+      case ServiceType.QDRANT:
+        service = new QdrantService(config, this.templateEngine);
         break;
       case ServiceType.COROOT:
         service = new CorootService(config, this.templateEngine);
         break;
       case ServiceType.REDASH:
         service = new RedashService(config, this.templateEngine);
-        break;
-      case ServiceType.FLUENTBIT:
-        service = new FluentBitService(config, this.templateEngine);
         break;
       case ServiceType.REGISTRY:
         service = new RegistryService(config, this.templateEngine);
@@ -286,6 +305,9 @@ export class ServiceFactory {
       case ServiceType.PSITRANSFER:
         service = new PsiTransferService(config, this.templateEngine);
         break;
+      case ServiceType.SEND:
+        service = new SendService(config, this.templateEngine);
+        break;
       case ServiceType.FILESTASH:
         service = new FilestashService(config, this.templateEngine);
         break;
@@ -303,6 +325,12 @@ export class ServiceFactory {
         break;
       case ServiceType.KROKI:
         service = new KrokiService(config, this.templateEngine);
+        break;
+      case ServiceType.PRESENTON:
+        service = new PresentonService(config, this.templateEngine);
+        break;
+      case ServiceType.SLIDEV:
+        service = new SlidevService(config, this.templateEngine);
         break;
       case ServiceType.OUTLINE:
         service = new OutlineService(config, this.templateEngine);
@@ -352,6 +380,9 @@ export class ServiceFactory {
       case ServiceType.LIBRETRANSLATE:
         service = new LibreTranslateService(config, this.templateEngine);
         break;
+      case ServiceType.NTFY:
+        service = new NtfyService(config, this.templateEngine);
+        break;
       case ServiceType.MAILSERVER:
         service = new MailserverService(config, this.templateEngine);
         break;
@@ -391,6 +422,9 @@ export class ServiceFactory {
       case ServiceType.ANYTHINGLLM:
         service = new AnythingLLMService(config, this.templateEngine);
         break;
+      case ServiceType.VOICEBOX:
+        service = new VoiceboxService(config, this.templateEngine);
+        break;
       case ServiceType.COPILOTKIT:
         service = new CopilotKitService(config, this.templateEngine);
         break;
@@ -421,14 +455,17 @@ export class ServiceFactory {
       case ServiceType.INSFORGE:
         service = new InsForgeService(config, this.templateEngine);
         break;
+      case ServiceType.SPARK:
+        service = new SparkService(config, this.templateEngine);
+        break;
       case ServiceType.ORCAROUTERLITE:
         service = new OrcaRouterLiteService(config, this.templateEngine);
         break;
       case ServiceType.DOCKHAND:
         service = new DockhandService(config, this.templateEngine);
         break;
-      case ServiceType.ZROK:
-        service = new ZrokService(config, this.templateEngine);
+      case ServiceType.HEADSCALE:
+        service = new HeadscaleService(config, this.templateEngine);
         break;
       case ServiceType.RUSTDESK:
         service = new RustDeskService(config, this.templateEngine);
@@ -569,6 +606,7 @@ export class ServiceFactory {
       ServiceType.MARIADB,
       ServiceType.SCYLLADB,
       ServiceType.OPENSEARCH,
+      ServiceType.QDRANT,
       ServiceType.KAFKA,
       ServiceType.KAFKAUI,
       ServiceType.RABBITMQ,
@@ -586,6 +624,7 @@ export class ServiceFactory {
       ServiceType.K3D,
       ServiceType.CODESERVER,
       ServiceType.JUPYTERLAB,
+      ServiceType.FORGEJO,
       ServiceType.ONEDEV,
       ServiceType.SEMAPHORE,
       ServiceType.BACKSTAGE,
@@ -598,9 +637,10 @@ export class ServiceFactory {
       ServiceType.K6,
       ServiceType.GRAFANA,
       ServiceType.LOKI,
+      ServiceType.PROMETHEUS,
+      ServiceType.FLUENTBIT,
       ServiceType.COROOT,
       ServiceType.REDASH,
-      ServiceType.FLUENTBIT,
       ServiceType.UPTIMEKUMA,
       ServiceType.DOZZLE,
       ServiceType.HULY,
@@ -610,6 +650,7 @@ export class ServiceFactory {
       ServiceType.FLOCIGCP,
       ServiceType.LITELLM,
       ServiceType.ANYTHINGLLM,
+      ServiceType.VOICEBOX,
       ServiceType.COPILOTKIT,
       ServiceType.GOOSE,
       ServiceType.HERMES,
@@ -626,13 +667,15 @@ export class ServiceFactory {
       ServiceType.VAULTWARDEN,
       ServiceType.LINKWARDEN,
       ServiceType.SHLINK,
-      ServiceType.PSITRANSFER,
+      ServiceType.SEND,
       ServiceType.FILESTASH,
       ServiceType.SEAFILE,
       ServiceType.EXCALIDRAW,
       ServiceType.DRAWIO,
       ServiceType.WISEMAPPING,
       ServiceType.KROKI,
+      ServiceType.PRESENTON,
+      ServiceType.SLIDEV,
       ServiceType.OUTLINE,
       ServiceType.GRIST,
       ServiceType.NOCODB,
@@ -651,11 +694,13 @@ export class ServiceFactory {
       ServiceType.LIBRETRANSLATE,
       ServiceType.DIRECTUS,
       ServiceType.INSFORGE,
+      ServiceType.SPARK,
       ServiceType.ORCAROUTERLITE,
+      ServiceType.NTFY,
       ServiceType.MAILSERVER,
       ServiceType.LISTMONK,
-      ServiceType.ZROK,
       ServiceType.CLOUDFLARED,
+      ServiceType.HEADSCALE,
       ServiceType.WETTY,
       ServiceType.RUSTDESK,
       ServiceType.PORTAINER,
@@ -683,8 +728,14 @@ export class ServiceFactory {
 
     // Validate that all selected services are valid
     const allValidServices = [...this.getCoreServices(), ...this.getOptionalServices()];
+    const deprecatedServices = [ServiceType.PSITRANSFER]; // Deprecated services
     for (const serviceType of config.selectedServices) {
       if (!allValidServices.includes(serviceType)) {
+        if (deprecatedServices.includes(serviceType)) {
+          // Remove deprecated services from selection
+          config.selectedServices = config.selectedServices.filter(s => s !== serviceType);
+          continue;
+        }
         throw new ServiceInstallationError(
           ServiceType.CADDY, // Generic error, Caddy is a core service
           `Invalid service type in configuration: ${serviceType}`
@@ -739,6 +790,7 @@ export class ServiceFactory {
       'k3d': ServiceType.K3D,
       'Code Server': ServiceType.CODESERVER,
       'JupyterLab': ServiceType.JUPYTERLAB,
+      'Forgejo': ServiceType.FORGEJO,
       'OneDev': ServiceType.ONEDEV,
       'Semaphore UI': ServiceType.SEMAPHORE,
       'Backstage': ServiceType.BACKSTAGE,
@@ -751,9 +803,10 @@ export class ServiceFactory {
       'K6': ServiceType.K6,
       'Grafana': ServiceType.GRAFANA,
       'Loki': ServiceType.LOKI,
+      'Prometheus': ServiceType.PROMETHEUS,
+      'Fluent Bit': ServiceType.FLUENTBIT,
       'Coroot': ServiceType.COROOT,
       'ReDash': ServiceType.REDASH,
-      'Fluent Bit': ServiceType.FLUENTBIT,
       'Registry': ServiceType.REGISTRY,
       'Nexus Repository': ServiceType.NEXUS,
       'Vault': ServiceType.VAULT,
@@ -761,13 +814,15 @@ export class ServiceFactory {
       'Vaultwarden': ServiceType.VAULTWARDEN,
       'Linkwarden': ServiceType.LINKWARDEN,
       'Shlink': ServiceType.SHLINK,
-      'PsiTransfer': ServiceType.PSITRANSFER,
+      'Send': ServiceType.SEND,
       'Filestash': ServiceType.FILESTASH,
       'Seafile': ServiceType.SEAFILE,
       'Excalidraw': ServiceType.EXCALIDRAW,
       'Draw.io': ServiceType.DRAWIO,
       'WiseMapping': ServiceType.WISEMAPPING,
       'Kroki': ServiceType.KROKI,
+      'Presenton': ServiceType.PRESENTON,
+      'Slidev': ServiceType.SLIDEV,
       'Outline': ServiceType.OUTLINE,
       'Grist': ServiceType.GRIST,
       'NocoDB': ServiceType.NOCODB,
@@ -786,11 +841,13 @@ export class ServiceFactory {
       'LibreTranslate': ServiceType.LIBRETRANSLATE,
       'Directus': ServiceType.DIRECTUS,
       'InsForge': ServiceType.INSFORGE,
+      'Apache Spark': ServiceType.SPARK,
       'OrcaRouter Lite': ServiceType.ORCAROUTERLITE,
+      'Ntfy': ServiceType.NTFY,
       'Docker Mailserver': ServiceType.MAILSERVER,
       'Listmonk': ServiceType.LISTMONK,
-      'Zrok': ServiceType.ZROK,
       'Cloudflare Tunnel': ServiceType.CLOUDFLARED,
+      'Headscale': ServiceType.HEADSCALE,
       'Wetty': ServiceType.WETTY,
       'Uptime Kuma': ServiceType.UPTIMEKUMA,
       'Dozzle': ServiceType.DOZZLE,
@@ -802,12 +859,14 @@ export class ServiceFactory {
       'Floci-GCP': ServiceType.FLOCIGCP,
       'LiteLLM': ServiceType.LITELLM,
       'AnythingLLM': ServiceType.ANYTHINGLLM,
+      'Voicebox': ServiceType.VOICEBOX,
       'CopilotKit': ServiceType.COPILOTKIT,
       'Goose': ServiceType.GOOSE,
       'Hermes': ServiceType.HERMES,
       'OpenClaw': ServiceType.OPENCLAW,
       'OpenHuman': ServiceType.OPENHUMAN,
       'OpenSearch': ServiceType.OPENSEARCH,
+      'Qdrant': ServiceType.QDRANT,
       'Firecrawl': ServiceType.FIRECRAWL,
       'SearXNG': ServiceType.SEARXNG,
       'Plausible': ServiceType.PLAUSIBLE,

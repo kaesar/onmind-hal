@@ -10,8 +10,16 @@ commands:
     - docker volume create litellm_postgres_data
     - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='llmproxy') THEN CREATE USER llmproxy WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER llmproxy WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE litellm OWNER llmproxy" 2>/dev/null || true
+    - |-
+      cat > ~/{{CONFIG_PATH}}/litellm/config.yaml << 'LITELLM_EOF'
+      general_settings:
+        master_key: {{ADMIN_TOKEN}}
+        database_url: postgresql://llmproxy:{{STORAGE_PASSWORD}}@postgresql:5432/litellm
+
+      model_list: []
+      LITELLM_EOF
   run: |-
-    docker run \
+    docker rm -f litellm 2>/dev/null; docker run \
           -d \
           --name litellm \
           --network {{NETWORK_NAME}} \

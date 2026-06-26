@@ -368,16 +368,20 @@ If you need to remove all HAL services and start fresh:
 
 ```bash
 # Stop and remove all HAL containers
-docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|kafka|rabbitmq|ollama|web|n8n|tooljet|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|onedev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|linkwarden|shlink|psitransfer|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|keystonejs|insforge|medusa|twentycrm|calcom|huly|mattermost|jasperreports|stirlingpdf|libretranslate|orcarouter|litellm|anythingllm|opennotebooklm|hermes|goose|openclaw|openhuman|firecrawl|searxng|plausible|mailserver|zrok|ziti|cloudflared|wetty|rustdesk|seafile|copilot|surreal|docuseal|chat|adguard|listmonk|back" --format "{{.Names}}" | xargs -r docker rm -f
+docker ps -a --filter "name=caddy|dockhand|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|qdrant|kafka|rabbitmq|ollama|web|n8n|tooljet|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|forge|onedev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|link|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|keystonejs|spark|medusa|twentycrm|calcom|huly|mattermost|jasperreports|stirlingpdf|libretranslate|orcarouter|litellm|anythingllm|opennotebooklm|hermes|goose|openclaw|openhuman|firecrawl|searxng|plausible|mailserver|zrok|ziti|cloudflared|wetty|rustdesk|seafile|copilot|surreal|docuseal|chat|adguard|listmonk|send|back" --format "{{.Names}}" | xargs -r docker rm -f
 
 # Remove HAL network
 docker network rm homelab-network 2>/dev/null || true
 
-# Remove data directories (optional)
-sudo rm -rf ~/ws/data
+# Remove Docker images (optional)
+docker images -q | xargs -r docker rmi -f
 
 # Remove Docker volumes (optional)
-docker volume ls --filter "name=_data" --format "{{.Name}}" | xargs -r docker volume rm
+docker volume ls --filter "name=data|work|conf|logs|plug" --format "{{.Name}}" | xargs -r docker volume rm
+
+# Remove data directories (optional)
+sudo rm -rf ~/ws/data
+mkdir -p ~/ws/data
 ```
 
 > Removes volumes and data directories are actions with focus just in cleanup, because you lose data
@@ -902,6 +906,26 @@ sudo ufw --force reset
 # Re-run HAL to reconfigure properly
 cd hal && bun run start
 ```
+
+**Sudo password required (exit code 100):**
+
+**HAL** ejecuta comandos con `sudo` para configurar UFW. Si el usuario no tiene **passwordless sudo**, el proceso podria llegar a fallar con `ShellError: Failed with exit code 100` porque Bun no puede proveer una terminal interactiva para la contraseña.
+
+**Soluciones:**
+
+1. Simplemente reinicia la maquina y verifica ejecutando de nuevo.
+
+2. **Passwordless sudo** (recomendado para automatización):
+   ```bash
+   echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/hal-automation
+   sudo chmod 440 /etc/sudoers.d/hal-automation
+   ```
+
+3. **Cachear contraseña sudo** antes de ejecutar HAL:
+   ```bash
+   sudo -v && bun run start
+   ```
+   `sudo -v` extiende el timeout de sudo (15 min por defecto) sin ejecutar un comando.
 
 ### Docker Permission Issues
 

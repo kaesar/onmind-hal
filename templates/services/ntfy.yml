@@ -1,0 +1,20 @@
+name: Ntfy Notification Server
+description: Self-hosted push notification server with pub/sub topics, iOS/Android apps, and attachments
+commands:
+  install:
+    - docker pull binwiederhier/ntfy:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/ntfy
+  run: |-
+    docker run \
+          -d \
+          --name ntfy \
+          --network {{NETWORK_NAME}} \
+          -p 8005:80 \
+          -v ~/{{DATA_PATH}}/ntfy:/etc/ntfy \
+          --restart=always \
+          binwiederhier/ntfy:latest serve
+variables:
+  - DATA_PATH
+  - NETWORK_NAME
+dependencies: []

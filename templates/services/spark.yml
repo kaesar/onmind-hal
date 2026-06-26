@@ -1,0 +1,22 @@
+name: Apache Spark
+description: Unified analytics engine for large-scale data processing
+commands:
+  install:
+    - docker pull apache/spark:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/spark
+  run: |-
+    docker run \
+          -d \
+          --name spark \
+          --network {{NETWORK_NAME}} \
+          -p 9093:8080 \
+          -p 7077:7077 \
+          --restart=always \
+          apache/spark:latest \
+          /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master \
+          --host 0.0.0.0 --port 7077 --webui-port 8080
+variables:
+  - DATA_PATH
+  - NETWORK_NAME
+dependencies: []

@@ -1,0 +1,20 @@
+name: Presenton AI Presentation Generator
+description: Open-source AI presentation generator (Gamma/Canva alternative)
+commands:
+  install:
+    - docker pull ghcr.io/presenton/presenton:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/presenton/data
+  run: |-
+    docker run \
+          -d \
+          --name presenton \
+          --network {{NETWORK_NAME}} \
+          -p 5010:80 \
+          -v ~/{{DATA_PATH}}/presenton/data:/app_data \
+          --restart=always \
+          ghcr.io/presenton/presenton:latest
+variables:
+  - DATA_PATH
+  - NETWORK_NAME
+dependencies: []

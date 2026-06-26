@@ -21,9 +21,9 @@ export const DEFAULT_OPTIONAL_SERVICES: ServiceType[] = [
   ServiceType.REDIS,
   ServiceType.KAFKA,
   ServiceType.POCKETID,
+  ServiceType.NTFY,
   ServiceType.MAILSERVER,
   ServiceType.INFISCAL,
-  ServiceType.GOOSE,
   ServiceType.CLOUDFLARED,
 ];
 
@@ -172,6 +172,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'OpenSearch'
     },
     {
+      name: 'Qdrant - Vector database for AI and RAG applications',
+      value: ServiceType.QDRANT,
+      short: 'Qdrant'
+    },
+    {
       name: 'Kafka - Distributed streaming platform (with KRaft)',
       value: ServiceType.KAFKA,
       short: 'Kafka',
@@ -274,6 +279,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'JupyterLab'
     },
     {
+      name: 'Forgejo - Self-hosted lightweight Git server with CI/CD (Gitea fork)',
+      value: ServiceType.FORGEJO,
+      short: 'Forgejo'
+    },
+    {
       name: 'OneDev - Self-hosted Git server with CI/CD',
       value: ServiceType.ONEDEV,
       short: 'OneDev'
@@ -329,6 +339,16 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Loki'
     },
     {
+      name: 'Prometheus - Open-source systems monitoring and alerting toolkit',
+      value: ServiceType.PROMETHEUS,
+      short: 'Prometheus'
+    },
+    {
+      name: 'Fluent Bit - Lightweight log processor and forwarder',
+      value: ServiceType.FLUENTBIT,
+      short: 'Fluent Bit'
+    },
+    {
       name: 'Coroot - Open-source observability and monitoring platform',
       value: ServiceType.COROOT,
       short: 'Coroot'
@@ -337,11 +357,6 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'ReDash - SQL query editor and visualization platform',
       value: ServiceType.REDASH,
       short: 'ReDash'
-    },
-    {
-      name: 'Fluent Bit - Lightweight log processor and forwarder',
-      value: ServiceType.FLUENTBIT,
-      short: 'Fluent Bit'
     },
     {
       name: 'Uptime Kuma - Self-hosted uptime monitoring tool',
@@ -395,9 +410,9 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Shlink'
     },
     {
-      name: 'PsiTransfer - File sharing platform (like WeTransfer)',
-      value: ServiceType.PSITRANSFER,
-      short: 'PsiTransfer'
+      name: 'Send - Simple, private file sharing with end-to-end encryption (Firefox Send fork)',
+      value: ServiceType.SEND,
+      short: 'Send'
     },
     {
       name: 'Filestash - Web-based file manager for any storage backend',
@@ -430,6 +445,16 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Kroki'
     },
     {
+      name: 'Presenton - Open-source AI presentation generator (Gamma/Canva alternative)',
+      value: ServiceType.PRESENTON,
+      short: 'Presenton'
+    },
+    {
+      name: 'Slidev - Presentation slides for developers (Markdown-based)',
+      value: ServiceType.SLIDEV,
+      short: 'Slidev'
+    },
+    {
       name: 'Outline - Team knowledge base and wiki (requires PostgreSQL + Redis)',
       value: ServiceType.OUTLINE,
       short: 'Outline'
@@ -453,6 +478,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'InsForge - Open-source backend platform for AI coding agents (database, auth, storage, AI gateway)',
       value: ServiceType.INSFORGE,
       short: 'InsForge'
+    },
+    {
+      name: 'Apache Spark - Unified analytics engine for large-scale data processing',
+      value: ServiceType.SPARK,
+      short: 'Apache Spark'
     },
     {
       name: 'TwentyCRM - Modern open-source CRM platform',
@@ -525,6 +555,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'AnythingLLM'
     },
     {
+      name: 'Voicebox - Open-source AI voice studio with voice cloning and TTS',
+      value: ServiceType.VOICEBOX,
+      short: 'Voicebox'
+    },
+    {
       name: 'CopilotKit - Open-source AI agent runtime with multi-provider support and AG-UI protocol',
       value: ServiceType.COPILOTKIT,
       short: 'CopilotKit'
@@ -565,6 +600,12 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Plausible'
     },
     {
+      name: 'Ntfy - Self-hosted push notification server with pub/sub topics, iOS/Android apps, and attachments',
+      value: ServiceType.NTFY,
+      short: 'Ntfy',
+      checked: true
+    },
+    {
       name: 'Docker Mailserver - Full-featured mail server',
       value: ServiceType.MAILSERVER,
       short: 'Mailserver',
@@ -576,15 +617,15 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'Listmonk'
     },
     {
-      name: 'Zrok - Zero-trust tunneling platform (NGROK alternative) with OpenZiti',
-      value: ServiceType.ZROK,
-      short: 'Zrok'
-    },
-    {
       name: 'Cloudflare Tunnel - Secure tunnel to expose services (requires Cloudflare account)',
       value: ServiceType.CLOUDFLARED,
       short: 'Cloudflared',
       checked: true
+    },
+    {
+      name: 'Headscale - Self-hosted VPN server (Tailscale control server) with WireGuard',
+      value: ServiceType.HEADSCALE,
+      short: 'Headscale'
     },
     {
       name: 'Wetty - Web-based SSH terminal for secure host access',

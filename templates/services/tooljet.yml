@@ -6,8 +6,9 @@ commands:
   setup:
     - mkdir -p ~/{{DATA_PATH}}/tooljet
     - touch ~/{{DATA_PATH}}/tooljet/.env
-    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='tooljet') THEN CREATE USER tooljet WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER tooljet WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='tooljet') THEN CREATE USER tooljet WITH PASSWORD '{{STORAGE_PASSWORD}}' CREATEDB; ELSE ALTER USER tooljet WITH PASSWORD '{{STORAGE_PASSWORD}}' CREATEDB; END IF; END \$\$;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE tooljet OWNER tooljet" 2>/dev/null || true
+    - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE tooljet_db OWNER tooljet" 2>/dev/null || true
   run: |-
     docker run \
       -d \
@@ -17,11 +18,18 @@ commands:
       -e TOOLJET_HOST=https://tooljet.{{DOMAIN}} \
       -e LOCKBOX_MASTER_KEY={{ADMIN_TOKEN}} \
       -e SECRET_KEY_BASE={{ADMIN_TOKEN}}{{ADMIN_TOKEN}} \
-      -e DATABASE_URL=postgres://tooljet:{{STORAGE_PASSWORD}}@postgresql:5432/tooljet \
+      -e DATABASE_URL=postgres://tooljet:{{STORAGE_PASSWORD}}@postgresql:5432/tooljet?sslmode=disable \
+      -e TOOLJET_DB=tooljet_db \
+      -e TOOLJET_DB_HOST=postgresql \
+      -e TOOLJET_DB_PORT=5432 \
+      -e TOOLJET_DB_USER=tooljet \
+      -e TOOLJET_DB_PASS={{STORAGE_PASSWORD}} \
+      -e TOOLJET_DB_SSL_MODE=disable \
       -e REDIS_URL=redis://redis:6379/0 \
       -e NODE_ENV=production \
       -e ENABLE_TOOLJET_DB=true \
       -e TOOLJET_SERVER_URL=https://tooljet.{{DOMAIN}} \
+      -e PGSSLMODE=disable \
       -v ~/{{DATA_PATH}}/tooljet/.env:/app/.env \
       --restart unless-stopped \
       tooljet/tooljet-ce:latest
@@ -34,16 +42,23 @@ variables:
 ports:
   - "3084:3000"
 volumes:
-  - ~/{{DATA_PATH}}/tooljet/data:/app/.env
+  - ~/{{DATA_PATH}}/tooljet/.env:/app/.env
 environment:
   TOOLJET_HOST: https://tooljet.{{DOMAIN}}
   LOCKBOX_MASTER_KEY: "{{ADMIN_TOKEN}}"
   SECRET_KEY_BASE: "{{ADMIN_TOKEN}}{{ADMIN_TOKEN}}"
-  DATABASE_URL: postgres://tooljet:{{STORAGE_PASSWORD}}@postgresql:5432/tooljet
+  DATABASE_URL: postgres://tooljet:{{STORAGE_PASSWORD}}@postgresql:5432/tooljet?sslmode=disable
+  TOOLJET_DB: tooljet_db
+  TOOLJET_DB_HOST: postgresql
+  TOOLJET_DB_PORT: "5432"
+  TOOLJET_DB_USER: tooljet
+  TOOLJET_DB_PASS: "{{STORAGE_PASSWORD}}"
+  TOOLJET_DB_SSL_MODE: disable
   REDIS_URL: redis://redis:6379/0
   NODE_ENV: production
   ENABLE_TOOLJET_DB: "true"
   TOOLJET_SERVER_URL: https://tooljet.{{DOMAIN}}
+  PGSSLMODE: disable
 accessUrl: https://tooljet.{{DOMAIN}}
 dependencies:
   - PostgreSQL

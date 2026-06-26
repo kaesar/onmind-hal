@@ -4,14 +4,14 @@ commands:
   install:
     - docker pull louislam/uptime-kuma:latest
   setup:
-    - docker volume create uptime_kuma_data
+    - docker volume create uptimekuma_data
   run: |-
     docker run \
           -d \
           --name uptimekuma \
           --network {{NETWORK_NAME}} \
           -p 3003:3001 \
-          -v uptime_kuma_data:/app/data \
+          -v uptimekuma_data:/app/data \
           --restart=always \
           louislam/uptime-kuma:latest
 variables:

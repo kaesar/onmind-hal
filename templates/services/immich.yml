@@ -3,13 +3,15 @@ description: Self-hosted photo and video backup and management platform
 commands:
   install:
     - docker pull ghcr.io/immich-app/immich-server:release
-    - docker pull ghcr.io/immich-app/immich-microservices:release
     - docker pull ghcr.io/immich-app/immich-machine-learning:release
   setup:
-    - mkdir -p ~/{{DATA_PATH}}/immich/photos
-    - mkdir -p ~/{{DATA_PATH}}/immich/encoding
+    - mkdir -p ~/{{DATA_PATH}}/immich/data
+    - mkdir -p ~/{{DATA_PATH}}/immich/model-cache
+    - docker exec postgresql sh -c "psql -U root -d postgres -tAc \"SELECT 1 FROM pg_extension WHERE extname='vector'\" | grep -q 1 || (apk add --no-cache build-base postgresql-dev git && cd /tmp && git clone --branch v0.8.0 https://github.com/pgvector/pgvector.git && cd pgvector && make && cp vector.so /usr/local/lib/postgresql/ && cp sql/vector--0.8.0.sql /usr/local/share/postgresql/extension/ && cp vector.control /usr/local/share/postgresql/extension/ && cd / && rm -rf /tmp/pgvector && apk del build-base git postgresql-dev)"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE EXTENSION IF NOT EXISTS vector"
     - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='immich') THEN CREATE USER immich WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER immich WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE immich OWNER immich" 2>/dev/null || true
+    - docker exec postgresql psql -U root -d immich -c "CREATE EXTENSION IF NOT EXISTS vector"
   run: |-
     docker run \
           -d \
@@ -22,31 +24,20 @@ commands:
           -e DB_DATABASE_NAME=immich \
           -e REDIS_HOSTNAME=redis \
           -e IMMICH_MACHINE_LEARNING_URL=http://immich-ml:3003 \
-          -v ~/{{DATA_PATH}}/immich/photos:/usr/src/app/upload \
-          -v ~/{{DATA_PATH}}/immich/encoding:/usr/src/app/encoding \
+          -v ~/{{DATA_PATH}}/immich/data:/data \
           --restart=always \
           ghcr.io/immich-app/immich-server:release
 
     docker run \
           -d \
-          --name immich-microservices \
+          --name immich-ml \
           --network {{NETWORK_NAME}} \
           -e DB_HOSTNAME=postgresql \
           -e DB_USERNAME=immich \
           -e DB_PASSWORD={{STORAGE_PASSWORD}} \
           -e DB_DATABASE_NAME=immich \
           -e REDIS_HOSTNAME=redis \
-          -e IMMICH_MACHINE_LEARNING_URL=http://immich-ml:3003 \
-          -v ~/{{DATA_PATH}}/immich/photos:/usr/src/app/upload \
-          -v ~/{{DATA_PATH}}/immich/encoding:/usr/src/app/encoding \
-          --restart=always \
-          ghcr.io/immich-app/immich-microservices:release
-
-    docker run \
-          -d \
-          --name immich-ml \
-          --network {{NETWORK_NAME}} \
-          -v ~/{{DATA_PATH}}/immich/encoding:/usr/src/app/encoding \
+          -v ~/{{DATA_PATH}}/immich/model-cache:/cache \
           --restart=always \
           ghcr.io/immich-app/immich-machine-learning:release
 variables:

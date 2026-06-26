@@ -1,0 +1,20 @@
+name: Slidev
+description: Presentation slides for developers (Markdown-based)
+commands:
+  install:
+    - docker pull tangramor/slidev:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/slidev/slides
+  run: |-
+    docker run \
+          -d \
+          --name slidev \
+          --network {{NETWORK_NAME}} \
+          -p 3031:3030 \
+          -v ~/{{DATA_PATH}}/slidev/slides:/slides \
+          --restart=always \
+          tangramor/slidev:latest
+variables:
+  - DATA_PATH
+  - NETWORK_NAME
+dependencies: []

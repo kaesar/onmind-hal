@@ -6,8 +6,7 @@ commands:
   setup:
     - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='mattermost') THEN CREATE USER mattermost WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER mattermost WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE mattermost OWNER mattermost" 2>/dev/null || true
-    - mkdir -p ~/{{CONFIG_PATH}}/mattermost
-    - chmod 777 ~/{{CONFIG_PATH}}/mattermost
+    - docker volume create mattermost_config
     - docker volume create mattermost_data
     - docker volume create mattermost_logs
     - docker volume create mattermost_plugins
@@ -17,7 +16,7 @@ commands:
           --name mattermost \
           --network {{NETWORK_NAME}} \
           -p 8065:8065 \
-          -v ~/{{CONFIG_PATH}}/mattermost:/mattermost/config \
+          -v mattermost_config:/mattermost/config \
           -v mattermost_data:/mattermost/data \
           -v mattermost_logs:/mattermost/logs \
           -v mattermost_plugins:/mattermost/plugins \
