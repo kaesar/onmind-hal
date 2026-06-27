@@ -17,14 +17,7 @@ commands:
           -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
           -v postgres_data:/var/lib/postgresql/data pgvector/pgvector:pg17
   postRun:
-    - docker exec postgresql sh -c "apt-get update -qq && apt-get install -y -qq postgresql-17-cron postgresql-17-http 2>/dev/null"
-    - docker exec postgresql psql -U root -d postgres -c "CREATE EXTENSION IF NOT EXISTS pg_cron;"
-    - docker exec postgresql psql -U root -d postgres -c "CREATE EXTENSION IF NOT EXISTS http;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
-    - docker exec postgresql sh -c "grep -q \"shared_preload_libraries.*pg_cron\" /var/lib/postgresql/data/postgresql.conf || echo \"shared_preload_libraries = 'pg_cron'\" >> /var/lib/postgresql/data/postgresql.conf"
-    - docker exec postgresql sh -c "grep -q \"cron.database_name\" /var/lib/postgresql/data/postgresql.conf || echo \"cron.database_name = 'postgres'\" >> /var/lib/postgresql/data/postgresql.conf"
-    - docker restart postgresql
-    - sleep 5
 variables:
   - NETWORK_NAME
   - STORAGE_PASSWORD
