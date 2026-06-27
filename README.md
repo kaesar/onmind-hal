@@ -52,7 +52,7 @@ bun run src/main.ts [--ip <address>] [--domain <domain>] [--list <services>] [--
 - **`--ip`** (optional): Server IP address. Auto-detected if omitted. Must be a valid IPv4 address.
 - **`--domain`** (optional): Domain name (default: `homelab.lan`).
 - **`--list`** (optional): Comma-separated list of service names (lowercase, e.g. `postgresql,redis,grafana`). Uses pre-selected defaults if omitted.
-- **`--list`** (optional): Comma-separated list of service names to exclude
+- **`--nolist`** (optional): Comma-separated list of service names to exclude. It has priority over `--list` and replace it.
 - **`--password`** (optional): Database/Storage password in base64. If omitted but PostgreSQL/MariaDB/MongoDB are selected, a password is generated as `Admin<YY>!` (YY = last two digits of current year).
 - **`--help`**: Show usage information.
 
@@ -83,7 +83,7 @@ Examples:
 ```bash
 bun run src/main.ts --domain myhomelab.lan
 
-bun run src/main.ts --list defaults,n8n --nolist ntfy
+bun run src/main.ts --list defaults,n8n,floci
 ```
 
 > To install directly in Linux you can add `sudo` (at the beginning) for priviledges

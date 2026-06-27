@@ -10,7 +10,8 @@ commands:
         echo "  Waiting for PostgreSQL to be ready... ($i/12)"
         sleep 5
       done
-    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='infisical') THEN CREATE USER infisical WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER infisical WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "CREATE USER infisical WITH PASSWORD '{{STORAGE_PASSWORD}}'" 2>/dev/null || true
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER infisical WITH PASSWORD '{{STORAGE_PASSWORD}}'"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE infisical OWNER infisical" 2>/dev/null || true
     - mkdir -p ~/{{DATA_PATH}}/infisical/data
     - docker volume rm infisical_data 2>/dev/null || true

@@ -214,7 +214,7 @@ export class CaddyService extends BaseService {
       [ServiceType.NTFY]: { subdomain: 'ntfy', port: 80, container: 'ntfy' },
       [ServiceType.MAILSERVER]: null,
       [ServiceType.LISTMONK]: { subdomain: 'listmonk', port: 9000, container: 'listmonk' },
-      [ServiceType.ZROK]: { subdomain: 'zrok', port: 443, container: 'zrok-caddy' },
+      [ServiceType.HEADSCALE]: { subdomain: 'headscale', port: 443, container: 'headscale' },
       [ServiceType.CLOUDFLARED]: null, // No web UI - managed via Cloudflare Dashboard
       [ServiceType.WETTY]: { subdomain: 'wetty', port: 3000, container: 'wetty' },
       [ServiceType.RUSTDESK]: { subdomain: 'rustdesk', port: 21115, container: 'rustdesk-hbbs' },
