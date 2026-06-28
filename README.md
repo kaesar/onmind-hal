@@ -96,7 +96,7 @@ bun run src/main.ts --list defaults,n8n,floci
 - **Dockhand** (Docker) or **Arcane** (Podman): Container management interface
 - **Copyparty**: File sharing and management platform
 
-> In script mode: **Dockhand** is selected for Docker, **Arcane** for Podman. In interactive mode, you can choose between Dockhand, Arcane, or Portainer.
+> In script mode: **Dockhand** is selected for Docker, **Arcane** for Podman. In interactive mode, you can choose between Dockhand or Arcane (user arcane with arcane-admin to pass).
 
 ### Optional Services
 
