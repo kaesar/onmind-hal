@@ -13,8 +13,12 @@ commands:
         sleep 5
       done
     - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='insforge') THEN CREATE USER insforge WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER insforge WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER insforge SUPERUSER;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE insforge OWNER insforge" 2>/dev/null || true
     - docker exec postgresql psql -U root -d insforge -c "CREATE EXTENSION IF NOT EXISTS vector;" 2>/dev/null || true
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='project_admin') THEN CREATE ROLE project_admin; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='authenticated') THEN CREATE ROLE authenticated NOINHERIT; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon NOINHERIT; END IF; END \$\$;"
     - mkdir -p ~/{{DATA_PATH}}/insforge/storage
     - mkdir -p ~/{{DATA_PATH}}/insforge/logs
   run: |-
@@ -58,14 +62,13 @@ commands:
           -e DENO_RUNTIME_URL=http://insforge-deno:7133 \
           -e JWT_SECRET={{ADMIN_TOKEN}} \
           -e ENCRYPTION_KEY={{ADMIN_TOKEN}} \
-          -e ADMIN_EMAIL=admin@{{DOMAIN}} \
+          -e ADMIN_EMAIL={{ADMIN_EMAIL}} \
           -e ADMIN_PASSWORD={{STORAGE_PASSWORD}} \
           -v ~/{{DATA_PATH}}/insforge/storage:/insforge-storage \
           -v ~/{{DATA_PATH}}/insforge/logs:/insforge-logs \
           insforge/insforge-oss:latest
   postRun:
-    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='authenticated') THEN CREATE ROLE authenticated NOINHERIT; END IF; END \$\$;"
-    - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='anon') THEN CREATE ROLE anon NOINHERIT; END IF; END \$\$;"
+    - echo "InsForge roles created during setup"
 variables:
   - NETWORK_NAME
   - DOMAIN

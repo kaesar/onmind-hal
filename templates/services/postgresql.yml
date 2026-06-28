@@ -17,6 +17,12 @@ commands:
           -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
           -v postgres_data:/var/lib/postgresql/data pgvector/pgvector:pg17
   postRun:
+    - |
+      for i in $(seq 1 15); do
+        docker exec postgresql pg_isready -U root -d postgres && break
+        echo "Waiting for PostgreSQL to be ready... ($i/15)"
+        sleep 2
+      done
     - docker exec postgresql psql -U root -d postgres -c "CREATE EXTENSION IF NOT EXISTS pgcrypto;"
 variables:
   - NETWORK_NAME

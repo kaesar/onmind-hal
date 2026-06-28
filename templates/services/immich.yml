@@ -9,6 +9,7 @@ commands:
     - mkdir -p ~/{{DATA_PATH}}/immich/model-cache
     - docker exec postgresql psql -U root -d postgres -c "CREATE EXTENSION IF NOT EXISTS vector"
     - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='immich') THEN CREATE USER immich WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER immich WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
+    - docker exec postgresql psql -U root -d postgres -c "ALTER USER immich SUPERUSER;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE immich OWNER immich" 2>/dev/null || true
     - docker exec postgresql psql -U root -d immich -c "CREATE EXTENSION IF NOT EXISTS vector"
   run: |-

@@ -17,7 +17,7 @@ commands:
           -p 8055:8055 \
           -e KEY={{ADMIN_TOKEN}} \
           -e SECRET={{ADMIN_TOKEN}} \
-          -e ADMIN_EMAIL=admin@{{DOMAIN}} \
+          -e ADMIN_EMAIL={{ADMIN_EMAIL}} \
           -e ADMIN_PASSWORD={{STORAGE_PASSWORD}} \
           -e PUBLIC_URL=https://directus.{{DOMAIN}} \
           -e DB_CLIENT=pg \
@@ -49,7 +49,7 @@ volumes:
 environment:
   KEY: "{{ADMIN_TOKEN}}"
   SECRET: "{{ADMIN_TOKEN}}"
-  ADMIN_EMAIL: "admin@{{DOMAIN}}"
+  ADMIN_EMAIL: "admin@localhost"
   ADMIN_PASSWORD: "{{STORAGE_PASSWORD}}"
   PUBLIC_URL: "https://directus.{{DOMAIN}}"
   DB_CLIENT: "pg"
