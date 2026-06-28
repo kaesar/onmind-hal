@@ -106,7 +106,7 @@ export class CLIInterface {
     } else if (!services) {
       const prevState = await StateManager.load();
       if (prevState) {
-        const coreTypes = [ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.PORTAINER];
+        const coreTypes = [ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.ARCANE];
         const optionalServices = prevState.selectedServices.filter(s => !coreTypes.includes(s));
         console.log(`   📋 Restoring ${optionalServices.length} optional services from previous installation`);
         services = optionalServices;
@@ -139,7 +139,7 @@ export class CLIInterface {
     
     if (this.config.selectedServices) {
       console.log('\n📦 Services to install:');
-      const coreServiceTypes = ['caddy', 'dockhand', 'portainer', 'copyparty'];
+      const coreServiceTypes = ['caddy', 'dockhand', 'arcane', 'copyparty'];
       const coreServices = this.config.selectedServices.filter(s => 
         coreServiceTypes.includes(s)
       );
@@ -174,7 +174,7 @@ export class CLIInterface {
       // Core services
       caddy: 'Caddy (Reverse Proxy)',
       dockhand: 'Dockhand (Docker Management UI)',
-      portainer: 'Portainer (Docker Management UI)',
+      arcane: 'Arcane (Container Management UI)',
       copyparty: 'Copyparty (File Sharing)',
 
       // Optional services (in README table order)

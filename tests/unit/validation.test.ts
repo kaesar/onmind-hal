@@ -129,14 +129,14 @@ describe('PostgreSQL Password Validation', () => {
 
 describe('Service Selection Validation', () => {
   it('should validate correct service selections', () => {
-    const services = [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY];
+    const services = [ServiceType.CADDY, ServiceType.ARCANE, ServiceType.COPYPARTY];
     expect(() => validateServiceSelection(services)).not.toThrow();
   });
 
   it('should validate service selections with optional services', () => {
     const services = [
       ServiceType.CADDY, 
-      ServiceType.PORTAINER, 
+      ServiceType.ARCANE, 
       ServiceType.COPYPARTY,
       ServiceType.N8N,
       ServiceType.POSTGRESQL
@@ -154,7 +154,7 @@ describe('Service Selection Validation', () => {
   });
 
   it('should reject duplicate services', () => {
-    const services = [ServiceType.CADDY, ServiceType.CADDY, ServiceType.PORTAINER];
+    const services = [ServiceType.CADDY, ServiceType.CADDY, ServiceType.ARCANE];
     expect(() => validateServiceSelection(services)).toThrow(ValidationError);
   });
 
@@ -168,7 +168,7 @@ describe('Service Dependencies Validation', () => {
   it('should validate correct dependencies', () => {
     const services = [
       ServiceType.CADDY,
-      ServiceType.PORTAINER,
+      ServiceType.ARCANE,
       ServiceType.COPYPARTY,
       ServiceType.N8N,
       ServiceType.POSTGRESQL
@@ -177,12 +177,12 @@ describe('Service Dependencies Validation', () => {
   });
 
   it('should reject N8N without PostgreSQL', () => {
-    const services = [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY, ServiceType.N8N];
+    const services = [ServiceType.CADDY, ServiceType.ARCANE, ServiceType.COPYPARTY, ServiceType.N8N];
     expect(() => validateServiceDependencies(services)).toThrow(ValidationError);
   });
 
   it('should require all core services', () => {
-    const services = [ServiceType.CADDY, ServiceType.PORTAINER]; // Missing Copyparty
+    const services = [ServiceType.CADDY, ServiceType.ARCANE]; // Missing Copyparty
     expect(() => validateServiceDependencies(services)).toThrow(ValidationError);
   });
 });
@@ -207,7 +207,7 @@ describe('HomeLab Configuration Validation', () => {
       ip: '192.168.1.100',
       domain: 'homelab.local',
       networkName: 'homelab-network',
-      selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY],
+      selectedServices: [ServiceType.CADDY, ServiceType.ARCANE, ServiceType.COPYPARTY],
       distribution: DistributionType.UBUNTU
     };
   });

@@ -4,11 +4,12 @@ import { TemplateEngine } from '../templates/engine.js';
 
 // Core services
 import { CaddyService } from './core/caddy.js';
-import { PortainerService } from './core/portainer.js';
+import { DockhandService } from './core/dockhand.js';
+import { ArcaneService } from './optional/arcane.js';
 import { CopypartyService } from './core/copyparty.js';
-import { DuckDBService } from './optional/duckdb.js';
 
 // Optional services
+import { DuckDBService } from './optional/duckdb.js';
 import { PostgreSQLService } from './optional/postgresql.js';
 import { RedisService } from './optional/redis.js';
 import { MongoDBService } from './optional/mongodb.js';
@@ -111,10 +112,8 @@ import { DirectusService } from './optional/directus.js';
 import { InsForgeService } from './optional/insforge.js';
 import { SparkService } from './optional/spark.js';
 import { OrcaRouterLiteService } from './optional/orcarouter-lite.js';
-import { DockhandService } from './core/dockhand.js';
 import { HeadscaleService } from './optional/headscale.js';
 import { RustDeskService } from './optional/rustdesk.js';
-import { NtfyService } from './optional/ntfy.js';
 
 /**
  * Service factory for creating service instances based on configuration
@@ -146,8 +145,11 @@ export class ServiceFactory {
       case ServiceType.CADDY:
         service = new CaddyService(config, this.templateEngine);
         break;
-      case ServiceType.PORTAINER:
-        service = new PortainerService(config, this.templateEngine);
+      case ServiceType.DOCKHAND:
+        service = new DockhandService(config, this.templateEngine);
+        break;
+      case ServiceType.ARCANE:
+        service = new ArcaneService(config, this.templateEngine);
         break;
       case ServiceType.COPYPARTY:
         service = new CopypartyService(config, this.templateEngine);
@@ -461,9 +463,6 @@ export class ServiceFactory {
       case ServiceType.ORCAROUTERLITE:
         service = new OrcaRouterLiteService(config, this.templateEngine);
         break;
-      case ServiceType.DOCKHAND:
-        service = new DockhandService(config, this.templateEngine);
-        break;
       case ServiceType.HEADSCALE:
         service = new HeadscaleService(config, this.templateEngine);
         break;
@@ -703,7 +702,7 @@ export class ServiceFactory {
       ServiceType.HEADSCALE,
       ServiceType.WETTY,
       ServiceType.RUSTDESK,
-      ServiceType.PORTAINER,
+      ServiceType.ARCANE,
     ];
   }
 
@@ -728,7 +727,7 @@ export class ServiceFactory {
 
     // Validate that all selected services are valid
     const allValidServices = [...this.getCoreServices(), ...this.getOptionalServices()];
-    const deprecatedServices = [ServiceType.PSITRANSFER]; // Deprecated services
+    const deprecatedServices = [ServiceType.PSITRANSFER, ServiceType.PORTAINER]; // Deprecated services
     for (const serviceType of config.selectedServices) {
       if (!allValidServices.includes(serviceType)) {
         if (deprecatedServices.includes(serviceType)) {

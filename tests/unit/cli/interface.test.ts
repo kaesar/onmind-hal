@@ -57,7 +57,6 @@ describe('CLI Interface Unit Tests', () => {
     it('should return correct display names for all supported services', () => {
       const testCases = [
         { service: 'caddy', expected: 'Caddy (Reverse Proxy)' },
-        { service: 'portainer', expected: 'Portainer (Docker Management UI)' },
         { service: 'copyparty', expected: 'Copyparty (File Sharing)' },
         { service: 'n8n', expected: 'n8n (Workflow Automation)' },
         { service: 'postgresql', expected: 'PostgreSQL (Database)' },

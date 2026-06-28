@@ -205,7 +205,6 @@ describe('CLI Interface Integration', () => {
   describe('Service Display Names', () => {
     it('should return correct display names for services', () => {
       expect((cli as any).getServiceDisplayName('caddy')).toBe('Caddy (Reverse Proxy)');
-      expect((cli as any).getServiceDisplayName('portainer')).toBe('Portainer (Docker Management UI)');
       expect((cli as any).getServiceDisplayName('dockhand')).toBe('Dockhand (Docker Management UI)');
       expect((cli as any).getServiceDisplayName('copyparty')).toBe('Copyparty (File Sharing)');
       expect((cli as any).getServiceDisplayName('n8n')).toBe('n8n (Workflow Automation)');

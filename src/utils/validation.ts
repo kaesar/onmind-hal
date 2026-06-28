@@ -196,7 +196,7 @@ export function validateServiceDependencies(services: ServiceType[]): void {
   }
 
   // Core services validation (Caddy, Portainer, Copyparty should always be included)
-  const coreServices = [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY];
+  const coreServices = [ServiceType.CADDY, ServiceType.COPYPARTY];
   for (const coreService of coreServices) {
     if (!serviceSet.has(coreService)) {
       throw new ValidationError('selectedServices', services, `Core service ${coreService} must be included`);

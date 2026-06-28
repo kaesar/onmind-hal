@@ -41,6 +41,7 @@ export class HomelabApplication {
   private cliInterface: CLIInterface;
   private logger: Logger;
   private installedServices: Service[] = [];
+  private failedServices: string[] = [];
 
   constructor() {
     this.logger = new Logger();
@@ -85,7 +86,7 @@ export class HomelabApplication {
       // Save installation state for future re-runs
       const managementUI = this.config!.selectedServices.includes(ServiceType.DOCKHAND)
         ? ServiceType.DOCKHAND
-        : ServiceType.PORTAINER;
+        : ServiceType.ARCANE;
       await StateManager.save(this.config!, managementUI);
 
       this.logger.info('✅ HomeLab installation completed successfully!');
@@ -361,8 +362,18 @@ export class HomelabApplication {
 
       // Install services in order
       for (const service of orderedServices) {
-        await this.installService(service);
-        this.installedServices.push(service);
+        if (service.isCore) {
+          await this.installService(service);
+          this.installedServices.push(service);
+        } else {
+          try {
+            await this.installService(service);
+            this.installedServices.push(service);
+          } catch (error) {
+            this.logger.error(`⚠️  Skipping ${service.name}: ${error instanceof Error ? error.message : String(error)}`);
+            this.failedServices.push(service.name);
+          }
+        }
       }
 
       // Restart core services to ensure proper configuration
@@ -371,13 +382,12 @@ export class HomelabApplication {
       // Configure dnsmasq after services are installed (for dynamic DNS)
       await this.configureDnsmasqPostInstall();
 
-      this.logger.info('✅ All services installed and configured successfully');
+      if (this.failedServices.length > 0) {
+        this.logger.warn(`⚠️  ${this.failedServices.length} service(s) failed: ${this.failedServices.join(', ')}`);
+      }
+      this.logger.info('✅ HomeLab installation completed');
     } catch (error) {
-      this.logger.error('❌ Service installation failed');
-
-      // Attempt rollback of installed services
-      await this.rollbackServices();
-
+      this.logger.error('❌ Unexpected error during service installation');
       throw error;
     }
   }
@@ -433,7 +443,7 @@ export class HomelabApplication {
         ServiceType.DOCKHAND,
       )
         ? 'dockhand'
-        : 'portainer';
+        : 'arcane';
       const command = `${runtime} restart caddy ${managementContainer} || true`;
       await $`sh -c ${command}`;
 
@@ -459,8 +469,6 @@ export class HomelabApplication {
     // Rollback services in reverse order
     for (const service of this.installedServices.reverse()) {
       try {
-        // Note: Rollback implementation would depend on service-specific logic
-        // For now, we just log the attempt
         this.logger.warn(
           `⚠️  Manual cleanup may be required for ${service.name}`,
         );
@@ -535,10 +543,15 @@ export class HomelabApplication {
       console.log(`   ✓ ${service.name}: ${accessUrl}`);
     }
 
-    if (skipped.length > 0) {
+    if (skipped.length > 0 || this.failedServices.length > 0) {
       console.log('\n⚠️  Skipped / Failed:');
       for (const service of skipped) {
         console.log(`   ✗ ${service.name}`);
+      }
+      for (const name of this.failedServices) {
+        if (!skipped.some(s => s.name === name)) {
+          console.log(`   ✗ ${name}`);
+        }
       }
     }
 
@@ -565,7 +578,7 @@ export class HomelabApplication {
       // Ordered to match README.md service table
       const webServices = [
         'copyparty',
-        'portainer',
+        'arcane',
         'dockhand',
         'rustfs',
         'duckdb',

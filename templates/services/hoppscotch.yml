@@ -4,6 +4,7 @@ commands:
   install:
     - docker pull hoppscotch/hoppscotch:latest
   setup:
+    - mkdir -p ~/{{DATA_PATH}}/hoppscotch
     - docker exec postgresql psql -U root -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='hoppscotch') THEN CREATE USER hoppscotch WITH PASSWORD '{{STORAGE_PASSWORD}}'; ELSE ALTER USER hoppscotch WITH PASSWORD '{{STORAGE_PASSWORD}}'; END IF; END \$\$;"
     - docker exec postgresql psql -U root -d postgres -c "CREATE DATABASE hoppscotch OWNER hoppscotch" 2>/dev/null || true
     - openssl rand -hex 32 > ~/{{DATA_PATH}}/hoppscotch/.encryption_key

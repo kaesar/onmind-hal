@@ -104,9 +104,9 @@ describe('Error Classes', () => {
 
   describe('ServiceConfigurationError', () => {
     it('should create service configuration error', () => {
-      const error = new ServiceConfigurationError(ServiceType.PORTAINER, 'Invalid config');
+      const error = new ServiceConfigurationError(ServiceType.ARCANE, 'Invalid config');
 
-      expect(error.message).toContain('portainer');
+      expect(error.message).toContain('arcane');
       expect(error.message).toContain('Invalid config');
       expect(error.code).toBe('SERVICE_CONFIG_FAILED');
       expect(error.recoverable).toBe(true);

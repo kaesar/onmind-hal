@@ -24,7 +24,7 @@ describe('CaddyService', () => {
       ip: '192.168.1.100',
       domain: 'homelab.local',
       networkName: 'homelab-network',
-      selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.N8N],
+      selectedServices: [ServiceType.CADDY, ServiceType.N8N],
       distribution: DistributionType.UBUNTU
     };
 
@@ -47,13 +47,7 @@ describe('CaddyService', () => {
   it('should generate service proxy config correctly', () => {
     const proxyConfig = (caddyService as any).getServiceProxyConfig();
     
-    expect(proxyConfig).toHaveLength(2); // Portainer and N8N (Caddy doesn't proxy itself)
-    expect(proxyConfig).toContainEqual({
-      name: ServiceType.PORTAINER,
-      subdomain: 'portainer',
-      port: 9000,
-      container: 'portainer'
-    });
+    expect(proxyConfig).toHaveLength(1); // N8N only (Caddy doesn't proxy itself)
     expect(proxyConfig).toContainEqual({
       name: ServiceType.N8N,
       subdomain: 'n8n',

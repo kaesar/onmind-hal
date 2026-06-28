@@ -11,12 +11,13 @@ commands:
           --name portainer \
           --network {{NETWORK_NAME}} \
           -p 9000:9000 \
-          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v {{DOCKER_SOCKET_PATH}}:/var/run/docker.sock \
           -v portainer_data:/data \
           portainer/portainer-ce:latest
 variables:
   - NETWORK_NAME
   - DOMAIN
+  - DOCKER_SOCKET_PATH
 ports:
   - "9000:9000"
 volumes:

@@ -1,0 +1,32 @@
+name: Arcane
+description: Modern Docker/Podman container management web UI
+commands:
+  install:
+    - docker pull ghcr.io/getarcaneapp/arcane:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/arcane/data
+    - openssl rand -base64 32 > ~/{{DATA_PATH}}/arcane/.encryption_key
+    - openssl rand -base64 32 > ~/{{DATA_PATH}}/arcane/.jwt_secret
+  run: |-
+    docker rm -f arcane 2>/dev/null; docker run \
+          -d \
+          --name arcane \
+          --network {{NETWORK_NAME}} \
+          -p 3552:3552 \
+          -v ~/{{DATA_PATH}}/arcane/data:/app/data \
+          -v {{DOCKER_SOCKET_PATH}}:/var/run/docker.sock \
+          -e GIN_MODE=release \
+          -e ENVIRONMENT=production \
+          -e PORT=3552 \
+          -e APP_URL=https://arcane.{{DOMAIN}} \
+          -e ENCRYPTION_KEY=$(cat ~/{{DATA_PATH}}/arcane/.encryption_key) \
+          -e JWT_SECRET=$(cat ~/{{DATA_PATH}}/arcane/.jwt_secret) \
+          -e TRUSTED_PROXIES=172.16.0.0/12,192.168.0.0/16,10.0.0.0/8 \
+          --restart unless-stopped \
+          ghcr.io/getarcaneapp/arcane:latest
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - DATA_PATH
+  - DOCKER_SOCKET_PATH
+dependencies: []

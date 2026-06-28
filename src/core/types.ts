@@ -22,11 +22,11 @@ export enum ContainerRuntime {
 export enum ServiceType {
   CADDY = 'caddy',
   DOCKHAND = 'dockhand',
-  PORTAINER = 'portainer',
+  ARCANE = 'arcane',
   COPYPARTY = 'copyparty',
   RUSTFS = 'rustfs',
   DUCKDB = 'duckdb',
-  POSTGRESQL = 'postgresql', // (alternative to Oracle DB)
+  POSTGRESQL = 'postgresql',
   REDIS = 'redis',
   MONGODB = 'mongodb',
   MARIADB = 'mariadb',

@@ -710,7 +710,12 @@ export async function promptForConfirmation(message: string): Promise<boolean> {
 
 export async function promptForDockerManagementUI(): Promise<ServiceType> {
   try {
-    await ContainerRuntimeUtils.detectRuntime();
+    const runtime = await ContainerRuntimeUtils.detectRuntime();
+
+    if (runtime === 'podman') {
+      console.log('   ✓ Podman detected - Arcane will be used for container management');
+      return ServiceType.ARCANE;
+    }
 
     const { managementUI } = await inquirer.prompt([
       {
@@ -719,7 +724,7 @@ export async function promptForDockerManagementUI(): Promise<ServiceType> {
         message: 'Select container management UI:',
         choices: [
           { name: 'Dockhand - Lightweight Docker management UI (default)', value: ServiceType.DOCKHAND },
-          { name: 'Portainer - Full-featured container management interface', value: ServiceType.PORTAINER }
+          { name: 'Arcane - Modern container management interface', value: ServiceType.ARCANE }
         ],
         default: ServiceType.DOCKHAND
       }
@@ -766,7 +771,7 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
   const dataPath = await promptForDataPath();
   
   const managementUI = await promptForDockerManagementUI();
-  console.log(`   ✓ ${managementUI === ServiceType.DOCKHAND ? 'Dockhand' : 'Portainer'} selected for container management`);
+  console.log(`   ✓ ${managementUI === ServiceType.DOCKHAND ? 'Dockhand' : 'Arcane'} selected for container management`);
 
   const optionalServices = await promptForOptionalServices();
   
@@ -793,7 +798,7 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
 }
 
 const ALL_OPTIONAL_SERVICES: ServiceType[] = Object.values(ServiceType).filter(
-  s => ![ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.PORTAINER].includes(s),
+  s => ![ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.ARCANE].includes(s),
 );
 
 export async function collectUserConfigurationFromArgs(
@@ -805,8 +810,12 @@ export async function collectUserConfigurationFromArgs(
 ): Promise<Partial<HomelabConfig>> {
   let managementUI: ServiceType;
   try {
-    await ContainerRuntimeUtils.detectRuntime();
-    managementUI = ServiceType.DOCKHAND;
+    const runtime = await ContainerRuntimeUtils.detectRuntime();
+    if (runtime === 'podman') {
+      managementUI = ServiceType.ARCANE;
+    } else {
+      managementUI = ServiceType.DOCKHAND;
+    }
   } catch {
     managementUI = ServiceType.DOCKHAND;
   }

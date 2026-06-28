@@ -119,8 +119,8 @@ export class CaddyService extends BaseService {
   private getServiceProxyConfig(): Array<{name: string, subdomain: string, port: number, container: string}> {
     const serviceProxyMap = {
       // Core services (always installed)
-      [ServiceType.PORTAINER]: { subdomain: 'portainer', port: 9000, container: 'portainer' },
       [ServiceType.DOCKHAND]: { subdomain: 'dockhand', port: 3000, container: 'dockhand' },
+      [ServiceType.ARCANE]: { subdomain: 'arcane', port: 3552, container: 'arcane' },
       [ServiceType.COPYPARTY]: { subdomain: 'files', port: 3923, container: 'copyparty' },
       
       // Optional services (in README order)

@@ -15,7 +15,7 @@ const testConfig: HomelabConfig = {
   ip: '192.168.1.100',
   domain: 'homelab.local',
   networkName: 'homelab-network',
-  selectedServices: [ServiceType.CADDY, ServiceType.PORTAINER, ServiceType.COPYPARTY, ServiceType.N8N, ServiceType.POSTGRESQL, ServiceType.MARIADB],
+  selectedServices: [ServiceType.CADDY, ServiceType.ARCANE, ServiceType.COPYPARTY, ServiceType.N8N, ServiceType.POSTGRESQL, ServiceType.MARIADB],
   distribution: DistributionType.UBUNTU,
   storagePassword: 'test-password'
 };

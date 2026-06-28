@@ -145,7 +145,7 @@ describe('Template Loading Integration', () => {
 
     it('should render service template with variables', async () => {
       const template = await engine.load('services/portainer');
-      const context = { NETWORK_NAME: 'homelab-network', DOMAIN: 'homelab.local' };
+      const context = { NETWORK_NAME: 'homelab-network', DOMAIN: 'homelab.local', DOCKER_SOCKET_PATH: '/var/run/docker.sock' };
       
       const rendered = engine.render(template, context);
       

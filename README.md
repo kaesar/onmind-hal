@@ -93,10 +93,10 @@ bun run src/main.ts --list defaults,n8n,floci
 ### Core Services (Always Installed)
 
 - **Caddy**: Reverse proxy and web server with automatic HTTPS
-- **Dockhand** (or **Portainer**): Docker container management interface
+- **Dockhand** (Docker) or **Arcane** (Podman): Container management interface
 - **Copyparty**: File sharing and management platform
 
-> **Dockhand** is automatically selected as the default management UI. **Portainer** is the alternative. You can override this selection during interactive configuration (not for script mode).
+> In script mode: **Dockhand** is selected for Docker, **Arcane** for Podman. In interactive mode, you can choose between Dockhand, Arcane, or Portainer.
 
 ### Optional Services
 

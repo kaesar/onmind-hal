@@ -34,10 +34,10 @@ describe('ServiceFactory', () => {
     expect(caddyService.type).toBe(ServiceType.CADDY);
     expect(caddyService.isCore).toBe(true);
 
-    const portainerService = factory.createService(ServiceType.PORTAINER, config);
-    expect(portainerService.name).toBe('Portainer');
-    expect(portainerService.type).toBe(ServiceType.PORTAINER);
-    expect(portainerService.isCore).toBe(true);
+    const arcaneService = factory.createService(ServiceType.ARCANE, config);
+    expect(arcaneService.name).toBe('Arcane');
+    expect(arcaneService.type).toBe(ServiceType.ARCANE);
+    expect(arcaneService.isCore).toBe(true);
   });
 
   it('should create optional services correctly', () => {
@@ -194,7 +194,7 @@ describe('ServiceFactory', () => {
       ServiceType.HEADSCALE,
       ServiceType.WETTY,
       ServiceType.RUSTDESK,
-      ServiceType.PORTAINER,
+      ServiceType.ARCANE,
     ]);
   });
 

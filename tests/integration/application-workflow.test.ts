@@ -205,7 +205,7 @@ describe('HomelabApplication Integration Tests', () => {
       expect(mockLogger.error).toHaveBeenCalledWith('❌ Docker installation failed');
     });
 
-    it('should handle service installation failure with rollback', async () => {
+    it('should abort when a core service fails', async () => {
       // Set configuration
       const config: HomelabConfig = {
         ip: '192.168.1.100',
@@ -216,19 +216,11 @@ describe('HomelabApplication Integration Tests', () => {
       };
       application.setConfig(config);
 
-      // Mock service installation failure
+      // Mock core service installation failure
       mockService.install.mockRejectedValueOnce(new Error('Service installation failed'));
 
-      // Expect the workflow to fail
+      // Workflow should abort
       await expect(application.run()).rejects.toThrow(ServiceInstallationError);
-
-      // Verify error handling - check for both individual service error and general error
-      expect(mockLogger.error).toHaveBeenCalledWith('❌ Failed to install TestService');
-      expect(mockLogger.error).toHaveBeenCalledWith('❌ Service installation failed');
-      
-      // Since the first service fails to install, it never gets added to installedServices,
-      // so rollback returns early without logging. This is correct behavior.
-      // The rollback method is called but returns early if no services were installed.
     });
   });
 
@@ -320,7 +312,7 @@ describe('HomelabApplication Integration Tests', () => {
   });
 
   describe('Error Handling and Rollback', () => {
-    it('should attempt rollback when service installation fails', async () => {
+    it('should continue installing when an optional service fails', async () => {
       // Set configuration
       const config: HomelabConfig = {
         ip: '192.168.1.100',
@@ -332,8 +324,8 @@ describe('HomelabApplication Integration Tests', () => {
       application.setConfig(config);
 
       // Create multiple services
-      const service1 = { ...mockService, name: 'Service1' };
-      const service2 = { ...mockService, name: 'Service2' };
+      const service1 = { ...mockService, name: 'Service1', isCore: true };
+      const service2 = { ...mockService, name: 'Service2', isCore: false };
       
       // Mock successful installation for first service, failure for second
       service1.install = mock(() => Promise.resolve());
@@ -343,21 +335,21 @@ describe('HomelabApplication Integration Tests', () => {
       mockServiceFactory.createServices.mockReturnValueOnce([service1, service2]);
       mockServiceFactory.getInstallationOrder.mockReturnValueOnce([service1, service2]);
 
-      // Expect workflow to fail
-      await expect(application.run()).rejects.toThrow(ServiceInstallationError);
+      // Workflow completes despite second service failing
+      await application.run();
 
       // Verify first service was installed
       expect(service1.install).toHaveBeenCalled();
       expect(service1.configure).toHaveBeenCalled();
 
-      // Verify second service installation was attempted
+      // Verify second service was attempted
       expect(service2.install).toHaveBeenCalled();
 
-      // Verify rollback was attempted
-      expect(mockLogger.warn).toHaveBeenCalledWith('🔄 Attempting to rollback installed services...');
+      // Verify error logged for failed service
+      expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('Skipping Service2'));
     });
 
-    it('should handle rollback errors gracefully', async () => {
+    it('should abort when a single core service fails', async () => {
       // Set configuration
       const config: HomelabConfig = {
         ip: '192.168.1.100',
@@ -371,11 +363,8 @@ describe('HomelabApplication Integration Tests', () => {
       // Mock service that fails during installation
       mockService.install.mockRejectedValueOnce(new Error('Installation failed'));
 
-      // Expect workflow to fail but not throw additional errors during rollback
+      // Workflow should abort
       await expect(application.run()).rejects.toThrow(ServiceInstallationError);
-
-      // Verify rollback was attempted
-      expect(mockLogger.warn).toHaveBeenCalledWith('🔄 Attempting to rollback installed services...');
     });
   });
 

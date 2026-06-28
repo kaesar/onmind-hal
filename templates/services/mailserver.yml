@@ -28,8 +28,8 @@ commands:
           --restart unless-stopped docker.io/mailserver/docker-mailserver:latest
   postRun:
     - |
-      echo "  🚀 Mailserver started. Waiting for dovecot (max 90s)..."
-      for i in $(seq 1 18); do
+      echo "  🚀 Mailserver started. Waiting for dovecot (max 45s)..."
+      for i in $(seq 1 9); do
         if docker exec mailserver pgrep dovecot >/dev/null 2>&1; then
           echo "  ✅ Dovecot ready. Creating admin user..."
           printf "%s\n%s\n" "{{MAIL_PASSWORD}}" "{{MAIL_PASSWORD}}" | docker exec -i mailserver setup email add {{MAIL_USER}} 2>/dev/null && \
@@ -42,7 +42,7 @@ commands:
           echo "  Waiting for dovecot... $((i*5))s"
         sleep 5
       done
-      echo "  ⚠️  Dovecot not ready after 90s (ClamAV first-run may be slow)."
+      echo "  ⚠️  Dovecot not ready after 45s (ClamAV first-run may be slow)."
       echo "  💡 The mailserver is still running and will be ready soon."
       echo "  💡 Create admin later: printf '%s\n%s\n' '{{MAIL_PASSWORD}}' '{{MAIL_PASSWORD}}' | docker exec -i mailserver setup email add {{MAIL_USER}}"
 variables:
