@@ -129,23 +129,27 @@ export abstract class BaseService implements Service {
         
         if (isContainerCommand && isKnownError) {
           const runtime = interpolatedCommand.includes('podman') ? 'Podman' : 'Docker';
-          const commandType = interpolatedCommand.includes('pull') ? 'image pull' :
-                            interpolatedCommand.includes('volume') ? 'volume creation' :
-                            interpolatedCommand.includes('network') ? 'network creation' :
-                            interpolatedCommand.includes('build') ? 'image build' :
-                            interpolatedCommand.includes('run') ? 'container run' : 'command';
-          
+          // Detect command type by looking at the actual subcommand (e.g., "docker pull", "docker run")
+          const subcommandMatch = interpolatedCommand.match(/(?:docker|podman)\s+(pull|run|build|volume|network)\b/);
+          const subcommand = subcommandMatch ? subcommandMatch[1] : 'command';
+          const commandType = subcommand === 'pull' ? 'image pull' :
+                            subcommand === 'volume' ? 'volume creation' :
+                            subcommand === 'network' ? 'network creation' :
+                            subcommand === 'build' ? 'image build' :
+                            subcommand === 'run' ? 'container run' : 'command';
+
           console.log(`⚠️  ${commandType} failed with ${runtime}:\n→ ${interpolatedCommand}`);
-          
-          // Specific handling for exit code 125
-          if (error.message.includes('exit code 125')) {
+          console.error(`   Error: ${error.message}`);
+
+          // Specific handling for exit codes
+          if (error.message.includes('exit code 125') || error.message.includes('exit code 126')) {
             if (runtime === 'Podman') {
               await this.diagnosePodmanError(interpolatedCommand, error.message);
             } else {
               await this.diagnoseDockRunFailure(interpolatedCommand);
             }
           }
-          
+
           this.installationFailed = !interpolatedCommand.includes('volume');
           if (this.installationFailed) {
             console.log(`⏭️  Skipping ${this.name} due to ${runtime.toLowerCase()} issues`);
@@ -192,6 +196,28 @@ export abstract class BaseService implements Service {
       return containers.some(name => name === this.type || name.startsWith(this.type + '-'));
     } catch {
       return false;
+    }
+  }
+
+  /**
+   * Remove stale container if it exists but is not running
+   */
+  protected async removeStaleContainer(): Promise<void> {
+    try {
+      const runtime = await ContainerRuntimeUtils.detectRuntime();
+      // Check for containers in any state (including Created, Exited, etc.)
+      const command = `${runtime} ps -a --format {{.Names}}`;
+      const result = await $`sh -c ${command}`.quiet();
+      const output = result.stdout.toString().trim();
+      if (!output) return;
+      const containers = output.split('\n');
+      const staleContainer = containers.find(name => name === this.type || name.startsWith(this.type + '-'));
+      if (staleContainer) {
+        console.log(`🧹 Removing stale container: ${staleContainer}`);
+        await $`sh -c "${runtime} rm -f ${staleContainer}"`.quiet();
+      }
+    } catch {
+      // Ignore errors
     }
   }
 
@@ -266,10 +292,13 @@ export abstract class BaseService implements Service {
 
     try {
       console.log(`Configuring ${this.name}...`);
-      
+
       // Generate configuration files if needed
       await this.generateConfigFilesWithRetry();
-      
+
+      // Remove stale container if it exists but is not running
+      await this.removeStaleContainer();
+
       // Execute run command to start the service
       if (this.serviceTemplate.commands?.run) {
         await this.executeCommands([this.serviceTemplate.commands.run]);
@@ -312,18 +341,25 @@ export abstract class BaseService implements Service {
    */
   private async diagnosePodmanError(command: string, errorMessage: string): Promise<void> {
     console.log(`🔍 Diagnosing Podman error for ${this.name}:`);
-    
+
     try {
-      // Check if Podman machine is running (macOS specific)
-      const machineResult = await $`podman machine list`.quiet();
-      const machineOutput = machineResult.stdout.toString();
-      
-      if (!machineOutput.includes('Running')) {
-        console.log(`❌ Podman machine not running`);
-        console.log(`💡 Try: podman machine start`);
-        return;
+      // Check if Podman machine is running (macOS specific - only on macOS)
+      const platform = process.platform;
+      if (platform === 'darwin') {
+        try {
+          const machineResult = await $`podman machine list`.quiet();
+          const machineOutput = machineResult.stdout.toString();
+
+          if (!machineOutput.includes('Running')) {
+            console.log(`❌ Podman machine not running`);
+            console.log(`💡 Try: podman machine start`);
+            return;
+          }
+        } catch {
+          // podman machine not available
+        }
       }
-      
+
       // Check network existence
       if (command.includes('--network')) {
         const networkMatch = command.match(/--network\s+(\S+)/);
@@ -339,7 +375,7 @@ export abstract class BaseService implements Service {
           }
         }
       }
-      
+
       // Check port conflicts
       const portMatch = command.match(/-p\s+(\d+):(\d+)/);
       if (portMatch) {
@@ -355,7 +391,7 @@ export abstract class BaseService implements Service {
           // Port is free
         }
       }
-      
+
       // Check image availability
       const imageMatch = command.match(/([^\s]+)$/);
       if (imageMatch) {
@@ -369,9 +405,9 @@ export abstract class BaseService implements Service {
           return;
         }
       }
-      
+
       console.log(`❓ Unknown Podman error - check logs with: podman logs ${this.type}`);
-      
+
     } catch (diagError) {
       console.log(`⚠️  Could not diagnose Podman error: ${diagError}`);
     }

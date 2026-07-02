@@ -21,26 +21,9 @@ export class ContainerRuntimeUtils {
       return this.detectedRuntime;
     }
 
-    // Try Docker first
-    try {
-      await $`docker --version`.quiet();
-      // Verify Docker is actually working
-      try {
-        await $`docker info`.quiet();
-        this.detectedRuntime = 'docker';
-        this.logger.info('✅ Docker detected as container runtime');
-        return 'docker';
-      } catch {
-        this.logger.warn('⚠️  Docker is installed but not running');
-      }
-    } catch {
-      // Docker not available
-    }
-
-    // Try Podman as fallback
+    // Check for Podman first (handles podman-docker wrapper)
     try {
       await $`podman --version`.quiet();
-      // Verify Podman is working
       try {
         await $`podman info`.quiet();
         this.detectedRuntime = 'podman';
@@ -51,6 +34,21 @@ export class ContainerRuntimeUtils {
       }
     } catch {
       // Podman not available
+    }
+
+    // Try Docker (real Docker, not podman-docker wrapper)
+    try {
+      await $`docker --version`.quiet();
+      try {
+        await $`docker info`.quiet();
+        this.detectedRuntime = 'docker';
+        this.logger.info('✅ Docker detected as container runtime');
+        return 'docker';
+      } catch {
+        this.logger.warn('⚠️  Docker is installed but not running');
+      }
+    } catch {
+      // Docker not available
     }
 
     throw new Error('No working container runtime found. Please install and start Docker or Podman.');
@@ -181,7 +179,7 @@ export class ContainerRuntimeUtils {
       return [
         '⚠️  Using Podman runtime - some additional setup may be required:',
         '   • For macOS: Ensure Podman machine is running with `podman machine start`',
-        '   • For Dockhand/Portainer: Run `systemctl --user enable --now podman.socket` (Linux)',
+        '   • For Dockhand/Arcane: Run `systemctl --user enable --now podman.socket` (Linux)',
         '   • Rootless containers run under user namespace',
         '   • Some Docker-specific features may not be available',
         '   • Network creation might require manual setup'

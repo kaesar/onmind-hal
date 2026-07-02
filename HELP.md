@@ -970,6 +970,33 @@ sudo systemctl start docker
 sudo chmod 666 /var/run/docker.sock
 ```
 
+### Podman - Privileged Ports
+
+**Error: rootlessport cannot expose privileged port 80**
+
+```bash
+# Temporary (lost on reboot)
+sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
+
+# Permanent
+echo "net.ipv4.ip_unprivileged_port_start=80" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+```
+
+**For Docker Mailserver** (ports 25, 143, 587, 993):
+```bash
+sudo sysctl -w net.ipv4.ip_unprivileged_port_start=25
+```
+
+### Podman - Short Image Names
+
+**Error: short-name did not resolve to an alias**
+
+```bash
+# Manual pull with full name
+podman pull docker.io/library/redis:7.2-alpine
+```
+
 ### Port Conflicts (Common Issue)
 
 **Identify what's using port 80:**

@@ -57,11 +57,28 @@ export class ArchStrategy extends BaseDistributionStrategy {
       // Check if Docker is already installed
       const dockerInstalled = await this.commandExists('docker');
       if (dockerInstalled) {
-        console.log('✅ Docker is already installed, skipping installation...');
-        // Ensure Docker service is running
-        await $`sudo systemctl enable docker`.quiet();
-        await $`sudo systemctl start docker`.quiet();
-        return;
+        // Verify Docker is actually working (handles podman-docker wrapper)
+        try {
+          await $`docker version`.quiet();
+          console.log('✅ Docker is already installed and working, skipping installation...');
+          return;
+        } catch {
+          console.log('⚠️  Docker command exists but is not working. Try: sudo systemctl start docker');
+        }
+      }
+
+      // Check if Podman is available as alternative
+      const podmanInstalled = await this.commandExists('podman');
+      if (podmanInstalled) {
+        console.log('✅ Podman is already installed, using it as container runtime...');
+        // Verify Podman is working
+        try {
+          await $`podman version`.quiet();
+          console.log('✅ Podman is working correctly');
+          return;
+        } catch {
+          console.log('⚠️  Podman is installed but not working properly, will install Docker...');
+        }
       }
 
       console.log('📦 Installing Docker on Arch Linux...');

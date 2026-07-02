@@ -6,8 +6,8 @@ commands:
   setup:
     - docker volume create liquibase_data
     - docker volume create liquibase_libs
-    - docker run --rm -v liquibase_libs:/liquibase-ext alpine sh -c "wget -q -O /liquibase-ext/postgresql.jar 'https://jdbc.postgresql.org/download/postgresql-42.7.4.jar'"
-    - docker run --rm -v liquibase_data:/liquibase/changelog alpine sh -c "mkdir -p /liquibase/changelog/changelog && printf 'changelogFile=changelog/db.changelog.yaml\nurl=jdbc:postgresql://postgresql:5432/postgres\nusername=root\npassword=Admin26!\ndriver=org.postgresql.Driver\n' > /liquibase/changelog/liquibase.properties"
+    - docker run --rm -v liquibase_libs:/liquibase-ext docker.io/library/alpine sh -c "wget -q -O /liquibase-ext/postgresql.jar 'https://jdbc.postgresql.org/download/postgresql-42.7.4.jar'"
+    - docker run --rm -v liquibase_data:/liquibase/changelog docker.io/library/alpine sh -c "mkdir -p /liquibase/changelog/changelog && printf 'changelogFile=changelog/db.changelog.yaml\nurl=jdbc:postgresql://postgresql:5432/postgres\nusername=root\npassword=Admin26!\ndriver=org.postgresql.Driver\n' > /liquibase/changelog/liquibase.properties"
   run: |-
     docker run \
           -d \
