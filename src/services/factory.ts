@@ -733,19 +733,19 @@ export class ServiceFactory {
     // Validate that all selected services are valid
     const allValidServices = [...this.getCoreServices(), ...this.getOptionalServices()];
     const deprecatedServices = [ServiceType.PSITRANSFER, ServiceType.PORTAINER]; // Deprecated services
-    for (const serviceType of config.selectedServices) {
-      if (!allValidServices.includes(serviceType)) {
-        if (deprecatedServices.includes(serviceType)) {
-          // Remove deprecated services from selection
-          config.selectedServices = config.selectedServices.filter(s => s !== serviceType);
-          continue;
-        }
-        throw new ServiceInstallationError(
-          ServiceType.CADDY, // Generic error, Caddy is a core service
-          `Invalid service type in configuration: ${serviceType}`
-        );
-      }
+    const invalidServices = config.selectedServices.filter(
+      s => !allValidServices.includes(s) && !deprecatedServices.includes(s)
+    );
+    if (invalidServices.length > 0) {
+      throw new ServiceInstallationError(
+        ServiceType.CADDY,
+        `Invalid service types in configuration: ${invalidServices.join(', ')}`
+      );
     }
+    // Remove deprecated services without mutating during iteration
+    config.selectedServices = config.selectedServices.filter(
+      s => allValidServices.includes(s)
+    );
   }
 
   /**

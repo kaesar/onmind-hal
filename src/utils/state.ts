@@ -50,17 +50,22 @@ export class StateManager {
   }
 
   static async save(config: HomelabConfig, managementUI: ServiceType): Promise<void> {
+    const coreServices = [ServiceType.CADDY, ServiceType.COPYPARTY];
+    const missing = coreServices.filter(s => !config.selectedServices.includes(s));
+
     const state: HalState = {
       version: STATE_VERSION,
       installedAt: new Date().toISOString(),
       ip: config.ip,
       domain: config.domain,
       networkName: config.networkName,
-      configPath: config.configPath,
-      dataPath: config.dataPath,
+      configPath: config.configPath || 'ws/init',
+      dataPath: config.dataPath || 'ws/data',
       storagePassword: config.storagePassword,
       managementUI,
-      selectedServices: config.selectedServices,
+      selectedServices: missing.length > 0
+        ? [...config.selectedServices, ...missing]
+        : config.selectedServices,
     };
 
     const filePath = getStatePath(config.configPath);

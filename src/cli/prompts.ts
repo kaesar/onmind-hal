@@ -23,7 +23,7 @@ export const DEFAULT_OPTIONAL_SERVICES: ServiceType[] = [
   ServiceType.POCKETID,
   ServiceType.NTFY,
   ServiceType.MAILPIT,
-  ServiceType.INFISCAL,
+  // ServiceType.INFISCAL,
   ServiceType.CLOUDFLARED,
 ];
 
@@ -388,7 +388,7 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       name: 'Infisical - Open-source secret management platform',
       value: ServiceType.INFISCAL,
       short: 'Infisical',
-      checked: usePrevious ? previousServices.includes(ServiceType.INFISCAL) : true
+      // checked: usePrevious ? previousServices.includes(ServiceType.INFISCAL) : true
     },
     {
       name: 'Vault - Secrets and encryption management (HashiCorp)',
