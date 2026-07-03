@@ -56,7 +56,7 @@ bun run src/main.ts [--ip <address>] [--domain <domain>] [--list <services>] [--
 - **`--password`** (optional): Database/Storage password in base64. If omitted but PostgreSQL/MariaDB/MongoDB are selected, a password is generated as `Admin<YY>!` (YY = last two digits of current year).
 - **`--help`**: Show usage information.
 
-> **Default optional services** (enabled when `--list` is omitted): RustFS, PostgreSQL, Redis, Kafka, PocketID, Ntfy, Docker Mailserver, Infisical, Cloudflare Tunnel.
+> **Default optional services** (enabled when `--list` is omitted): RustFS, PostgreSQL, Redis, Kafka, PocketID, Ntfy, Mailpit, Infisical, Cloudflare Tunnel.
 
 <!--
 Examples:
@@ -133,82 +133,83 @@ bun run src/main.ts --list defaults,n8n,floci
 | 29 | **JupyterLab** | `jupyterlab` | Web-based interactive development environment (notebooks and code) | 3082 |
 | 30 | **Forgejo** | `forgejo` | Self-hosted lightweight Git server with CI/CD (Gitea fork) | 3083 |
 | 31 | **OneDev** | `onedev` | Self-hosted Git server with CI/CD | 6610 |
-| 32 | **Semaphore-UI** | `semaphore` | Modern UI for Ansible and shell automation | 3002 |
-| 33 | **Backstage** | `backstage` | Developer portal platform (Developer Portal by Spotify) | 7007 |
-| 34 | **Liquibase** | `liquibase` | Database schema change management and version control | 8091 |
-| 35 | **SonarQube** | `sonarqube` | Code quality and security analysis | 9002 |
-| 36 | **Trivy** | `trivy` | Container security scanner | 8088 |
-| 37 | **Karate** | `karate` | API, UI & performance test automation framework (VNC) | 5901 |
-| 38 | **RapiDoc** | `rapidoc` | WebComponent for OpenAPI Spec viewer | 8085 |
-| 39 | **Hoppscotch** | `hoppscotch` | Open-source API development ecosystem (Postman alternative) | 3080 |
-| 40 | **K6-OSS** | `k6` | Open-source load testing tool by Grafana Labs | 6565 |
-| 41 | **Grafana** | `grafana` | Analytics and monitoring platform | 3001 |
-| 42 | **Loki** | `loki` | Log aggregation system by Grafana Labs | 3100 |
-| 43 | **Prometheus** | `prometheus` | Open-source systems monitoring and alerting toolkit | 9090 |
-| 44 | **Fluent-Bit** | `fluentbit` | Lightweight log processor and forwarder | 2020 |
-| 45 | **Coroot** | `coroot` | Open-source observability and monitoring platform | 8081 |
-| 46 | **ReDash** | `redash` | SQL query editor and visualization platform | 5000 |
-| 47 | **Uptime-Kuma** | `uptimekuma` | Self-hosted uptime monitoring tool | 3003 |
-| 48 | **Dozzle** | `dozzle` | Lightweight Docker log viewer and monitor | 8097 |
-| 49 | **Registry** | `registry` | Private Docker container registry | 5002 |
-| 50 | **Nexus-Repository** | `nexus` | Universal artifact repository manager | 8098 |
-| 51 | **Infisical** | `infisical` | Open-source secret management platform | 8096 |
-| 52 | **Vault** | `vault` | Secrets and encryption management (HashiCorp) | 8200 |
-| 53 | **Consul** | `consul` | Service discovery and configuration (HashiCorp) | 8500 |
-| 54 | **Vaultwarden** | `vaultwarden` | Self-hosted Bitwarden-compatible password manager | 8222 |
-| 55 | **Linkwarden** | `linkwarden` | Self-hosted bookmark manager with tagging and archiving | 3101 |
-| 56 | **Shlink** | `shlink` | URL shortener with REST API and web interface | 8012 |
-| 57 | **Send** | `send` | Simple, private file sharing with end-to-end encryption (Firefox Send fork) | 1880 |
-| 58 | **Filestash** | `filestash` | Web-based file manager for any storage backend | 8334 |
-| 59 | **Seafile** | `seafile` | Self-hosted file sync and share platform (Google Drive alternative) | 8016 |
-| 60 | **Excalidraw** | `excalidraw` | Virtual whiteboard for sketching diagrams | 8082 |
-| 61 | **Draw.io** | `drawio` | Web-based diagramming application | 8084 |
-| 62 | **WiseMapping** | `wisemapping` | Web-based mind mapping tool (requires PostgreSQL) | 8095 |
-| 63 | **Kroki** | `kroki` | API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.) | 8086 |
-| 64 | **Presenton** | `presenton` | Open-source AI presentation generator (Gamma/Canva alternative) | 5010 |
-| 65 | **Slidev** | `slidev` | Presentation slides for developers (Markdown-based) | 3031 |
-| 66 | **Outline** | `outline` | Team knowledge base and wiki | 3030 |
-| 67 | **Grist** | `grist` | Modern spreadsheet with relational database capabilities | 8484 |
-| 68 | **NocoDB** | `nocodb` | Open-source Airtable alternative - Smart spreadsheet | 8018 |
-| 69 | **Directus** | `directus` | Open-source headless CMS and backend-as-a-service | 8055 |
-| 70 | **InsForge** | `insforge` | Open-source backend platform for AI coding agents with database, auth, storage, and AI gateway | 7130 |
-| 71 | **Apache Spark** | `spark` | Unified analytics engine for large-scale data processing | 9093, 7077 |
-| 72 | **TwentyCRM** | `twentycrm` | Modern open-source CRM platform | 3021 |
-| 73 | **Chatwoot** | `chatwoot` | Open-source customer engagement platform (Intercom/Zendesk alternative) | 3092 |
-| 74 | **MedusaJS** | `medusajs` | Headless e-commerce platform (Shopify alternative) | 9003 |
-| 75 | **Huly** | `huly` | All-in-one project management platform (like Jira + Notion + Slack) | 8087 |
-| 76 | **Mattermost** | `mattermost` | Open-source team collaboration and messaging platform (like Slack) | 8065 |
-| 77 | **Cal.com** | `calcom` | Open-source scheduling platform (Calendly alternative) | 3040 |
-| 78 | **AdGuard-Home** | `adguard` | Network-wide ad and tracker blocking DNS server | 3004 |
-| 79 | **JasperReports** | `jasperreports` | Business intelligence and reporting platform | 8014 |
-| 80 | **DocuSeal** | `docuseal` | Open-source document signing and PDF form filling platform | 3009 |
-| 81 | **Stirling-PDF** | `stirlingpdf` | Powerful locally hosted PDF manipulation tool | 8090 |
-| 82 | **Pandoc-Web** | `pandocweb` | Web interface for Pandoc document converter | 8094 |
-| 83 | **Calibre-Web** | `calibreweb` | Web-based ebook library management and reader | 8083 |
-| 84 | **Immich** | `immich` | Self-hosted photo and video backup and management platform | 2283 |
-| 85 | **LibreTranslate** | `libretranslate` | Free and open source machine translation API | 5001 |
-| 86 | **OrcaRouter-Lite** | `orcarouterlite` | Lightweight LLM router with multi-provider support | 8000 |
-| 87 | **LiteLLM** | `litellm` | LLM proxy with unified API for 100+ LLMs | 4000 |
-| 88 | **AnythingLLM** | `anythingllm` | Multi-user AI platform with RAG, Agents, and local LLM support | 3007 |
-| 89 | **Voicebox** | `voicebox` | Open-source AI voice studio with voice cloning, TTS, and dictation | 17493 |
-| 90 | **CopilotKit** | `copilotkit` | Open-source AI agent runtime with multi-provider support | 4201 |
-| 91 | **Goose** | `goose` | Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation) | 8300 |
-| 92 | **Hermes** | `hermes` | Self-improving AI agent with persistent memory (Nous Research) | 8642 |
-| 93 | **OpenClaw** | `openclaw` | AI agent gateway for Claude Code, OpenAI Codex and more | 18789 |
-| 94 | **OpenHuman** | `openhuman` | Open-source AI agent platform with Rust core | 7788 |
+| 32 | **Jenkins** | `jenkins` | Automation server for building, testing, and deploying software | 8100 |
+| 33 | **Semaphore-UI** | `semaphore` | Modern UI for Ansible and shell automation | 3002 |
+| 34 | **Backstage** | `backstage` | Developer portal platform (Developer Portal by Spotify) | 7007 |
+| 35 | **Liquibase** | `liquibase` | Database schema change management and version control | 8091 |
+| 36 | **SonarQube** | `sonarqube` | Code quality and security analysis | 9002 |
+| 37 | **Trivy** | `trivy` | Container security scanner | 8088 |
+| 38 | **Karate** | `karate` | API, UI & performance test automation framework (VNC) | 5901 |
+| 39 | **RapiDoc** | `rapidoc` | WebComponent for OpenAPI Spec viewer | 8085 |
+| 40 | **Hoppscotch** | `hoppscotch` | Open-source API development ecosystem (Postman alternative) | 3080 |
+| 41 | **K6-OSS** | `k6` | Open-source load testing tool by Grafana Labs | 6565 |
+| 42 | **Grafana** | `grafana` | Analytics and monitoring platform | 3001 |
+| 43 | **Loki** | `loki` | Log aggregation system by Grafana Labs | 3100 |
+| 44 | **Prometheus** | `prometheus` | Open-source systems monitoring and alerting toolkit | 9090 |
+| 45 | **Fluent-Bit** | `fluentbit` | Lightweight log processor and forwarder | 2020 |
+| 46 | **Coroot** | `coroot` | Open-source observability and monitoring platform | 8081 |
+| 47 | **ReDash** | `redash` | SQL query editor and visualization platform | 5000 |
+| 48 | **Uptime-Kuma** | `uptimekuma` | Self-hosted uptime monitoring tool | 3003 |
+| 49 | **Dozzle** | `dozzle` | Lightweight Docker log viewer and monitor | 8097 |
+| 50 | **Registry** | `registry` | Private Docker container registry | 5002 |
+| 51 | **Nexus-Repository** | `nexus` | Universal artifact repository manager | 8098 |
+| 52 | **Infisical** | `infisical` | Open-source secret management platform | 8096 |
+| 53 | **Vault** | `vault` | Secrets and encryption management (HashiCorp) | 8200 |
+| 54 | **Consul** | `consul` | Service discovery and configuration (HashiCorp) | 8500 |
+| 55 | **Vaultwarden** | `vaultwarden` | Self-hosted Bitwarden-compatible password manager | 8222 |
+| 56 | **Linkwarden** | `linkwarden` | Self-hosted bookmark manager with tagging and archiving | 3101 |
+| 57 | **Shlink** | `shlink` | URL shortener with REST API and web interface | 8012 |
+| 58 | **Send** | `send` | Simple, private file sharing with end-to-end encryption (Firefox Send fork) | 1880 |
+| 59 | **Filestash** | `filestash` | Web-based file manager for any storage backend | 8334 |
+| 60 | **Seafile** | `seafile` | Self-hosted file sync and share platform (Google Drive alternative) | 8016 |
+| 61 | **Excalidraw** | `excalidraw` | Virtual whiteboard for sketching diagrams | 8082 |
+| 62 | **Draw.io** | `drawio` | Web-based diagramming application | 8084 |
+| 63 | **WiseMapping** | `wisemapping` | Web-based mind mapping tool (requires PostgreSQL) | 8095 |
+| 64 | **Kroki** | `kroki` | API for generating diagrams (PlantUML, Mermaid, GraphViz, etc.) | 8086 |
+| 65 | **Presenton** | `presenton` | Open-source AI presentation generator (Gamma/Canva alternative) | 5010 |
+| 66 | **Slidev** | `slidev` | Presentation slides for developers (Markdown-based) | 3031 |
+| 67 | **Outline** | `outline` | Team knowledge base and wiki | 3030 |
+| 68 | **Grist** | `grist` | Modern spreadsheet with relational database capabilities | 8484 |
+| 69 | **NocoDB** | `nocodb` | Open-source Airtable alternative - Smart spreadsheet | 8018 |
+| 70 | **Directus** | `directus` | Open-source headless CMS and backend-as-a-service | 8055 |
+| 71 | **InsForge** | `insforge` | Open-source backend platform for AI coding agents with database, auth, storage, and AI gateway | 7130 |
+| 72 | **Apache Spark** | `spark` | Unified analytics engine for large-scale data processing | 9093, 7077 |
+| 73 | **TwentyCRM** | `twentycrm` | Modern open-source CRM platform | 3021 |
+| 74 | **Chatwoot** | `chatwoot` | Open-source customer engagement platform (Intercom/Zendesk alternative) | 3092 |
+| 75 | **MedusaJS** | `medusajs` | Headless e-commerce platform (Shopify alternative) | 9003 |
+| 76 | **Huly** | `huly` | All-in-one project management platform (like Jira + Notion + Slack) | 8087 |
+| 77 | **Mattermost** | `mattermost` | Open-source team collaboration and messaging platform (like Slack) | 8065 |
+| 78 | **Cal.com** | `calcom` | Open-source scheduling platform (Calendly alternative) | 3040 |
+| 79 | **AdGuard-Home** | `adguard` | Network-wide ad and tracker blocking DNS server | 3004 |
+| 80 | **JasperReports** | `jasperreports` | Business intelligence and reporting platform | 8014 |
+| 81 | **DocuSeal** | `docuseal` | Open-source document signing and PDF form filling platform | 3009 |
+| 82 | **Stirling-PDF** | `stirlingpdf` | Powerful locally hosted PDF manipulation tool | 8090 |
+| 83 | **Pandoc-Web** | `pandocweb` | Web interface for Pandoc document converter | 8094 |
+| 84 | **Calibre-Web** | `calibreweb` | Web-based ebook library management and reader | 8083 |
+| 85 | **Immich** | `immich` | Self-hosted photo and video backup and management platform | 2283 |
+| 86 | **LibreTranslate** | `libretranslate` | Free and open source machine translation API | 5001 |
+| 87 | **OrcaRouter-Lite** | `orcarouterlite` | Lightweight LLM router with multi-provider support | 8000 |
+| 88 | **LiteLLM** | `litellm` | LLM proxy with unified API for 100+ LLMs | 4000 |
+| 89 | **AnythingLLM** | `anythingllm` | Multi-user AI platform with RAG, Agents, and local LLM support | 3007 |
+| 90 | **Voicebox** | `voicebox` | Open-source AI voice studio with voice cloning, TTS, and dictation | 17493 |
+| 91 | **CopilotKit** | `copilotkit` | Open-source AI agent runtime with multi-provider support | 4201 |
+| 92 | **Goose** | `goose` | Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation) | 8300 |
+| 93 | **Hermes** | `hermes` | Self-improving AI agent with persistent memory (Nous Research) | 8642 |
+| 94 | **OpenClaw** | `openclaw` | AI agent gateway for Claude Code, OpenAI Codex and more | 18789 |
 | 95 | **Firecrawl** | `firecrawl` | Open-source web scraping API with JavaScript rendering | 3008 |
 | 96 | **SearXNG** | `searxng` | Privacy-respecting metasearch engine | 8011 |
 | 97 | **Plausible** | `plausible` | Open-source web analytics platform (ClickHouse + PostgreSQL) | 3200 |
 | 98 | **Ntfy** | `ntfy` | Self-hosted push notification server with pub/sub topics, iOS/Android apps, and attachments | 8005 |
-| 99 | **Docker-Mailserver** | `mailserver` | Full-featured mail server (SMTP, IMAP, antispam, antivirus) | 25 |
-| 100 | **Listmonk** | `listmonk` | Self-hosted newsletter and mailing list manager | 9000 |
-| 101 | **Cloudflare-Tunnel** | `cloudflared` | Secure tunnel to expose services without opening ports | — |
-| 102 | **Headscale** | `headscale` | Self-hosted VPN server (Tailscale control server) with WireGuard | 8019 |
-| 103 | **Wetty** | `wetty` | Web-based SSH terminal for secure host access | 3033 |
-| 104 | **RustDesk-Server** | `rustdesk` | Open-source remote desktop server | 21115 |
+| 99 | **Mailpit** | `mailpit` | Email testing tool for developers (fake SMTP server with web UI) | 1025 |
+| 100 | **Docker-Mailserver** | `mailserver` | Full-featured mail server (SMTP, IMAP, antispam, antivirus) | 25 |
+| 101 | **Listmonk** | `listmonk` | Self-hosted newsletter and mailing list manager | 9000 |
+| 102 | **Cloudflare-Tunnel** | `cloudflared` | Secure tunnel to expose services without opening ports | — |
+| 103 | **Headscale** | `headscale` | Self-hosted VPN server (Tailscale control server) with WireGuard | 8019 |
+| 104 | **Wetty** | `wetty` | Web-based SSH terminal for secure host access | 3033 |
+| 105 | **RustDesk-Server** | `rustdesk` | Open-source remote desktop server | 21115 |
 
 <!--
-> *Perhaps, I will consider includes in a future*: Jitsi, PeerTube, Mastodon, Plane, FRP, BackVault, Koffan
+> *Perhaps, I will consider includes in a future*: GoCD, Jitsi, PeerTube, Mastodon, Plane, FRP, BackVault, Koffan
 -->
 ## Project Structure
 

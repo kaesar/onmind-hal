@@ -53,7 +53,9 @@ export class CLIInterface {
         );
 
         if (decision === 'reuse') {
-          this.config = StateManager.toConfig(prevState);
+          const coreTypes = [ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.ARCANE];
+          const previousOptional = prevState.selectedServices.filter(s => !coreTypes.includes(s));
+          this.config = await collectUserConfiguration(previousOptional);
           await this.displayConfigurationSummary();
           const confirmed = await promptForConfirmation('Do you want to proceed with this configuration?');
           if (!confirmed) {
@@ -208,6 +210,7 @@ export class CLIInterface {
       jupyterlab: 'JupyterLab (Notebook IDE)',
       forgejo: 'Forgejo (Git Server with CI/CD)',
       onedev: 'OneDev (Git Server)',
+      jenkins: 'Jenkins (CI/CD Server)',
       semaphore: 'Semaphore UI (Ansible UI)',
       backstage: 'Backstage (Developer Portal)',
       liquibase: 'Liquibase (DB Schema Management)',
@@ -270,11 +273,11 @@ export class CLIInterface {
       goose: 'Goose (AI Agent)',
       hermes: 'Hermes (AI Agent)',
       openclaw: 'OpenClaw (AI Agent Gateway)',
-      openhuman: 'OpenHuman (AI Agent Platform)',
       firecrawl: 'Firecrawl (Web Scraper)',
       searxng: 'SearXNG (Metasearch Engine)',
       plausible: 'Plausible Analytics (Web Analytics)',
       ntfy: 'Ntfy (Push Notification Server)',
+      mailpit: 'Mailpit (Email Testing Tool)',
       mailserver: 'Docker Mailserver (Mail Server)',
       listmonk: 'Listmonk (Email Marketing)',
       cloudflared: 'Cloudflare Tunnel (Secure Tunnel)',

@@ -22,7 +22,7 @@ export const DEFAULT_OPTIONAL_SERVICES: ServiceType[] = [
   ServiceType.KAFKA,
   ServiceType.POCKETID,
   ServiceType.NTFY,
-  ServiceType.MAILSERVER,
+  ServiceType.MAILPIT,
   ServiceType.INFISCAL,
   ServiceType.CLOUDFLARED,
 ];
@@ -126,13 +126,14 @@ export async function promptForNetworkName(): Promise<string> {
   return networkName.trim();
 }
 
-export async function promptForOptionalServices(): Promise<ServiceType[]> {
+export async function promptForOptionalServices(previousServices?: ServiceType[]): Promise<ServiceType[]> {
+  const usePrevious = Array.isArray(previousServices);
   const optionalServices = [
     {
       name: 'RustFS - High-performance S3-compatible distributed object storage',
       value: ServiceType.RUSTFS,
       short: 'RustFS',
-      checked: true
+      checked: usePrevious ? previousServices.includes(ServiceType.RUSTFS) : true
     },
     {
       name: 'DuckDB - In-memory analytical database with web UI',
@@ -143,13 +144,13 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'PostgreSQL - SQL database server (alternative to Oracle DB)',
       value: ServiceType.POSTGRESQL,
       short: 'PostgreSQL',
-      checked: true
+      checked: usePrevious ? previousServices.includes(ServiceType.POSTGRESQL) : true
     },
     {
       name: 'Redis - In-memory data store',
       value: ServiceType.REDIS,
       short: 'Redis',
-      checked: true
+      checked: usePrevious ? previousServices.includes(ServiceType.REDIS) : true
     },
     {
       name: 'MongoDB - NoSQL document database',
@@ -180,7 +181,7 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Kafka - Distributed streaming platform (with KRaft)',
       value: ServiceType.KAFKA,
       short: 'Kafka',
-      checked: true
+      checked: usePrevious ? previousServices.includes(ServiceType.KAFKA) : true
     },
     {
       name: 'Kafka UI - Web UI for managing Apache Kafka',
@@ -241,7 +242,7 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'PocketID - OIDC provider with passkeys support (for Caddy + oauth2-proxy)',
       value: ServiceType.POCKETID,
       short: 'PocketID',
-      checked: true
+      checked: usePrevious ? previousServices.includes(ServiceType.POCKETID) : true
     },
     {
       name: 'Apache APISIX - Cloud-native API Gateway and microservices management',
@@ -287,6 +288,11 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'OneDev - Self-hosted Git server with CI/CD',
       value: ServiceType.ONEDEV,
       short: 'OneDev'
+    },
+    {
+      name: 'Jenkins - Automation server for building, testing, and deploying software',
+      value: ServiceType.JENKINS,
+      short: 'Jenkins'
     },
     {
       name: 'Semaphore UI - Modern UI for Ansible and shell automation',
@@ -382,7 +388,7 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Infisical - Open-source secret management platform',
       value: ServiceType.INFISCAL,
       short: 'Infisical',
-      checked: true
+      checked: usePrevious ? previousServices.includes(ServiceType.INFISCAL) : true
     },
     {
       name: 'Vault - Secrets and encryption management (HashiCorp)',
@@ -580,11 +586,6 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       short: 'OpenClaw'
     },
     {
-      name: 'OpenHuman - Open-source AI agent platform with Rust core',
-      value: ServiceType.OPENHUMAN,
-      short: 'OpenHuman'
-    },
-    {
       name: 'Firecrawl - Open-source web scraping API with JavaScript rendering',
       value: ServiceType.FIRECRAWL,
       short: 'Firecrawl'
@@ -603,13 +604,18 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Ntfy - Self-hosted push notification server with pub/sub topics, iOS/Android apps, and attachments',
       value: ServiceType.NTFY,
       short: 'Ntfy',
-      checked: true
+      checked: usePrevious ? previousServices.includes(ServiceType.NTFY) : true
+    },
+    {
+      name: 'Mailpit - Email testing tool for developers (fake SMTP server with web UI)',
+      value: ServiceType.MAILPIT,
+      short: 'Mailpit',
+      checked: usePrevious ? previousServices.includes(ServiceType.MAILPIT) : true
     },
     {
       name: 'Docker Mailserver - Full-featured mail server',
       value: ServiceType.MAILSERVER,
-      short: 'Mailserver',
-      checked: true
+      short: 'Mailserver'
     },
     {
       name: 'Listmonk - Self-hosted newsletter and mailing list manager',
@@ -620,7 +626,7 @@ export async function promptForOptionalServices(): Promise<ServiceType[]> {
       name: 'Cloudflare Tunnel - Secure tunnel to expose services (requires Cloudflare account)',
       value: ServiceType.CLOUDFLARED,
       short: 'Cloudflared',
-      checked: true
+      checked: usePrevious ? previousServices.includes(ServiceType.CLOUDFLARED) : true
     },
     {
       name: 'Headscale - Self-hosted VPN server (Tailscale control server) with WireGuard',
@@ -760,7 +766,7 @@ export async function promptForPreviousInstallation(
 }
 
 // Main configuration collection function
-export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>> {
+export async function collectUserConfiguration(previousServices?: ServiceType[]): Promise<Partial<HomelabConfig>> {
   console.log('🏠 HomeLab Configuration Setup');
   console.log('Please provide the following information to configure your HomeLab:\n');
 
@@ -769,11 +775,11 @@ export async function collectUserConfiguration(): Promise<Partial<HomelabConfig>
   const networkName = await promptForNetworkName();
   const configPath = await promptForConfigPath();
   const dataPath = await promptForDataPath();
-  
+
   const managementUI = await promptForDockerManagementUI();
   console.log(`   ✓ ${managementUI === ServiceType.DOCKHAND ? 'Dockhand' : 'Arcane'} selected for container management`);
 
-  const optionalServices = await promptForOptionalServices();
+  const optionalServices = await promptForOptionalServices(previousServices);
   
   let storagePassword: string | undefined;
   if (optionalServices.includes(ServiceType.POSTGRESQL) || 

@@ -1,0 +1,21 @@
+name: Jenkins
+description: automation server for building, testing, and deploying software
+commands:
+  install:
+    - docker pull jenkins/jenkins:lts
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/jenkins/home
+  run: |-
+    docker run \
+          -d \
+          --name jenkins \
+          --network {{NETWORK_NAME}} \
+          -p 8100:8080 \
+          -p 50000:50000 \
+          -v ~/{{DATA_PATH}}/jenkins/home:/var/jenkins_home \
+          --restart=always \
+          jenkins/jenkins:lts
+variables:
+  - DATA_PATH
+  - NETWORK_NAME
+dependencies: []

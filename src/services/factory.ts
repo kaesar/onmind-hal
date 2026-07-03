@@ -34,6 +34,7 @@ import { CodeServerService } from './optional/codeserver.js';
 import { JupyterLabService } from './optional/jupyterlab.js';
 import { ForgejoService } from './optional/forgejo.js';
 import { OneDevService } from './optional/onedev.js';
+import { JenkinsService } from './optional/jenkins.js';
 import { SemaphoreService } from './optional/semaphore.js';
 import { BackstageService } from './optional/backstage.js';
 import { LiquibaseService } from './optional/liquibase.js';
@@ -85,6 +86,7 @@ import { CalibreWebService } from './optional/calibreweb.js';
 import { ImmichService } from './optional/immich.js';
 import { LibreTranslateService } from './optional/libretranslate.js';
 import { NtfyService } from './optional/ntfy.js';
+import { MailpitService } from './optional/mailpit.js';
 import { MailserverService } from './optional/mailserver.js';
 import { ListmonkService } from './optional/listmonk.js';
 import { CloudflaredService } from './optional/cloudflared.js';
@@ -104,7 +106,6 @@ import { CopilotKitService } from './optional/copilotkit.js';
 import { OpenClawService } from './optional/openclaw.js';
 import { GooseService } from './optional/goose.js';
 import { HermesService } from './optional/hermes.js';
-import { OpenHumanService } from './optional/openhuman.js';
 import { FirecrawlService } from './optional/firecrawl.js';
 import { SearXNGService } from './optional/searxng.js';
 import { PlausibleService } from './optional/plausible.js';
@@ -231,6 +232,9 @@ export class ServiceFactory {
         break;
       case ServiceType.ONEDEV:
         service = new OneDevService(config, this.templateEngine);
+        break;
+      case ServiceType.JENKINS:
+        service = new JenkinsService(config, this.templateEngine);
         break;
       case ServiceType.SEMAPHORE:
         service = new SemaphoreService(config, this.templateEngine);
@@ -385,6 +389,9 @@ export class ServiceFactory {
       case ServiceType.NTFY:
         service = new NtfyService(config, this.templateEngine);
         break;
+      case ServiceType.MAILPIT:
+        service = new MailpitService(config, this.templateEngine);
+        break;
       case ServiceType.MAILSERVER:
         service = new MailserverService(config, this.templateEngine);
         break;
@@ -438,9 +445,6 @@ export class ServiceFactory {
         break;
       case ServiceType.OPENCLAW:
         service = new OpenClawService(config, this.templateEngine);
-        break;
-      case ServiceType.OPENHUMAN:
-        service = new OpenHumanService(config, this.templateEngine);
         break;
       case ServiceType.FIRECRAWL:
         service = new FirecrawlService(config, this.templateEngine);
@@ -625,6 +629,7 @@ export class ServiceFactory {
       ServiceType.JUPYTERLAB,
       ServiceType.FORGEJO,
       ServiceType.ONEDEV,
+      ServiceType.JENKINS,
       ServiceType.SEMAPHORE,
       ServiceType.BACKSTAGE,
       ServiceType.LIQUIBASE,
@@ -654,7 +659,6 @@ export class ServiceFactory {
       ServiceType.GOOSE,
       ServiceType.HERMES,
       ServiceType.OPENCLAW,
-      ServiceType.OPENHUMAN,
       ServiceType.FIRECRAWL,
       ServiceType.SEARXNG,
       ServiceType.PLAUSIBLE,
@@ -696,6 +700,7 @@ export class ServiceFactory {
       ServiceType.SPARK,
       ServiceType.ORCAROUTERLITE,
       ServiceType.NTFY,
+      ServiceType.MAILPIT,
       ServiceType.MAILSERVER,
       ServiceType.LISTMONK,
       ServiceType.CLOUDFLARED,
@@ -791,6 +796,7 @@ export class ServiceFactory {
       'JupyterLab': ServiceType.JUPYTERLAB,
       'Forgejo': ServiceType.FORGEJO,
       'OneDev': ServiceType.ONEDEV,
+      'Jenkins': ServiceType.JENKINS,
       'Semaphore UI': ServiceType.SEMAPHORE,
       'Backstage': ServiceType.BACKSTAGE,
       'Liquibase': ServiceType.LIQUIBASE,
@@ -843,6 +849,7 @@ export class ServiceFactory {
       'Apache Spark': ServiceType.SPARK,
       'OrcaRouter Lite': ServiceType.ORCAROUTERLITE,
       'Ntfy': ServiceType.NTFY,
+      'Mailpit': ServiceType.MAILPIT,
       'Docker Mailserver': ServiceType.MAILSERVER,
       'Listmonk': ServiceType.LISTMONK,
       'Cloudflare Tunnel': ServiceType.CLOUDFLARED,
@@ -863,7 +870,6 @@ export class ServiceFactory {
       'Goose': ServiceType.GOOSE,
       'Hermes': ServiceType.HERMES,
       'OpenClaw': ServiceType.OPENCLAW,
-      'OpenHuman': ServiceType.OPENHUMAN,
       'OpenSearch': ServiceType.OPENSEARCH,
       'Qdrant': ServiceType.QDRANT,
       'Firecrawl': ServiceType.FIRECRAWL,

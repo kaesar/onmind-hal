@@ -1,0 +1,20 @@
+name: Mailpit
+description: Email testing tool for developers - fake SMTP server with web UI
+commands:
+  install:
+    - docker pull axllent/mailpit:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/mailpit
+  run: |-
+    docker run \
+          -d \
+          --name mailpit \
+          --network {{NETWORK_NAME}} \
+          -p 1025:1025 \
+          -v ~/{{DATA_PATH}}/mailpit:/mailpit \
+          --restart=always \
+          axllent/mailpit:latest
+variables:
+  - DATA_PATH
+  - NETWORK_NAME
+dependencies: []

@@ -28,6 +28,10 @@ import { NetworkUtils } from '../utils/network.js';
 import { ContainerRuntimeUtils } from '../utils/container.js';
 import { StateManager } from '../utils/state.js';
 import { $ } from 'bun';
+import inquirer from 'inquirer';
+import { writeFile, readFile, mkdir } from 'fs/promises';
+import { join } from 'path';
+import { homedir } from 'os';
 
 /**
  * Main application class that coordinates the entire HomeLab installation workflow
@@ -80,7 +84,10 @@ export class HomelabApplication {
       // Step 6: Install and configure services
       await this.installServices();
 
-      // Step 7: Display completion summary
+      // Step 7: Configure Cloudflare Tunnel if installed
+      await this.configureCloudflareTunnel();
+
+      // Step 8: Display completion summary
       this.displayCompletionSummary();
 
       // Save installation state for future re-runs
@@ -481,6 +488,106 @@ export class HomelabApplication {
   }
 
   /**
+   * Configure Cloudflare Tunnel with a permanent token if cloudflared was installed
+   */
+  private async configureCloudflareTunnel(): Promise<void> {
+    if (!this.config?.selectedServices.includes(ServiceType.CLOUDFLARED)) {
+      return;
+    }
+
+    const homeDir = process.env.HOME || process.env.USERPROFILE || '~';
+    const tokenPath = join(homeDir, '.cloudflared', 'token');
+
+    // Check if token already exists
+    try {
+      await readFile(tokenPath, 'utf-8');
+      console.log('\n🌐 Cloudflare Tunnel: permanent token detected, skipping configuration');
+      return;
+    } catch {
+      // No token file - continue with prompt
+    }
+
+    // Skip interactive prompt in non-interactive (script) mode
+    if (!process.stdin.isTTY) {
+      console.log('\n🌐 Cloudflare Tunnel: non-interactive mode detected');
+      console.log(`   To configure, run: bash scripts/setup-cloudflared.sh`);
+      console.log(`   Or save your token to: ${tokenPath}`);
+      return;
+    }
+
+    console.log('\n' + '═'.repeat(60));
+    console.log('🌐 Cloudflare Tunnel Configuration');
+    console.log('═'.repeat(60));
+    console.log('');
+    console.log('Cloudflared is running in quick tunnel mode (temporary URL).');
+    console.log('To expose your services with a permanent domain, you need a tunnel token.');
+    console.log('');
+    console.log('How to get your tunnel token:');
+    console.log('  1. Go to Cloudflare Zero Trust → Networks → Tunnels');
+    console.log('  2. Click "Create a tunnel"');
+    console.log('  3. Name your tunnel (e.g., homelab)');
+    console.log('  4. Copy the token from the install connector step');
+    console.log('     (starts with "eyJ...")');
+    console.log('');
+
+    const { configureTunnel } = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'configureTunnel',
+        message: 'Do you want to configure a permanent Cloudflare Tunnel?',
+        default: false,
+      },
+    ]);
+
+    if (!configureTunnel) {
+      console.log('   Skipping. You can configure later by saving your token to:');
+      console.log(`   ${tokenPath}`);
+      return;
+    }
+
+    const { tunnelToken } = await inquirer.prompt([
+      {
+        type: 'password',
+        name: 'tunnelToken',
+        message: 'Paste your Cloudflare Tunnel token:',
+        mask: '*',
+        validate: (input: string) => {
+          if (!input.trim()) return 'Token cannot be empty';
+          return true;
+        },
+      },
+    ]);
+
+    try {
+      // Save token
+      await mkdir(join(homeDir, '.cloudflared'), { recursive: true });
+      await writeFile(tokenPath, tunnelToken.trim());
+
+      // Recreate cloudflared container with permanent tunnel token
+      const runtime = ContainerRuntimeUtils.getCurrentRuntime() || 'docker';
+      const token = tunnelToken.trim();
+      const network = this.config!.networkName;
+
+      await $`sh -c "${runtime} stop cloudflared 2>/dev/null; ${runtime} rm cloudflared 2>/dev/null"`.quiet();
+      await $`sh -c "${runtime} run -d --name cloudflared --network ${network} -v ${homeDir}/.cloudflared:/etc/cloudflared --restart unless-stopped cloudflare/cloudflared:latest tunnel --no-autoupdate run --token '${token}'"`.quiet();
+
+      console.log('');
+      console.log('✅ Cloudflare Tunnel configured successfully!');
+      console.log('   Token saved and container recreated with permanent tunnel.');
+      console.log('   Your services will be available at the domains configured in Cloudflare Zero Trust.');
+    } catch (error) {
+      console.log('');
+      console.log('⚠️  Failed to configure tunnel automatically.');
+      console.log(`   Save your token manually: echo '<token>' > ${tokenPath}`);
+      console.log(`   Then recreate the container:`);
+      console.log(`   docker stop cloudflared && docker rm cloudflared`);
+      console.log(`   docker run -d --name cloudflared --network ${this.config?.networkName} \\`);
+      console.log(`     -v ~/.cloudflared:/etc/cloudflared --restart unless-stopped \\`);
+      console.log(`     cloudflare/cloudflared:latest tunnel --no-autoupdate run --token "$(cat ${tokenPath})"`);
+    }
+  }
+
+  /**
    * Display completion summary with access URLs
    */
   private displayCompletionSummary(): void {
@@ -604,6 +711,7 @@ export class HomelabApplication {
         'jupyterlab',
         'forgejo',
         'onedev',
+        'jenkins',
         'semaphore',
         'backstage',
         'liquibase',
@@ -660,11 +768,11 @@ export class HomelabApplication {
         'copilotkit',
         'goose',
         'openclaw',
-        'openhuman',
         'firecrawl',
         'searxng',
         'plausible',
         'ntfy',
+        'mailpit',
         'listmonk',
         'zrok',
         'wetty',
