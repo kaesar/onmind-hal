@@ -4,17 +4,20 @@
 
 Thinked for professionals or techie individuals, as well, IT area and infraestucture (CloudOps or DevSecOps), architecture and software development environments. That's the reason to include first serveral services for infra (IT), but also some services for HomeLab (around 100+). 
 
+I have tested the funtional flow and aceptance by myself trying installation en reinstall again and again, many but many times. The issues with containers and their repos are not about **HAL** (except some template).
+
 > This started from my Article about making your HomeLab: [here](https://onmind.net/devops/es/YourHomeLab)  
 > See other repos from my portfolio: [here](https://github.com/kaesar) 
 
 ## Features
 
-- **Automated Installation**: One-command setup for multiple services, around 100+ (even try `ufw` and `dnsmasq`)
+- **Automated Installation**: One-command setup for multiple services, around 100+ (even try `ufw` and `dnsmasq`, besides `caddy`)
 - **Multi-Platform Support**: Ubuntu/Debian (even WSL2: Windows Subsystem for Linux), Arch Linux, Amazon Linux 2023, macOS, Windows (MINGW64/Git Bash - experimental)
 - **Container Runtime Flexibility**: Docker, Colima, or Podman support on macOS and Linux
 - **Template-Based Configuration**: YAML templates for easy technical service customization
 - **Comprehensive Logging**: Detailed execution tracking for debugging
 - **Podman as Alternative**: Docker-first but `podman` could replace `docker` commands if you don't use Docker (experimental).
+- **Cloudflared Tunnel Support**: Setup for the Tunnel with Cloudflare
 
 > Many services couldn't fit in a machine, consider it's limits (memory, disk, CPU's).  
 > For all services you need a serious machine (like a server) at least with 32GB+.
@@ -35,7 +38,7 @@ git clone https://github.com/kaesar/onmind-hal.git hal
 cd hal
 bun install
 bun run build
-bun run start
+bun start
 ```
 
 > Follow the interactive prompts to configure your HomeLab setup.  
@@ -56,7 +59,7 @@ bun run src/main.ts [--ip <address>] [--domain <domain>] [--list <services>] [--
 - **`--password`** (optional): Database/Storage password in base64. If omitted but PostgreSQL/MariaDB/MongoDB are selected, a password is generated as `Admin<YY>!` (YY = last two digits of current year).
 - **`--help`**: Show usage information.
 
-> **Default optional services** (enabled when `--list` is omitted): RustFS, PostgreSQL, Redis, Kafka, PocketID, Ntfy, Mailpit, Infisical, Cloudflare Tunnel.
+> **Default optional services** (enabled when `--list` is omitted): RustFS, PostgreSQL, Redis, Kafka, PocketID, Ntfy, Mailpit, Cloudflare Tunnel.
 
 <!--
 Examples:
@@ -81,9 +84,9 @@ bun run src/main.ts --ip 192.168.1.100 --list postgresql,redis --password MySecr
 Examples:
 
 ```bash
-bun run src/main.ts --domain myhomelab.lan
+bun run src/main.ts --domain hal.lan --nolist jenkins,onedev,backstage,seafile,twentycrm,medusajs,huly,mailserver
 
-bun run src/main.ts --list defaults,n8n,floci
+bun run src/main.ts --list defaults,mongodb,mariadb,n8n,floci
 ```
 
 > To install directly in Linux you can add `sudo` (at the beginning) for priviledges
@@ -96,7 +99,7 @@ bun run src/main.ts --list defaults,n8n,floci
 - **Dockhand** (Docker) or **Arcane** (Podman): Container management interface
 - **Copyparty**: File sharing and management platform
 
-> In script mode: **Dockhand** is selected for Docker, **Arcane** for Podman. In interactive mode, you can choose between Dockhand or Arcane (user arcane with arcane-admin to pass).
+> In script mode: **Dockhand** is selected for Docker, **Arcane** for Podman. In interactive mode, you can choose between Dockhand or Arcane (the user is `arcane` with `arcane-admin` to pass).
 
 ### Optional Services
 

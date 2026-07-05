@@ -45,24 +45,28 @@ export class CLIInterface {
         console.log(`   IP: ${prevState.ip}  Domain: ${prevState.domain}`);
         console.log(`   Services: ${prevState.selectedServices.length} installed\n`);
 
-        const decision = await promptForPreviousInstallation(
-          dateStr,
-          prevState.ip,
-          prevState.domain,
-          prevState.selectedServices.length,
-        );
+        // Skip reuse prompt if previous installation has too few services
+        if (prevState.selectedServices.length > 3) {
+          const decision = await promptForPreviousInstallation(
+            dateStr,
+            prevState.ip,
+            prevState.domain,
+            prevState.selectedServices.length,
+          );
 
-        if (decision === 'reuse') {
-          const coreTypes = [ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.ARCANE];
-          const previousOptional = prevState.selectedServices.filter(s => !coreTypes.includes(s));
-          this.config = await collectUserConfiguration(previousOptional);
-          await this.displayConfigurationSummary();
-          const confirmed = await promptForConfirmation('Do you want to proceed with this configuration?');
-          if (!confirmed) {
-            console.log('❌ Configuration cancelled by user.');
-            process.exit(0);
+          if (decision === 'reuse') {
+            const coreTypes = [ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.ARCANE];
+            const previousOptional = prevState.selectedServices.filter(s => !coreTypes.includes(s));
+            const previousConfig = StateManager.toConfig(prevState);
+            this.config = await collectUserConfiguration(previousOptional, previousConfig);
+            await this.displayConfigurationSummary();
+            const confirmed = await promptForConfirmation('Do you want to proceed with this configuration?');
+            if (!confirmed) {
+              console.log('❌ Configuration cancelled by user.');
+              process.exit(0);
+            }
+            return this.validateAndCompleteConfig();
           }
-          return this.validateAndCompleteConfig();
         }
         console.log('   Starting fresh configuration...\n');
       }

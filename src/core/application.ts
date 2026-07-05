@@ -84,17 +84,20 @@ export class HomelabApplication {
       // Step 6: Install and configure services
       await this.installServices();
 
+      // Save installation state before optional Cloudflare step,
+      // but only if a meaningful selection was made (>= 3 services)
+      if (this.config!.selectedServices.length > 2) {
+        const managementUI = this.config!.selectedServices.includes(ServiceType.DOCKHAND)
+          ? ServiceType.DOCKHAND
+          : ServiceType.ARCANE;
+        await StateManager.save(this.config!, managementUI);
+      }
+
       // Step 7: Configure Cloudflare Tunnel if installed
       await this.configureCloudflareTunnel();
 
       // Step 8: Display completion summary
       this.displayCompletionSummary();
-
-      // Save installation state for future re-runs
-      const managementUI = this.config!.selectedServices.includes(ServiceType.DOCKHAND)
-        ? ServiceType.DOCKHAND
-        : ServiceType.ARCANE;
-      await StateManager.save(this.config!, managementUI);
 
       this.logger.info('✅ HomeLab installation completed successfully!');
     } catch (error) {
@@ -454,7 +457,26 @@ export class HomelabApplication {
       const command = `${runtime} restart caddy ${managementContainer} || true`;
       await $`sh -c ${command}`;
 
-      this.logger.info('✅ Core services restarted successfully');
+      // Verify Caddy is running after restart
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const statusResult = await $`sh -c "${runtime} ps --format '{{.Names}}\\t{{.Status}}'"`.quiet();
+      const statusOutput = statusResult.stdout.toString();
+
+      if (statusOutput.includes('caddy') && !statusOutput.includes('caddy.*Exited')) {
+        this.logger.info('✅ Core services restarted successfully');
+      } else {
+        this.logger.warn('⚠️  Caddy may not be running properly');
+        console.log('');
+        console.log('   ⚠️  Caddy requires ports 80 and 443 which are privileged.');
+        console.log('   To fix, run one of these commands:');
+        console.log('');
+        console.log('   Option 1 - Allow unprivileged ports (recommended):');
+        console.log('     sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80');
+        console.log('');
+        console.log('   Option 2 - Run Caddy with sudo:');
+        console.log(`     sudo ${runtime} start caddy`);
+        console.log('');
+      }
     } catch (error) {
       this.logger.warn(
         '⚠️  Failed to restart core services, but continuing...',
@@ -488,7 +510,7 @@ export class HomelabApplication {
   }
 
   /**
-   * Configure Cloudflare Tunnel with a permanent token if cloudflared was installed
+   * Configure Cloudflare Tunnel with local config if cloudflared was installed
    */
   private async configureCloudflareTunnel(): Promise<void> {
     if (!this.config?.selectedServices.includes(ServiceType.CLOUDFLARED)) {
@@ -496,38 +518,42 @@ export class HomelabApplication {
     }
 
     const homeDir = process.env.HOME || process.env.USERPROFILE || '~';
-    const tokenPath = join(homeDir, '.cloudflared', 'token');
+    const configDir = join(homeDir, this.config!.configPath || 'ws/init', 'cloudflared');
+    const configYmlPath = join(configDir, 'config.yml');
 
-    // Check if token already exists
+    // Check if config.yml already has a valid tunnel ID
     try {
-      await readFile(tokenPath, 'utf-8');
-      console.log('\n🌐 Cloudflare Tunnel: permanent token detected, skipping configuration');
-      return;
+      const content = await readFile(configYmlPath, 'utf-8');
+      if (content.includes('tunnel:') && !content.includes('TUNNEL_ID')) {
+        console.log('\n🌐 Cloudflare Tunnel: config.yml with tunnel ID detected, skipping configuration');
+        return;
+      }
     } catch {
-      // No token file - continue with prompt
+      // No config file - continue with prompt
     }
 
     // Skip interactive prompt in non-interactive (script) mode
     if (!process.stdin.isTTY) {
       console.log('\n🌐 Cloudflare Tunnel: non-interactive mode detected');
       console.log(`   To configure, run: bash scripts/setup-cloudflared.sh`);
-      console.log(`   Or save your token to: ${tokenPath}`);
+      console.log(`   Or edit: ${configYmlPath}`);
       return;
     }
+
+    const runtime = ContainerRuntimeUtils.getCurrentRuntime() || 'docker';
+    const network = this.config!.networkName;
 
     console.log('\n' + '═'.repeat(60));
     console.log('🌐 Cloudflare Tunnel Configuration');
     console.log('═'.repeat(60));
     console.log('');
     console.log('Cloudflared is running in quick tunnel mode (temporary URL).');
-    console.log('To expose your services with a permanent domain, you need a tunnel token.');
+    console.log('To expose your services permanently, configure the tunnel:');
     console.log('');
-    console.log('How to get your tunnel token:');
-    console.log('  1. Go to Cloudflare Zero Trust → Networks → Tunnels');
-    console.log('  2. Click "Create a tunnel"');
-    console.log('  3. Name your tunnel (e.g., homelab)');
-    console.log('  4. Copy the token from the install connector step');
-    console.log('     (starts with "eyJ...")');
+    console.log('How to set up (via container CLI):');
+    console.log('  1. Authenticate with Cloudflare (opens browser)');
+    console.log('  2. Create a tunnel');
+    console.log('  3. Routes in config.yml sync automatically to Cloudflare');
     console.log('');
 
     const { configureTunnel } = await inquirer.prompt([
@@ -540,50 +566,151 @@ export class HomelabApplication {
     ]);
 
     if (!configureTunnel) {
-      console.log('   Skipping. You can configure later by saving your token to:');
-      console.log(`   ${tokenPath}`);
+      console.log('   Skipping. You can configure later by running:');
+      console.log(`   bash scripts/setup-cloudflared.sh`);
       return;
     }
 
-    const { tunnelToken } = await inquirer.prompt([
-      {
-        type: 'password',
-        name: 'tunnelToken',
-        message: 'Paste your Cloudflare Tunnel token:',
-        mask: '*',
-        validate: (input: string) => {
-          if (!input.trim()) return 'Token cannot be empty';
-          return true;
-        },
-      },
-    ]);
-
     try {
-      // Save token
-      await mkdir(join(homeDir, '.cloudflared'), { recursive: true });
-      await writeFile(tokenPath, tunnelToken.trim());
+      await mkdir(configDir, { recursive: true });
 
-      // Recreate cloudflared container with permanent tunnel token
-      const runtime = ContainerRuntimeUtils.getCurrentRuntime() || 'docker';
-      const token = tunnelToken.trim();
-      const network = this.config!.networkName;
+      // Step 1: Authenticate with Cloudflare
+      console.log('\n📋 Step 1: Authenticate with Cloudflare');
+      console.log('   A URL will appear below. Open it in your browser to authenticate.');
+      console.log('');
+
+      // cloudflared container runs as nonroot by default. Use --user root
+      // so it can write cert.pem. Mount to /root/.cloudflared (root's home).
+      try {
+        await $`sh -c "${runtime} run --rm --user root -v ${configDir}:/root/.cloudflared cloudflare/cloudflared:latest tunnel login"`;
+      } catch {
+        // User can press Ctrl+C to cancel if needed
+      }
+
+      // Verify cert.pem was created
+      const certPath = join(configDir, 'cert.pem');
+      try {
+        await readFile(certPath, 'utf-8');
+        console.log('   ✓ Authentication successful');
+      } catch {
+        console.log('   ❌ Authentication failed or timed out. cert.pem not found.');
+        console.log('   You can retry later by running:');
+        console.log(`     ${runtime} run --rm --user root -v ${configDir}:/root/.cloudflared cloudflare/cloudflared:latest tunnel login`);
+        return;
+      }
+
+      // Step 2: Create tunnel
+      console.log('\n📋 Step 2: Create a tunnel');
+      const { tunnelName, tunnelDomain } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'tunnelName',
+          message: 'Tunnel name:',
+          default: 'homelab',
+        },
+        {
+          type: 'input',
+          name: 'tunnelDomain',
+          message: 'Public domain managed by Cloudflare (e.g., homelab.example.com):',
+          validate: (input: string) => input.length > 0 || 'Domain is required',
+        },
+      ]);
+
+      const createResult = await $`sh -c "${runtime} run --rm --user root -v ${configDir}:/root/.cloudflared cloudflare/cloudflared:latest tunnel create ${tunnelName.trim()}"`.quiet();
+      const createOutput = createResult.stdout.toString();
+
+      // Extract tunnel ID from output
+      const tunnelIdMatch = createOutput.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+      if (!tunnelIdMatch) {
+        console.log('   ❌ Failed to create tunnel. Output:');
+        console.log(createOutput);
+        return;
+      }
+      const tunnelId = tunnelIdMatch[1];
+      console.log(`   ✓ Tunnel created: ${tunnelId}`);
+
+      // Make credentials file readable by the container's nonroot user
+      const credsPath = join(configDir, `${tunnelId}.json`);
+      try {
+        await $`chmod 644 ${credsPath}`.quiet();
+      } catch {
+        // Best effort
+      }
+
+      // Step 3: Route DNS to tunnel
+      console.log('\n📋 Step 3: Route DNS to tunnel');
+      try {
+        const routeResult = await $`sh -c "${runtime} run --rm --user root -v ${configDir}:/root/.cloudflared cloudflare/cloudflared:latest tunnel route dns ${tunnelName.trim()} ${tunnelDomain}"`.quiet();
+        console.log(`   ✓ DNS route created for ${tunnelDomain}`);
+      } catch (routeError) {
+        console.log(`   ⚠️  DNS route may already exist or will be configured manually`);
+        console.log(`   Run later: cloudflared tunnel route dns ${tunnelName.trim()} ${tunnelDomain}`);
+      }
+
+      // Step 4: Update config.yml with tunnel ID and public domain
+      console.log('\n📋 Step 4: Update config.yml');
+      let configContent = '';
+      try {
+        configContent = await readFile(configYmlPath, 'utf-8');
+      } catch {
+        // File doesn't exist, will be generated by service
+      }
+
+      if (!configContent) {
+        console.log('   ⚠️  config.yml not found');
+      } else {
+        let updated = false;
+
+        // Replace TUNNEL_ID placeholder if present
+        if (configContent.includes('TUNNEL_ID')) {
+          configContent = configContent.replace(/tunnel: TUNNEL_ID/, `tunnel: ${tunnelId}`);
+          configContent = configContent.replace(/credentials-file: \/etc\/cloudflared\/TUNNEL_ID\.json/, `credentials-file: /etc/cloudflared/${tunnelId}.json`);
+          updated = true;
+        }
+
+        // Replace local domain with public tunnel domain in ingress hostnames
+        const localDomain = this.config!.domain;
+        if (configContent.includes(`.${localDomain}`)) {
+          configContent = configContent.split(`.${localDomain}`).join(`.${tunnelDomain}`);
+          updated = true;
+        }
+
+        if (updated) {
+          await writeFile(configYmlPath, configContent);
+          console.log('   ✓ config.yml updated');
+        } else {
+          console.log('   ✓ config.yml already up to date');
+        }
+      }
+
+      // Store public domain in config for Caddy HTTP routes
+      this.config!.tunnelDomain = tunnelDomain;
+
+      // Step 5: Verify Caddy and restart cloudflared
+      console.log('\n📋 Step 5: Start tunnel');
+      const caddyStatus = await $`sh -c "${runtime} ps --format '{{.Names}}\\t{{.Status}}'"`.quiet();
+      const caddyRunning = caddyStatus.stdout.toString().includes('caddy') &&
+                           !caddyStatus.stdout.toString().includes('caddy.*Exited');
+
+      if (!caddyRunning) {
+        console.log('   ⚠️  Caddy not running, attempting to start...');
+        await $`sh -c "${runtime} start caddy 2>/dev/null || true"`.quiet();
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
 
       await $`sh -c "${runtime} stop cloudflared 2>/dev/null; ${runtime} rm cloudflared 2>/dev/null"`.quiet();
-      await $`sh -c "${runtime} run -d --name cloudflared --network ${network} -v ${homeDir}/.cloudflared:/etc/cloudflared --restart unless-stopped cloudflare/cloudflared:latest tunnel --no-autoupdate run --token '${token}'"`.quiet();
+      await $`sh -c "${runtime} run -d --name cloudflared --network ${network} -v ${configDir}:/etc/cloudflared --restart unless-stopped cloudflare/cloudflared:latest tunnel --config /etc/cloudflared/config.yml --no-autoupdate run"`.quiet();
 
       console.log('');
       console.log('✅ Cloudflare Tunnel configured successfully!');
-      console.log('   Token saved and container recreated with permanent tunnel.');
-      console.log('   Your services will be available at the domains configured in Cloudflare Zero Trust.');
+      console.log(`   Tunnel ID: ${tunnelId}`);
+      console.log(`   Config: ${configYmlPath}`);
+      console.log('   Routes in config.yml will sync to Cloudflare automatically.');
     } catch (error) {
       console.log('');
-      console.log('⚠️  Failed to configure tunnel automatically.');
-      console.log(`   Save your token manually: echo '<token>' > ${tokenPath}`);
-      console.log(`   Then recreate the container:`);
-      console.log(`   docker stop cloudflared && docker rm cloudflared`);
-      console.log(`   docker run -d --name cloudflared --network ${this.config?.networkName} \\`);
-      console.log(`     -v ~/.cloudflared:/etc/cloudflared --restart unless-stopped \\`);
-      console.log(`     cloudflare/cloudflared:latest tunnel --no-autoupdate run --token "$(cat ${tokenPath})"`);
+      console.log('⚠️  Failed to configure tunnel.');
+      console.log(`   Run: bash scripts/setup-cloudflared.sh`);
+      console.log(`   Or edit: ${configYmlPath}`);
     }
   }
 

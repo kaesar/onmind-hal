@@ -72,7 +72,7 @@ export class StateManager {
     await writeFile(filePath, JSON.stringify(state, null, 2));
   }
 
-  static toConfig(state: HalState): Partial<HomelabConfig> {
+  static toConfig(state: HalState): Partial<HomelabConfig> & { managementUI?: ServiceType } {
     return {
       ip: state.ip,
       domain: state.domain,
@@ -81,6 +81,7 @@ export class StateManager {
       dataPath: state.dataPath,
       storagePassword: state.storagePassword,
       selectedServices: state.selectedServices,
+      managementUI: state.managementUI,
     };
   }
 }

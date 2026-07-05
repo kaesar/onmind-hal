@@ -136,6 +136,7 @@ export enum ServiceType {
 export interface HomelabConfig {
   ip: string;
   domain: string;
+  tunnelDomain?: string;
   networkName: string;
   storagePassword?: string;
   selectedServices: ServiceType[];

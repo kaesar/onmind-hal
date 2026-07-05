@@ -85,7 +85,7 @@ export function validatePassword(input: string): boolean | string {
 }
 
 // Prompt functions
-export async function promptForIP(): Promise<string> {
+export async function promptForIP(defaultValue?: string): Promise<string> {
   const localIP = await NetworkUtils.detectLocalIP();
 
   const { ip } = await inquirer.prompt([
@@ -94,33 +94,33 @@ export async function promptForIP(): Promise<string> {
       name: 'ip',
       message: 'Enter your server IP address:',
       validate: validateIP,
-      default: localIP || '192.168.1.100'
+      default: defaultValue || localIP || '192.168.1.100'
     }
   ]);
   return ip.trim();
 }
 
-export async function promptForDomain(): Promise<string> {
+export async function promptForDomain(defaultValue?: string): Promise<string> {
   const { domain } = await inquirer.prompt([
     {
       type: 'input',
       name: 'domain',
       message: 'Enter your domain name:',
       validate: validateDomain,
-      default: 'homelab.lan'
+      default: defaultValue || 'homelab.lan'
     }
   ]);
   return domain.trim();
 }
 
-export async function promptForNetworkName(): Promise<string> {
+export async function promptForNetworkName(defaultValue?: string): Promise<string> {
   const { networkName } = await inquirer.prompt([
     {
       type: 'input',
       name: 'networkName',
       message: 'Enter Docker network name:',
       validate: validateNetworkName,
-      default: 'homelab-network'
+      default: defaultValue || 'homelab-network'
     }
   ]);
   return networkName.trim();
@@ -133,7 +133,6 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       name: 'RustFS - High-performance S3-compatible distributed object storage',
       value: ServiceType.RUSTFS,
       short: 'RustFS',
-      checked: usePrevious ? previousServices.includes(ServiceType.RUSTFS) : true
     },
     {
       name: 'DuckDB - In-memory analytical database with web UI',
@@ -144,13 +143,11 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       name: 'PostgreSQL - SQL database server (alternative to Oracle DB)',
       value: ServiceType.POSTGRESQL,
       short: 'PostgreSQL',
-      checked: usePrevious ? previousServices.includes(ServiceType.POSTGRESQL) : true
     },
     {
       name: 'Redis - In-memory data store',
       value: ServiceType.REDIS,
       short: 'Redis',
-      checked: usePrevious ? previousServices.includes(ServiceType.REDIS) : true
     },
     {
       name: 'MongoDB - NoSQL document database',
@@ -181,7 +178,6 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       name: 'Kafka - Distributed streaming platform (with KRaft)',
       value: ServiceType.KAFKA,
       short: 'Kafka',
-      checked: usePrevious ? previousServices.includes(ServiceType.KAFKA) : true
     },
     {
       name: 'Kafka UI - Web UI for managing Apache Kafka',
@@ -242,7 +238,6 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       name: 'PocketID - OIDC provider with passkeys support (for Caddy + oauth2-proxy)',
       value: ServiceType.POCKETID,
       short: 'PocketID',
-      checked: usePrevious ? previousServices.includes(ServiceType.POCKETID) : true
     },
     {
       name: 'Apache APISIX - Cloud-native API Gateway and microservices management',
@@ -388,7 +383,6 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       name: 'Infisical - Open-source secret management platform',
       value: ServiceType.INFISCAL,
       short: 'Infisical',
-      // checked: usePrevious ? previousServices.includes(ServiceType.INFISCAL) : true
     },
     {
       name: 'Vault - Secrets and encryption management (HashiCorp)',
@@ -604,13 +598,11 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       name: 'Ntfy - Self-hosted push notification server with pub/sub topics, iOS/Android apps, and attachments',
       value: ServiceType.NTFY,
       short: 'Ntfy',
-      checked: usePrevious ? previousServices.includes(ServiceType.NTFY) : true
     },
     {
       name: 'Mailpit - Email testing tool for developers (fake SMTP server with web UI)',
       value: ServiceType.MAILPIT,
       short: 'Mailpit',
-      checked: usePrevious ? previousServices.includes(ServiceType.MAILPIT) : true
     },
     {
       name: 'Docker Mailserver - Full-featured mail server',
@@ -626,7 +618,6 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       name: 'Cloudflare Tunnel - Secure tunnel to expose services (requires Cloudflare account)',
       value: ServiceType.CLOUDFLARED,
       short: 'Cloudflared',
-      checked: usePrevious ? previousServices.includes(ServiceType.CLOUDFLARED) : true
     },
     {
       name: 'Headscale - Self-hosted VPN server (Tailscale control server) with WireGuard',
@@ -644,6 +635,13 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       short: 'RustDesk'
     }
   ];
+
+  // Apply checked state for all services based on previous selection or defaults
+  for (const service of optionalServices) {
+    service.checked = usePrevious
+      ? previousServices.includes(service.value)
+      : DEFAULT_OPTIONAL_SERVICES.includes(service.value);
+  }
 
   const { services } = await inquirer.prompt([
     {
@@ -678,25 +676,25 @@ export async function promptForStoragePassword(): Promise<string> {
   return password.trim();
 }
 
-export async function promptForConfigPath(): Promise<string> {
+export async function promptForConfigPath(defaultValue?: string): Promise<string> {
   const { configPath } = await inquirer.prompt([
     {
       type: 'input',
       name: 'configPath',
       message: 'Enter configuration files directory:',
-      default: 'ws/init'
+      default: defaultValue || 'ws/init'
     }
   ]);
   return configPath.trim();
 }
 
-export async function promptForDataPath(): Promise<string> {
+export async function promptForDataPath(defaultValue?: string): Promise<string> {
   const { dataPath } = await inquirer.prompt([
     {
       type: 'input',
       name: 'dataPath',
       message: 'Enter data and storage directory:',
-      default: 'ws/data'
+      default: defaultValue || 'ws/data'
     }
   ]);
   return dataPath.trim();
@@ -714,7 +712,7 @@ export async function promptForConfirmation(message: string): Promise<boolean> {
   return confirmed;
 }
 
-export async function promptForDockerManagementUI(): Promise<ServiceType> {
+export async function promptForDockerManagementUI(defaultValue?: ServiceType): Promise<ServiceType> {
   try {
     const runtime = await ContainerRuntimeUtils.detectRuntime();
 
@@ -732,7 +730,7 @@ export async function promptForDockerManagementUI(): Promise<ServiceType> {
           { name: 'Dockhand - Lightweight Docker management UI (default)', value: ServiceType.DOCKHAND },
           { name: 'Arcane - Modern container management interface', value: ServiceType.ARCANE }
         ],
-        default: ServiceType.DOCKHAND
+        default: defaultValue || ServiceType.DOCKHAND
       }
     ]);
 
@@ -766,17 +764,17 @@ export async function promptForPreviousInstallation(
 }
 
 // Main configuration collection function
-export async function collectUserConfiguration(previousServices?: ServiceType[]): Promise<Partial<HomelabConfig>> {
+export async function collectUserConfiguration(previousServices?: ServiceType[], previousConfig?: Partial<HomelabConfig> & { managementUI?: ServiceType }): Promise<Partial<HomelabConfig>> {
   console.log('🏠 HomeLab Configuration Setup');
   console.log('Please provide the following information to configure your HomeLab:\n');
 
-  const ip = await promptForIP();
-  const domain = await promptForDomain();
-  const networkName = await promptForNetworkName();
-  const configPath = await promptForConfigPath();
-  const dataPath = await promptForDataPath();
+  const ip = await promptForIP(previousConfig?.ip);
+  const domain = await promptForDomain(previousConfig?.domain);
+  const networkName = await promptForNetworkName(previousConfig?.networkName);
+  const configPath = await promptForConfigPath(previousConfig?.configPath);
+  const dataPath = await promptForDataPath(previousConfig?.dataPath);
 
-  const managementUI = await promptForDockerManagementUI();
+  const managementUI = await promptForDockerManagementUI(previousConfig?.managementUI);
   console.log(`   ✓ ${managementUI === ServiceType.DOCKHAND ? 'Dockhand' : 'Arcane'} selected for container management`);
 
   const optionalServices = await promptForOptionalServices(previousServices);

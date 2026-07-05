@@ -84,8 +84,8 @@ async function collectConfiguration() {
         { name: "Redis - In-memory data store", value: "redis" },
         { name: "MongoDB - NoSQL document database", value: "mongodb" },
         {
-          name: "Infisical - Secret management platform (requires PostgreSQL & Redis)",
-          value: "infisical",
+          name: "Mailpit - Mail testing tool (email catcher & SMTP)",
+          value: "mailpit",
         },
         { name: "Ollama - Local LLM server", value: "ollama" },
         {
@@ -176,10 +176,8 @@ function getCommands(config) {
     mongodb_volume_create: `docker volume create mongodb || true`,
     mongodb_run: `docker run -d -p 27017:27017 --name mongodb --network ${networkName} --restart always -v mongodb:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=homelab123 mongo:latest`,
 
-    infisical_mkdir: `mkdir -p ~/ws/data/infisical`,
-    infisical_encryption_key: `[ -f ~/ws/data/infisical/encryption.key ] || openssl rand -hex 16 > ~/ws/data/infisical/encryption.key`,
-    infisical_volume_create: `docker volume create infisical_data || true`,
-    infisical_run: `docker run -d -p 8080:8080 --name infisical --network ${networkName} --restart always -e ENCRYPTION_KEY=$(cat ~/ws/data/infisical/encryption.key) -e AUTH_SECRET=Admin${yy}! -e DB_CONNECTION_URI=postgresql://postgres:${postgresPassword}@postgres:5432/infisical -e REDIS_URL=redis://redis:6379 -e SITE_URL=https://infisical.${domain} -e PORT=8080 infisical/infisical:latest`,
+    mailpit_volume_create: `docker volume create mailpit_data || true`,
+    mailpit_run: `docker run -d -p 8025:8025 -p 1025:1025 --name mailpit --network ${networkName} --restart always -v mailpit_data:/data axllent/mailpit:latest`,
 
     ollama_volume_create: `docker volume create ollama || true`,
     ollama_run: `docker run -d -p 11434:11434 --name ollama --network ${networkName} --restart always -v ollama:/root/.ollama ollama/ollama`,
@@ -248,11 +246,11 @@ rustfs.${domain} {
 }`;
   }
 
-  if (services.includes("infisical")) {
+  if (services.includes("mailpit")) {
     caddyfileContent += `
 
-infisical.${domain} {
-    reverse_proxy infisical:8080
+mailpit.${domain} {
+    reverse_proxy mailpit:8025
     tls internal
 }`;
   }
@@ -298,8 +296,8 @@ address=/copyparty.${domain}/${ip}`;
     dnsmasqContent += `\naddress=/rustfs.${domain}/${ip}`;
   }
 
-  if (services.includes("infisical")) {
-    dnsmasqContent += `\naddress=/infisical.${domain}/${ip}`;
+  if (services.includes("mailpit")) {
+    dnsmasqContent += `\naddress=/mailpit.${domain}/${ip}`;
   }
 
   if (services.includes("ollama")) {
@@ -507,21 +505,13 @@ async function installHomeLab(config) {
       await runCommand(commands.mongodb_run, "Starting MongoDB container");
     }
 
-    if (services.includes("infisical")) {
-      console.log("\n🔐 Setting up Infisical...");
+    if (services.includes("mailpit")) {
+      console.log("\n📧 Setting up Mailpit...");
       await runCommand(
-        commands.infisical_mkdir,
-        "Creating Infisical data directory",
+        commands.mailpit_volume_create,
+        "Creating Mailpit volume",
       );
-      await runCommand(
-        commands.infisical_encryption_key,
-        "Generating encryption key",
-      );
-      await runCommand(
-        commands.infisical_volume_create,
-        "Creating Infisical volume",
-      );
-      await runCommand(commands.infisical_run, "Starting Infisical container");
+      await runCommand(commands.mailpit_run, "Starting Mailpit container");
     }
 
     if (services.includes("ollama")) {
@@ -582,8 +572,8 @@ async function installHomeLab(config) {
         `🍃 MongoDB: docker exec -it mongodb mongosh admin -u admin -p homelab123`,
       );
     }
-    if (services.includes("infisical")) {
-      console.log(`🔐 Infisical: https://infisical.${domain}`);
+    if (services.includes("mailpit")) {
+      console.log(`📧 Mailpit: https://mailpit.${domain}`);
     }
     if (services.includes("ollama")) {
       console.log(`🤖 Ollama: https://ollama.${domain}`);

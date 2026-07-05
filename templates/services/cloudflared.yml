@@ -4,9 +4,9 @@ commands:
   install:
     - docker pull cloudflare/cloudflared:latest
   setup:
-    - mkdir -p ~/.cloudflared
+    - mkdir -p ~/{{CONFIG_PATH}}/cloudflared
     - |
-      if [ ! -f ~/.cloudflared/token ]; then
+      if [ ! -f ~/{{CONFIG_PATH}}/cloudflared/config.yml ]; then
         echo ""
         echo "==============================================="
         echo " Cloudflare Tunnel"
@@ -14,37 +14,37 @@ commands:
         echo "Container will start in quick tunnel mode"
         echo "pointing to Caddy (http://caddy:80)."
         echo ""
-        echo "For a permanent tunnel with custom domain:"
+        echo "For a permanent tunnel with local config:"
         echo "1. Create a tunnel in Cloudflare Zero Trust"
-        echo "2. Copy the tunnel token (CF-Connector-...)"
-        echo "3. Save it:"
-        echo "   echo '\''<TOKEN>'\'' > ~/.cloudflared/token"
-        echo "4. Restart: docker restart cloudflared"
+        echo "2. Download the tunnel credentials JSON file"
+        echo "3. Copy it to: ~/{{CONFIG_PATH}}/cloudflared/"
+        echo "4. Update config.yml with your tunnel ID"
+        echo "5. Restart: docker restart cloudflared"
         echo ""
         echo "Or run the setup script for guided configuration:"
         echo "  bash scripts/setup-cloudflared.sh"
         echo "==============================================="
       fi
   run: |-
-    if [ -f ~/.cloudflared/token ]; then
-      TUNNEL_TOKEN=$(cat ~/.cloudflared/token)
+    if [ -f ~/{{CONFIG_PATH}}/cloudflared/config.yml ]; then
       docker run -d \
         --name cloudflared \
         --network {{NETWORK_NAME}} \
-        -v ~/.cloudflared:/etc/cloudflared \
+        -v ~/{{CONFIG_PATH}}/cloudflared:/etc/cloudflared \
         --restart unless-stopped \
         cloudflare/cloudflared:latest \
-        tunnel --no-autoupdate run --token "$TUNNEL_TOKEN"
+        tunnel --config /etc/cloudflared/config.yml --no-autoupdate run
     else
       docker run -d \
         --name cloudflared \
         --network {{NETWORK_NAME}} \
-        -v ~/.cloudflared:/etc/cloudflared \
+        -v ~/{{CONFIG_PATH}}/cloudflared:/etc/cloudflared \
         --restart unless-stopped \
         cloudflare/cloudflared:latest \
-        tunnel --no-autoupdate --url http://caddy:80
+        tunnel --no-autoupdate run --url http://caddy:80
     fi
 variables:
   - NETWORK_NAME
+  - CONFIG_PATH
 dependencies:
   - Caddy

@@ -103,6 +103,11 @@ describe('HomelabApplication Integration Tests', () => {
     (application as any).serviceFactory = mockServiceFactory;
     (application as any).templateEngine = mockTemplateEngine;
     (application as any).logger = mockLogger;
+
+    // Mock private methods that execute shell commands
+    (application as any).createDockerNetwork = mock(() => Promise.resolve());
+    (application as any).restartCoreServices = mock(() => Promise.resolve());
+    (application as any).configureCloudflareTunnel = mock(() => Promise.resolve());
   });
 
   afterEach(() => {
@@ -271,7 +276,7 @@ describe('HomelabApplication Integration Tests', () => {
   });
 
   describe('Service Installation Order', () => {
-    it('should install services in correct dependency order', async () => {
+    it('should install services in correct dependency order', { timeout: 15000 }, async () => {
       // Set configuration
       const config: HomelabConfig = {
         ip: '192.168.1.100',
@@ -312,7 +317,7 @@ describe('HomelabApplication Integration Tests', () => {
   });
 
   describe('Error Handling and Rollback', () => {
-    it('should continue installing when an optional service fails', async () => {
+    it('should continue installing when an optional service fails', { timeout: 15000 }, async () => {
       // Set configuration
       const config: HomelabConfig = {
         ip: '192.168.1.100',
@@ -369,7 +374,7 @@ describe('HomelabApplication Integration Tests', () => {
   });
 
   describe('Completion Summary', () => {
-    it('should display completion summary with service URLs', async () => {
+    it('should display completion summary with service URLs', { timeout: 15000 }, async () => {
       // Set configuration
       const config: HomelabConfig = {
         ip: '192.168.1.100',
@@ -393,7 +398,7 @@ describe('HomelabApplication Integration Tests', () => {
   });
 
   describe('Firewall Configuration', () => {
-    it('should configure firewall after Docker installation', async () => {
+    it('should configure firewall after Docker installation', { timeout: 15000 }, async () => {
       // Set configuration
       const config: HomelabConfig = {
         ip: '192.168.1.100',

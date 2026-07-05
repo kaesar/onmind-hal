@@ -51,47 +51,68 @@ export class CaddyService extends BaseService {
   private generateDynamicCaddyfile(): string {
     const isMacOS = process.platform === 'darwin';
     const isLocalDomain = NetworkUtils.isLocalDomain(this.config.domain, this.config.ip);
-    
+    const hasCloudflared = this.config.selectedServices.includes(ServiceType.CLOUDFLARED);
+
     const services = this.getServiceProxyConfig();
-    
-    let content = '# Caddyfile for HomeLab services\n\n';
-    
-    // Global options - NO local_certs para Linux con dominios locales
-    if (!isLocalDomain || isMacOS) {
+
+    let content = '# Caddyfile for HomeLab services\n';
+    content += '# http:// = HTTP only (port 80), no redirect\n';
+    content += '# https:// = HTTPS only (port 443)\n\n';
+
+    // Global options - only for non-local public domains (Let's Encrypt)
+    if (!isLocalDomain) {
       content += '{\n';
-      if (isMacOS && isLocalDomain) {
-        content += '    # Use self-signed certificates for local development on macOS\n';
-        content += '    local_certs\n';
-      } else {
-        content += '    # Email for Let\'s Encrypt\n';
-        content += `    email admin@${this.config.domain}\n`;
-      }
+      content += `    email admin@${this.config.domain}\n`;
       content += '}\n\n';
     }
-    
-    // Main domain - Caddy default page (uncomment redir to customize)
-    content += `# Main domain\n`;
-    content += `${this.config.domain} {\n`;
-    if (isLocalDomain && !isMacOS) {
-      content += `    tls internal\n`;
-    }
+
+    // === HTTP on port 80 ===
+    content += '# HTTP - port 80 (no redirect)\n';
+
+    // Local domain HTTP
+    content += `http://${this.config.domain} {\n`;
     content += `    respond "Welcome to OnMind-HAL" 200\n`;
-    content += `    #redir https://files.${this.config.domain}\n`;
     content += '}\n\n';
-    
-    // Generate proxy configurations for selected services
-    if (services.length > 0) {
-      content += '# Installed Services\n';
+
+    for (const service of services) {
+      content += `http://${service.subdomain}.${this.config.domain} {\n`;
+      content += `    reverse_proxy ${service.container}:${service.port}\n`;
+      content += '}\n\n';
+    }
+
+    // Public domain HTTP routes (for Cloudflare Tunnel)
+    if (hasCloudflared && isLocalDomain) {
+      content += '# Public domain via Cloudflare Tunnel\n';
+      content += `http://${this.config.tunnelDomain} {\n`;
+      content += `    respond "Welcome to OnMind-HAL" 200\n`;
+      content += '}\n\n';
+
       for (const service of services) {
-        content += `${service.subdomain}.${this.config.domain} {\n`;
-        if (isLocalDomain && !isMacOS) {
-          content += `    tls internal\n`;
-        }
+        content += `http://${service.subdomain}.${this.config.tunnelDomain} {\n`;
         content += `    reverse_proxy ${service.container}:${service.port}\n`;
         content += '}\n\n';
       }
     }
-    
+
+    // === HTTPS on port 443 ===
+    content += `# HTTPS - port 443 (${isLocalDomain ? 'self-signed' : "Let's Encrypt"})\n`;
+
+    content += `https://${this.config.domain} {\n`;
+    if (isLocalDomain) {
+      content += `    tls internal\n`;
+    }
+    content += `    respond "Welcome to OnMind-HAL" 200\n`;
+    content += '}\n\n';
+
+    for (const service of services) {
+      content += `https://${service.subdomain}.${this.config.domain} {\n`;
+      if (isLocalDomain) {
+        content += `    tls internal\n`;
+      }
+      content += `    reverse_proxy ${service.container}:${service.port}\n`;
+      content += '}\n\n';
+    }
+
     return content;
   }
 

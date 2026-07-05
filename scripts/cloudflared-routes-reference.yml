@@ -1,0 +1,172 @@
+# Reference: Cloudflare Tunnel ingress rules
+# These routes match the services configured in Caddyfile.
+# Configure them in Cloudflare Zero Trust Dashboard → Networks → Tunnels → Public Hostnames.
+#
+# Each route: hostname = subdomain.yourdomain.com → http://caddy:8080
+# Caddy handles internal routing based on the Host header.
+
+ingress:
+  # --- Core Services ---
+  - hostname: files.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: arcane.{{DOMAIN}}
+    service: http://caddy:8080
+
+  # --- Storage & Databases ---
+  - hostname: rustfs.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: duckdb.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: opensearch.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: spark.{{DOMAIN}}
+    service: http://caddy:8080
+
+  # --- AI & LLM ---
+  - hostname: openwebui.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: notebook.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: orcarouter.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: litellm.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: anythingllm.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: voicebox.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: copilotkit.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: goose.{{DOMAIN}}
+    service: http://caddy:8080
+
+  # --- Automation & Workflows ---
+  - hostname: n8n.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: kestra.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: tooljet.{{DOMAIN}}
+    service: http://caddy:8080
+
+  # --- Dev Tools ---
+  - hostname: codeserver.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: jupyterlab.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: forgejo.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: k3d.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: semaphore.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: sonarqube.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: trivy.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: rapidoc.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: hoppscotch.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: k6.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: liquibase.{{DOMAIN}}
+    service: http://caddy:8080
+
+  # --- Monitoring ---
+  - hostname: grafana.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: loki.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: prometheus.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: coroot.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: redash.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: uptimekuma.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: dozzle.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: analytics.{{DOMAIN}}
+    service: http://caddy:8080
+
+  # --- Auth & Security ---
+  - hostname: auth.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: authelia.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: secrets.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: vaultwarden.{{DOMAIN}}
+    service: http://caddy:8080
+
+  # --- Productivity ---
+  - hostname: outline.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: grist.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: drawio.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: excalidraw.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: wisemapping.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: kroki.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: presenton.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: slidev.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: pdf.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: linkwarden.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: shlink.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: send.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: filestash.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: translate.{{DOMAIN}}
+    service: http://caddy:8080
+
+  # --- Communication ---
+  - hostname: mattermost.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: chatwoot.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: ntfy.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: mailpit.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: cal.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: huly.{{DOMAIN}}
+    service: http://caddy:8080
+
+  # --- Registry & Misc ---
+  - hostname: registry.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: nexus.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: adguard.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: jasper.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: docuseal.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: searxng.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: floci.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: flociaz.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: flocigcp.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: firecrawl.{{DOMAIN}}
+    service: http://caddy:8080
+  - hostname: wetty.{{DOMAIN}}
+    service: http://caddy:8080
+
+  # Catch-all (required)
+  - service: http_status:404

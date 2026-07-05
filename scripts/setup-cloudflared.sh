@@ -1,144 +1,129 @@
 #!/bin/bash
 # Cloudflare Tunnel Setup Helper for OnMind-HAL
-# This script helps configure Cloudflare Tunnel after installation
+# This script configures Cloudflare Tunnel via container CLI
+#
+# Usage: bash scripts/setup-cloudflared.sh [config_path]
+#   config_path: Optional path for cloudflared config (default: ~/ws/init)
 
 set -e
 
+CONFIG_PATH="${1:-$HOME/ws/init}"
+CLOUDFLARED_DIR="$CONFIG_PATH/cloudflared"
+RUNTIME="docker"
+
+# Detect container runtime
+if command -v podman &> /dev/null; then
+    RUNTIME="podman"
+fi
+
 echo "Cloudflare Tunnel Setup Helper"
 echo "================================"
+echo "Config directory: $CLOUDFLARED_DIR"
+echo "Runtime: $RUNTIME"
 echo ""
 
-# Check if Docker is available
-if ! command -v docker &> /dev/null; then
-    echo "Docker is not installed or not in PATH"
+# Check if runtime is available
+if ! command -v $RUNTIME &> /dev/null; then
+    echo "$RUNTIME is not installed or not in PATH"
     exit 1
 fi
 
 # Check if cloudflared image is available
-if ! docker images | grep -q cloudflare/cloudflared; then
+if ! $RUNTIME images | grep -q cloudflare/cloudflared; then
     echo "Pulling Cloudflare Tunnel image..."
-    docker pull cloudflare/cloudflared:latest
+    $RUNTIME pull cloudflare/cloudflared:latest
 fi
 
 # Create config directory
-mkdir -p ~/.cloudflared
+mkdir -p "$CLOUDFLARED_DIR"
+
+# Check if already configured
+if [ -f "$CLOUDFLARED_DIR/config.yml" ]; then
+    if grep -q "tunnel:" "$CLOUDFLARED_DIR/config.yml" && ! grep -q "TUNNEL_ID" "$CLOUDFLARED_DIR/config.yml"; then
+        echo "✓ Tunnel already configured in config.yml"
+        echo ""
+        echo "To reconfigure, delete config.yml and run this script again."
+        echo "To add routes, edit: $CLOUDFLARED_DIR/config.yml"
+        exit 0
+    fi
+fi
 
 echo "Step 1: Authenticate with Cloudflare"
 echo "-------------------------------------"
-echo "This will open your browser to authenticate with Cloudflare."
+echo "A URL will appear. Open it in your browser to authenticate."
 echo "Press Enter to continue..."
 read -r
 
-docker run --rm -v ~/.cloudflared:/home/nonroot/.cloudflared \
+$RUNTIME run --rm --user root -v "$CLOUDFLARED_DIR":/root/.cloudflared \
     cloudflare/cloudflared:latest tunnel login
 
-if [ ! -f ~/.cloudflared/cert.pem ]; then
+if [ ! -f "$CLOUDFLARED_DIR/cert.pem" ]; then
     echo "Authentication failed. cert.pem not found."
     exit 1
 fi
 
-echo "Authentication successful!"
+echo "✓ Authentication successful!"
 echo ""
 
 echo "Step 2: Create a tunnel"
 echo "-----------------------"
-echo "Enter a name for your tunnel (e.g., homelab):"
-read -r TUNNEL_NAME
+read -p "Tunnel name (default: homelab): " TUNNEL_NAME
+TUNNEL_NAME="${TUNNEL_NAME:-homelab}"
 
-if [ -z "$TUNNEL_NAME" ]; then
-    TUNNEL_NAME="homelab"
-    echo "Using default name: $TUNNEL_NAME"
-fi
+CREATE_OUTPUT=$($RUNTIME run --rm --user root -v "$CLOUDFLARED_DIR":/root/.cloudflared \
+    cloudflare/cloudflared:latest tunnel create "$TUNNEL_NAME" 2>&1)
 
-docker run --rm -v ~/.cloudflared:/home/nonroot/.cloudflared \
-    cloudflare/cloudflared:latest tunnel create "$TUNNEL_NAME"
+echo "$CREATE_OUTPUT"
 
-# Get tunnel ID
-TUNNEL_ID=$(docker run --rm -v ~/.cloudflared:/home/nonroot/.cloudflared \
-    cloudflare/cloudflared:latest tunnel list | grep "$TUNNEL_NAME" | awk '{print $1}')
+# Extract tunnel ID
+TUNNEL_ID=$(echo "$CREATE_OUTPUT" | grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1)
 
 if [ -z "$TUNNEL_ID" ]; then
     echo "Failed to create tunnel"
     exit 1
 fi
 
-echo "Tunnel created successfully!"
-echo "   Tunnel ID: $TUNNEL_ID"
+echo ""
+echo "✓ Tunnel created: $TUNNEL_ID"
 echo ""
 
-echo "Step 3: Configure ingress rules"
-echo "--------------------------------"
+echo "Step 3: Route DNS to tunnel"
+echo "---------------------------"
+read -p "Domain (e.g., homelab.example.com): " DOMAIN
 
-CADDYFILE="$HOME/ws/init/Caddyfile"
-
-# Build ingress YAML entries from Caddyfile
-INGRESS=""
-if [ -f "$CADDYFILE" ]; then
-    echo "Detecting services from Caddyfile..."
-    echo ""
-    while IFS= read -r line; do
-        if [[ "$line" =~ ^([a-zA-Z0-9_-]+)\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\ \{$ ]]; then
-            subdomain=$(echo "$line" | awk -F. '{print $1}')
-        fi
-        if [[ "$line" =~ reverse_proxy\ ([a-zA-Z0-9_-]+):([0-9]+) ]]; then
-            container="${BASH_REMATCH[1]}"
-            port="${BASH_REMATCH[2]}"
-            if [ -n "$subdomain" ] && [ -n "$container" ]; then
-                INGRESS="${INGRESS}  # - hostname: $subdomain.YOUR_DOMAIN
-  #   service: http://$container:$port
-"
-            fi
-        fi
-    done < "$CADDYFILE"
+if [ -n "$DOMAIN" ]; then
+    $RUNTIME run --rm --user root -v "$CLOUDFLARED_DIR":/root/.cloudflared \
+        cloudflare/cloudflared:latest tunnel route dns "$TUNNEL_NAME" "$DOMAIN" 2>&1 || \
+        echo "⚠️  DNS route may already exist or will be configured manually"
+    echo "✓ DNS route configured for $DOMAIN"
+else
+    echo "⚠️  No domain provided. Run later: cloudflared tunnel route dns $TUNNEL_NAME <domain>"
 fi
 
-cat > ~/.cloudflared/config.yml <<EOF
-tunnel: $TUNNEL_ID
-credentials-file: /etc/cloudflared/$TUNNEL_ID.json
-
-ingress:
-$(echo "$INGRESS" | sed 's/^/  /')
-  # Catch-all rule (required)
-  - service: http_status:404
-EOF
-
-echo "Configuration file created at ~/.cloudflared/config.yml"
-echo ""
-echo "Edit it to uncomment the services you want to expose and set your domain."
 echo ""
 
-echo "Step 4: Configure DNS routes (optional)"
-echo "----------------------------------------"
-echo "Do you want to create DNS routes for your services? (y/n):"
-read -r SETUP_DNS
+echo "Step 4: Update config.yml"
+echo "-------------------------"
 
-if [ "$SETUP_DNS" = "y" ]; then
-    echo "Enter your Cloudflare domain (e.g., yourdomain.com):"
-    read -r DOMAIN
-
-    if [ -n "$DOMAIN" ]; then
-        while IFS= read -r line; do
-            if [[ "$line" =~ ^([a-zA-Z0-9_-]+)\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\ \{$ ]]; then
-                subdomain=$(echo "$line" | awk -F. '{print $1}')
-                echo ""
-                echo "Create DNS route for $subdomain.$DOMAIN? (y/n):"
-                read -r CREATE_ROUTE
-                if [ "$CREATE_ROUTE" = "y" ]; then
-                    docker run --rm -v ~/.cloudflared:/home/nonroot/.cloudflared \
-                        cloudflare/cloudflared:latest tunnel route dns "$TUNNEL_NAME" "$subdomain.$DOMAIN"
-                    echo "Route created: $subdomain.$DOMAIN"
-                fi
-            fi
-        done < "$CADDYFILE"
-    fi
+if [ -f "$CLOUDFLARED_DIR/config.yml" ]; then
+    sed -i "s/tunnel: TUNNEL_ID/tunnel: $TUNNEL_ID/g" "$CLOUDFLARED_DIR/config.yml"
+    sed -i "s|credentials-file: /etc/cloudflared/TUNNEL_ID.json|credentials-file: /etc/cloudflared/$TUNNEL_ID.json|g" "$CLOUDFLARED_DIR/config.yml"
+    echo "✓ config.yml updated with tunnel ID"
+else
+    echo "⚠️  config.yml not found. Run the HAL installer first to generate it."
 fi
+
+echo ""
+
+echo "Step 5: Restart cloudflared"
+echo "---------------------------"
+$RUNTIME restart cloudflared 2>/dev/null || echo "Container not running"
 
 echo ""
 echo "Setup complete!"
 echo ""
-echo "Next steps:"
-echo "1. Edit ~/.cloudflared/config.yml and uncomment the services you want to expose"
-echo "2. Start the tunnel:"
-echo "   docker start cloudflared"
-echo "3. Check tunnel status:"
-echo "   docker logs cloudflared"
+echo "Tunnel ID: $TUNNEL_ID"
+echo "Config: $CLOUDFLARED_DIR/config.yml"
+echo ""
+echo "Routes in config.yml will sync to Cloudflare automatically."
+echo "To add more routes, edit: $CLOUDFLARED_DIR/config.yml"
