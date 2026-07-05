@@ -56,7 +56,7 @@ export class CLIInterface {
 
           if (decision === 'reuse') {
             const coreTypes = [ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.ARCANE];
-            const previousOptional = prevState.selectedServices.filter(s => !coreTypes.includes(s));
+            const previousOptional = prevState.selectedServices.filter(s => s != null && !coreTypes.includes(s));
             const previousConfig = StateManager.toConfig(prevState);
             this.config = await collectUserConfiguration(previousOptional, previousConfig);
             await this.displayConfigurationSummary();
@@ -113,7 +113,7 @@ export class CLIInterface {
       const prevState = await StateManager.load();
       if (prevState) {
         const coreTypes = [ServiceType.CADDY, ServiceType.COPYPARTY, ServiceType.DOCKHAND, ServiceType.ARCANE];
-        const optionalServices = prevState.selectedServices.filter(s => !coreTypes.includes(s));
+        const optionalServices = prevState.selectedServices.filter(s => s != null && !coreTypes.includes(s));
         console.log(`   📋 Restoring ${optionalServices.length} optional services from previous installation`);
         services = optionalServices;
       }
@@ -318,6 +318,12 @@ export class CLIInterface {
       throw new HomelabError(`Configuration validation failed: ${errors.join(', ')}`, 'CONFIG_VALIDATION_ERROR');
     }
 
+    // Sanitize selectedServices: remove null/undefined and invalid values
+    const validServices = Object.values(ServiceType);
+    const sanitizedServices = (this.config.selectedServices || []).filter(
+      (s): s is ServiceType => s != null && validServices.includes(s),
+    );
+
     // Note: distribution will be set by the application controller after detection
     return {
       ip: this.config.ip!,
@@ -325,7 +331,7 @@ export class CLIInterface {
       networkName: this.config.networkName!,
       configPath: this.config.configPath || 'ws/init',
       dataPath: this.config.dataPath || 'ws/data',
-      selectedServices: this.config.selectedServices!,
+      selectedServices: sanitizedServices,
       storagePassword: this.config.storagePassword,
       distribution: DistributionType.UBUNTU // Will be overridden by detection
     };

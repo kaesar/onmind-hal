@@ -11,13 +11,15 @@ I have tested the funtional flow and aceptance by myself trying installation en 
 
 ## Features
 
+Simply you can use docker or podman, setup ufw & dnsmasq (linux), caddy and cloudflared tunnel client. All of this and 100+ services/containers in an automation tool.
+
 - **Automated Installation**: One-command setup for multiple services, around 100+ (even try `ufw` and `dnsmasq`, besides `caddy`)
 - **Multi-Platform Support**: Ubuntu/Debian (even WSL2: Windows Subsystem for Linux), Arch Linux, Amazon Linux 2023, macOS, Windows (MINGW64/Git Bash - experimental)
 - **Container Runtime Flexibility**: Docker, Colima, or Podman support on macOS and Linux
 - **Template-Based Configuration**: YAML templates for easy technical service customization
 - **Comprehensive Logging**: Detailed execution tracking for debugging
 - **Podman as Alternative**: Docker-first but `podman` could replace `docker` commands if you don't use Docker (experimental).
-- **Cloudflared Tunnel Support**: Setup for the Tunnel with Cloudflare
+- **Cloudflared Tunnel Support**: Setup for the Tunnel with Cloudflare client (`cloudflared`)
 
 > Many services couldn't fit in a machine, consider it's limits (memory, disk, CPU's).  
 > For all services you need a serious machine (like a server) at least with 32GB+.

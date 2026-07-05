@@ -788,7 +788,11 @@ export async function collectUserConfiguration(previousServices?: ServiceType[],
 
   // Core services are always included
   const coreServices = [ServiceType.CADDY, ServiceType.COPYPARTY];
-  const selectedServices = [...coreServices, managementUI, ...optionalServices];
+  const validServices = Object.values(ServiceType);
+  const sanitizedOptional = optionalServices.filter(
+    (s): s is ServiceType => s != null && validServices.includes(s),
+  );
+  const selectedServices = [...coreServices, managementUI, ...sanitizedOptional];
 
   return {
     ip,
