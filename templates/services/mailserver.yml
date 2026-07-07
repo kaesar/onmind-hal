@@ -2,7 +2,7 @@ name: Docker Mailserver
 description: Full-featured mail server (SMTP, IMAP, POP3, antispam, antivirus)
 commands:
   install:
-    - docker pull docker.io/mailserver/docker-mailserver:latest
+    - docker pull mailserver/docker-mailserver:latest
   setup:
     - mkdir -p ~/{{DATA_PATH}}/mailserver/data
     - mkdir -p ~/{{DATA_PATH}}/mailserver/state

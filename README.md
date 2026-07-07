@@ -205,7 +205,7 @@ bun run src/main.ts --list defaults,mongodb,mariadb,n8n,floci
 | 96 | **SearXNG** | `searxng` | Privacy-respecting metasearch engine | 8011 |
 | 97 | **Plausible** | `plausible` | Open-source web analytics platform (ClickHouse + PostgreSQL) | 3200 |
 | 98 | **Ntfy** | `ntfy` | Self-hosted push notification server with pub/sub topics, iOS/Android apps, and attachments | 8005 |
-| 99 | **Mailpit** | `mailpit` | Email testing tool for developers (fake SMTP server with web UI) | 1025 |
+| 99 | **Mailpit** | `mailpit` | Email testing tool for developers (fake SMTP server with web UI) | 8025 |
 | 100 | **Docker-Mailserver** | `mailserver` | Full-featured mail server (SMTP, IMAP, antispam, antivirus) | 25 |
 | 101 | **Listmonk** | `listmonk` | Self-hosted newsletter and mailing list manager | 9000 |
 | 102 | **Cloudflare-Tunnel** | `cloudflared` | Secure tunnel to expose services without opening ports | — |

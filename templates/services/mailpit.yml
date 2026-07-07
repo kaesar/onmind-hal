@@ -11,7 +11,9 @@ commands:
           --name mailpit \
           --network {{NETWORK_NAME}} \
           -p 1025:1025 \
-          -v ~/{{DATA_PATH}}/mailpit:/mailpit \
+          -p 8025:8025 \
+          -v ~/{{DATA_PATH}}/mailpit:/data \
+          -e MP_DATA_DIR=/data \
           --restart=always \
           axllent/mailpit:latest
 variables:

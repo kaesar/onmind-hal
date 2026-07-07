@@ -8,6 +8,7 @@ export interface HalState {
   installedAt: string;
   ip: string;
   domain: string;
+  tunnelDomain?: string;
   networkName: string;
   configPath: string;
   dataPath: string;
@@ -63,6 +64,7 @@ export class StateManager {
       installedAt: new Date().toISOString(),
       ip: config.ip,
       domain: config.domain,
+      tunnelDomain: config.tunnelDomain,
       networkName: config.networkName,
       configPath: config.configPath || 'ws/init',
       dataPath: config.dataPath || 'ws/data',
@@ -81,6 +83,7 @@ export class StateManager {
     return {
       ip: state.ip,
       domain: state.domain,
+      tunnelDomain: state.tunnelDomain,
       networkName: state.networkName,
       configPath: state.configPath,
       dataPath: state.dataPath,

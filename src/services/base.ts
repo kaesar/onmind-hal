@@ -99,6 +99,9 @@ export abstract class BaseService implements Service {
           const originalCommand = interpolatedCommand;
           interpolatedCommand = await ContainerRuntimeUtils.processCommand(interpolatedCommand);
           
+          // Qualify short image names with docker.io/ for Podman compatibility
+          interpolatedCommand = this.qualifyImageNames(interpolatedCommand);
+          
           // Check disk space before pull commands
           if (interpolatedCommand.includes('pull')) {
             await this.checkDiskSpace();
@@ -219,6 +222,61 @@ export abstract class BaseService implements Service {
     } catch {
       // Ignore errors
     }
+  }
+
+  /**
+   * Qualify short image names with docker.io/ for Podman compatibility.
+   * Podman requires fully qualified names; Docker Hub short names need docker.io/ prefix.
+   * Skips names that already have a registry prefix (contain '.' before first '/').
+   */
+  private qualifyImageNames(command: string): string {
+    // Handle `podman pull <image>` — image is the token after 'pull'
+    command = command.replace(
+      /((?:docker|podman)\s+pull\s+)(\S+)/g,
+      (_match: string, prefix: string, image: string) => {
+        const slashIdx = image.indexOf('/');
+        if (slashIdx === -1 || !image.slice(0, slashIdx).includes('.')) {
+          return `${prefix}docker.io/${image}`;
+        }
+        return _match;
+      }
+    );
+    // Handle `podman run ... <image>` — image is the first non-flag arg
+    const runMatch = command.match(/(?:^|\b)((?:docker|podman)\s+run\s+)/);
+    if (runMatch) {
+      const cmdStart = runMatch.index! + runMatch[0].length;
+      const after = command.slice(cmdStart);
+      const tokens = after.split(/\s+/);
+
+      const flagWithValue = new Set([
+        '-e', '--env', '--name', '-v', '--volume', '-p', '--publish',
+        '--network', '--restart', '--label', '-l', '--mount',
+        '--user', '-u', '-w', '--workdir', '--entrypoint',
+        '--health-cmd', '--health-interval', '--health-retries', '--health-timeout',
+        '--cpus', '--memory', '-m', '--dns', '--ip', '--ip6',
+        '--log-driver', '--log-opt', '--pid', '--privileged',
+        '--security-opt', '--sysctl', '--shm-size', '--tmpfs',
+        '--device', '--add-host', '--dns-opt', '--dns-search',
+        '-c', '--cpu-shares', '--cpuset-cpus', '--gpus',
+        '--cap-add', '--cap-drop', '--ulimit', '--env-file',
+      ]);
+
+      for (let i = 0; i < tokens.length; i++) {
+        const tok = tokens[i].replace(/\\$/, '');
+        if (!tok || tok.startsWith('#')) continue;
+        if (flagWithValue.has(tok)) { i++; continue; }
+        if (tok.startsWith('-') || tok === '\\') continue;
+        // This is the image name
+        const slashIdx = tok.indexOf('/');
+        if (slashIdx === -1 || !tok.slice(0, slashIdx).includes('.')) {
+          tokens[i] = `docker.io/${tok}`;
+        }
+        break;
+      }
+
+      command = command.slice(0, cmdStart) + tokens.join(' ');
+    }
+    return command;
   }
 
   /**
@@ -392,10 +450,35 @@ export abstract class BaseService implements Service {
         }
       }
 
-      // Check image availability
-      const imageMatch = command.match(/([^\s]+)$/);
-      if (imageMatch) {
-        const imageName = imageMatch[1];
+      // Check image availability — find the actual image name, not the last token
+      const runImageMatch = command.match(/(?:docker|podman)\s+run\s+/);
+      let imageName: string | null = null;
+      if (runImageMatch) {
+        // Extract first non-flag token after `run` (the image name)
+        const afterRun = command.slice(runImageMatch.index! + runImageMatch[0].length);
+        const tokens = afterRun.split(/\s+/);
+        const flagWithValue = new Set([
+          '-e', '--env', '--name', '-v', '--volume', '-p', '--publish',
+          '--network', '--restart', '--label', '-l', '--mount',
+          '--user', '-u', '-w', '--workdir', '--entrypoint',
+          '--cpus', '--memory', '-m', '--dns', '--ip', '--ip6',
+          '--cap-add', '--cap-drop', '--ulimit',
+        ]);
+        for (let i = 0; i < tokens.length; i++) {
+          const t = tokens[i].replace(/\\$/, '');
+          if (!t || t === '\\') continue;
+          if (flagWithValue.has(t)) { i++; continue; }
+          if (t.startsWith('-') || t.startsWith('$')) continue;
+          imageName = t;
+          break;
+        }
+      } else {
+        // For pull commands: image is the next word after 'pull'
+        const pullMatch = command.match(/(?:docker|podman)\s+pull\s+(\S+)/);
+        imageName = pullMatch ? pullMatch[1] : null;
+      }
+
+      if (imageName) {
         try {
           await $`podman image inspect ${imageName}`.quiet();
           console.log(`✅ Image '${imageName}' is available`);

@@ -37,15 +37,12 @@ fi
 # Create config directory
 mkdir -p "$CLOUDFLARED_DIR"
 
-# Check if already configured
-if [ -f "$CLOUDFLARED_DIR/config.yml" ]; then
-    if grep -q "tunnel:" "$CLOUDFLARED_DIR/config.yml" && ! grep -q "TUNNEL_ID" "$CLOUDFLARED_DIR/config.yml"; then
-        echo "✓ Tunnel already configured in config.yml"
-        echo ""
-        echo "To reconfigure, delete config.yml and run this script again."
-        echo "To add routes, edit: $CLOUDFLARED_DIR/config.yml"
-        exit 0
-    fi
+# Check if already authenticated — exit early if cert.pem exists
+if [ -f "$CLOUDFLARED_DIR/cert.pem" ]; then
+    echo "✓ Cloudflare already authenticated (cert.pem exists)"
+    echo ""
+    echo "To reconfigure, delete $CLOUDFLARED_DIR/cert.pem and run again."
+    exit 0
 fi
 
 echo "Step 1: Authenticate with Cloudflare"
@@ -96,6 +93,12 @@ if [ -n "$DOMAIN" ]; then
         cloudflare/cloudflared:latest tunnel route dns "$TUNNEL_NAME" "$DOMAIN" 2>&1 || \
         echo "⚠️  DNS route may already exist or will be configured manually"
     echo "✓ DNS route configured for $DOMAIN"
+
+    # Route wildcard so all subdomains resolve through the tunnel
+    $RUNTIME run --rm --user root -v "$CLOUDFLARED_DIR":/root/.cloudflared \
+        cloudflare/cloudflared:latest tunnel route dns "$TUNNEL_NAME" "*.$DOMAIN" 2>&1 || \
+        echo "⚠️  Wildcard DNS route may already exist"
+    echo "✓ Wildcard DNS route configured for *.$DOMAIN"
 else
     echo "⚠️  No domain provided. Run later: cloudflared tunnel route dns $TUNNEL_NAME <domain>"
 fi
@@ -106,8 +109,8 @@ echo "Step 4: Update config.yml"
 echo "-------------------------"
 
 if [ -f "$CLOUDFLARED_DIR/config.yml" ]; then
-    sed -i "s/tunnel: TUNNEL_ID/tunnel: $TUNNEL_ID/g" "$CLOUDFLARED_DIR/config.yml"
-    sed -i "s|credentials-file: /etc/cloudflared/TUNNEL_ID.json|credentials-file: /etc/cloudflared/$TUNNEL_ID.json|g" "$CLOUDFLARED_DIR/config.yml"
+    sed -i "s/^tunnel: .*/tunnel: $TUNNEL_ID/" "$CLOUDFLARED_DIR/config.yml"
+    sed -i "s|^credentials-file: .*|credentials-file: /etc/cloudflared/$TUNNEL_ID.json|" "$CLOUDFLARED_DIR/config.yml"
     echo "✓ config.yml updated with tunnel ID"
 else
     echo "⚠️  config.yml not found. Run the HAL installer first to generate it."

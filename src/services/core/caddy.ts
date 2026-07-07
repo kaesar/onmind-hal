@@ -81,7 +81,7 @@ export class CaddyService extends BaseService {
     }
 
     // Public domain HTTP routes (for Cloudflare Tunnel)
-    if (hasCloudflared && isLocalDomain) {
+    if (hasCloudflared && isLocalDomain && this.config.tunnelDomain) {
       content += '# Public domain via Cloudflare Tunnel\n';
       content += `http://${this.config.tunnelDomain} {\n`;
       content += `    respond "Welcome to OnMind-HAL" 200\n`;
@@ -274,5 +274,12 @@ export class CaddyService extends BaseService {
    */
   getAccessUrl(): string {
     return `https://${this.config.domain}`;
+  }
+
+  /**
+   * Regenerate Caddyfile (used after Cloudflare Tunnel config sets tunnelDomain)
+   */
+  async regenerateConfigFiles(): Promise<void> {
+    await this.generateConfigFiles();
   }
 }

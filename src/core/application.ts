@@ -13,6 +13,7 @@ import {
 import { HomelabError, ServiceInstallationError } from '../utils/errors.js';
 import { CLIInterface } from '../cli/interface.js';
 import { ServiceFactory } from '../services/factory.js';
+import { CaddyService } from '../services/core/caddy.js';
 import { TemplateEngine } from '../templates/engine.js';
 import {
   DistributionDetector,
@@ -95,6 +96,14 @@ export class HomelabApplication {
 
       // Step 7: Configure Cloudflare Tunnel if installed
       await this.configureCloudflareTunnel();
+
+      // Re-save state after Cloudflare config (captures tunnelDomain)
+      if (this.config!.tunnelDomain && this.config!.selectedServices.length > 2) {
+        const managementUI = this.config!.selectedServices.includes(ServiceType.DOCKHAND)
+          ? ServiceType.DOCKHAND
+          : ServiceType.ARCANE;
+        await StateManager.save(this.config!, managementUI);
+      }
 
       // Step 8: Display completion summary
       this.displayCompletionSummary();
@@ -525,6 +534,13 @@ export class HomelabApplication {
     try {
       const content = await readFile(configYmlPath, 'utf-8');
       if (content.includes('tunnel:') && !content.includes('TUNNEL_ID')) {
+        // Extract tunnelDomain from existing ingress hostnames for Caddy config
+        if (!this.config!.tunnelDomain) {
+          const hostnameLine = /\s+- hostname: \S+?\.(\S+)/.exec(content);
+          if (hostnameLine) {
+            this.config!.tunnelDomain = hostnameLine[1];
+          }
+        }
         console.log('\n🌐 Cloudflare Tunnel: config.yml with tunnel ID detected, skipping configuration');
         return;
       }
@@ -583,15 +599,17 @@ export class HomelabApplication {
       // so it can write cert.pem. Mount to /root/.cloudflared (root's home).
       try {
         await $`sh -c "${runtime} run --rm --user root -v ${configDir}:/root/.cloudflared cloudflare/cloudflared:latest tunnel login"`;
-      } catch {
-        // User can press Ctrl+C to cancel if needed
-      }
+      } catch { }
 
       // Verify cert.pem was created
       const certPath = join(configDir, 'cert.pem');
       try {
         await readFile(certPath, 'utf-8');
         console.log('   ✓ Authentication successful');
+        // Make cert.pem readable by container's nonroot user
+        try {
+          await $`chmod 644 ${certPath}`.quiet();
+        } catch { }
       } catch {
         console.log('   ❌ Authentication failed or timed out. cert.pem not found.');
         console.log('   You can retry later by running:');
@@ -646,6 +664,13 @@ export class HomelabApplication {
         console.log(`   ⚠️  DNS route may already exist or will be configured manually`);
         console.log(`   Run later: cloudflared tunnel route dns ${tunnelName.trim()} ${tunnelDomain}`);
       }
+      // Route wildcard so all subdomains resolve through the tunnel
+      try {
+        await $`sh -c "${runtime} run --rm --user root -v ${configDir}:/root/.cloudflared cloudflare/cloudflared:latest tunnel route dns ${tunnelName.trim()} '*.'${tunnelDomain}"`.quiet();
+        console.log(`   ✓ Wildcard DNS route created for *.${tunnelDomain}`);
+      } catch {
+        console.log(`   ⚠️  Wildcard DNS route may already exist`);
+      }
 
       // Step 4: Update config.yml with tunnel ID and public domain
       console.log('\n📋 Step 4: Update config.yml');
@@ -661,10 +686,10 @@ export class HomelabApplication {
       } else {
         let updated = false;
 
-        // Replace TUNNEL_ID placeholder if present
-        if (configContent.includes('TUNNEL_ID')) {
-          configContent = configContent.replace(/tunnel: TUNNEL_ID/, `tunnel: ${tunnelId}`);
-          configContent = configContent.replace(/credentials-file: \/etc\/cloudflared\/TUNNEL_ID\.json/, `credentials-file: /etc/cloudflared/${tunnelId}.json`);
+        // Replace tunnel ID (placeholder or existing UUID)
+        if (configContent.includes('tunnel:')) {
+          configContent = configContent.replace(/^tunnel: .*/m, `tunnel: ${tunnelId}`);
+          configContent = configContent.replace(/^credentials-file: .*/m, `credentials-file: /etc/cloudflared/${tunnelId}.json`);
           updated = true;
         }
 
@@ -685,6 +710,17 @@ export class HomelabApplication {
 
       // Store public domain in config for Caddy HTTP routes
       this.config!.tunnelDomain = tunnelDomain;
+
+      // Regenerate Caddy config with the public domain
+      const caddyService = new CaddyService(this.config!, this.templateEngine);
+      await caddyService.regenerateConfigFiles();
+      console.log('   ✓ Caddyfile updated with public domain routes');
+
+      // Re-save state with tunnelDomain
+      const managementUI = this.config!.selectedServices.includes(ServiceType.DOCKHAND)
+        ? ServiceType.DOCKHAND
+        : ServiceType.ARCANE;
+      await StateManager.save(this.config!, managementUI);
 
       // Step 5: Verify Caddy and restart cloudflared
       console.log('\n📋 Step 5: Start tunnel');
