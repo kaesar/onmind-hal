@@ -1,0 +1,6 @@
+.env
+/.tanstack
+/.output
+/node_modules
+bun.lock
+package-lock.json

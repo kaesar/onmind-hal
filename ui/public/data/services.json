@@ -1,0 +1,76 @@
+{
+  "services": [
+    {
+      "id": "caddy",
+      "name": "Caddy",
+      "container": "caddy",
+      "icon": "caddy",
+      "status": "stopped",
+      "color": "#1d4ed8"
+    },
+    {
+      "id": "rustfs",
+      "name": "RustFS",
+      "container": "rustfs",
+      "icon": "rustfs",
+      "status": "stopped",
+      "color": "#2563eb"
+    },
+    {
+      "id": "postgresql",
+      "name": "PostgreSQL",
+      "container": "postgresql",
+      "icon": "postgresql",
+      "status": "stopped",
+      "color": "#3b82f6"
+    },
+    {
+      "id": "redis",
+      "name": "Redis",
+      "container": "redis",
+      "icon": "redis",
+      "status": "stopped",
+      "color": "#60a5fa"
+    },
+    {
+      "id": "kafka",
+      "name": "Kafka",
+      "container": "kafka",
+      "icon": "kafka",
+      "status": "stopped",
+      "color": "#1e40af"
+    },
+    {
+      "id": "pocketid",
+      "name": "PocketID",
+      "container": "pocketid",
+      "icon": "pocketid",
+      "status": "stopped",
+      "color": "#2563eb"
+    },
+    {
+      "id": "ntfy",
+      "name": "Ntfy",
+      "container": "ntfy",
+      "icon": "ntfy",
+      "status": "stopped",
+      "color": "#3b82f6"
+    },
+    {
+      "id": "mailpit",
+      "name": "MailPit",
+      "container": "mailpit",
+      "icon": "mailpit",
+      "status": "stopped",
+      "color": "#3b82f6"
+    },
+    {
+      "id": "cloudflared",
+      "name": "Cloudflared",
+      "container": "cloudflared",
+      "icon": "cloudflared",
+      "status": "stopped",
+      "color": "#60a5fa"
+    }
+  ]
+}
