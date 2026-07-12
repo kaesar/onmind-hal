@@ -34,8 +34,9 @@ commands:
           -p 8089:8080 \
           -v ~/{{DATA_PATH}}/kestra/data:/app/storage \
           -v ~/{{DATA_PATH}}/kestra/application.yml:/app/confs/application.yml \
-          -v /var/run/docker.sock:/var/run/docker.sock kestra/kestra:latest server standalone \
+          -v {{DOCKER_SOCKET_PATH}}:/var/run/docker.sock kestra/kestra:latest server standalone \
           --config=/app/confs/application.yml
 variables:
   - NETWORK_NAME
+  - DOCKER_SOCKET_PATH
 dependencies: []

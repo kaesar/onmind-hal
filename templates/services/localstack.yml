@@ -13,11 +13,12 @@ commands:
           -p 4569:4566 \
           -p 4571:4571 \
           -v ~/{{DATA_PATH}}/localstack/data:/var/lib/localstack \
-          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v {{DOCKER_SOCKET_PATH}}:/var/run/docker.sock \
           -e SERVICES=s3,dynamodb,sqs,sns,lambda,ec2,ecs,cloudformation \
           -e DEBUG=1 \
           -e DATA_DIR=/var/lib/localstack \
           localstack/localstack:3.8.0
 variables:
   - NETWORK_NAME
+  - DOCKER_SOCKET_PATH
 dependencies: []

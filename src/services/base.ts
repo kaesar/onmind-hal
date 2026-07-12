@@ -98,10 +98,13 @@ export abstract class BaseService implements Service {
         if (interpolatedCommand.includes('docker ')) {
           const originalCommand = interpolatedCommand;
           interpolatedCommand = await ContainerRuntimeUtils.processCommand(interpolatedCommand);
-          
-          // Qualify short image names with docker.io/ for Podman compatibility
-          interpolatedCommand = this.qualifyImageNames(interpolatedCommand);
-          
+
+          // Qualify short image names with docker.io/ only for Podman (Docker handles short names natively)
+          const runtime = ContainerRuntimeUtils.getCurrentRuntime();
+          if (runtime === 'podman') {
+            interpolatedCommand = this.qualifyImageNames(interpolatedCommand);
+          }
+
           // Check disk space before pull commands
           if (interpolatedCommand.includes('pull')) {
             await this.checkDiskSpace();
@@ -119,17 +122,18 @@ export abstract class BaseService implements Service {
         }
       } catch (error) {
         // Check for container runtime issues (both Docker and Podman)
-        const isContainerCommand = interpolatedCommand.includes('pull') || 
+        const isContainerCommand = interpolatedCommand.includes('pull') ||
                                   interpolatedCommand.includes('volume create') ||
                                   interpolatedCommand.includes('network create') ||
                                   interpolatedCommand.includes('build') ||
                                   interpolatedCommand.includes('run');
-        const isKnownError = error instanceof Error && 
-          (error.message.includes('unauthorized') || 
+        const isKnownError = error instanceof Error &&
+          (error.message.includes('unauthorized') ||
            error.message.includes('exit code 125') ||
            error.message.includes('exit code 1') ||
            error.message.includes('already exists'));
-        
+        const isAlreadyExists = error instanceof Error && error.message.includes('already exists');
+
         if (isContainerCommand && isKnownError) {
           const runtime = interpolatedCommand.includes('podman') ? 'Podman' : 'Docker';
           // Detect command type by looking at the actual subcommand (e.g., "docker pull", "docker run")
@@ -141,11 +145,16 @@ export abstract class BaseService implements Service {
                             subcommand === 'build' ? 'image build' :
                             subcommand === 'run' ? 'container run' : 'command';
 
-          console.log(`⚠️  ${commandType} failed with ${runtime}:\n→ ${interpolatedCommand}`);
-          console.error(`   Error: ${error.message}`);
+          // Volume/network "already exists" is normal — just note it, don't alarm
+          if (isAlreadyExists && (subcommand === 'volume' || subcommand === 'network')) {
+            console.log(`✅ ${commandType} already exists, continuing...`);
+          } else {
+            console.log(`⚠️  ${commandType} failed with ${runtime}:\n→ ${interpolatedCommand}`);
+            console.error(`   Error: ${error.message}`);
+          }
 
-          // Specific handling for exit codes
-          if (error.message.includes('exit code 125') || error.message.includes('exit code 126')) {
+          // Specific handling for exit codes (skip diagnosis for "already exists" — it's not a real error)
+          if (!isAlreadyExists && (error.message.includes('exit code 125') || error.message.includes('exit code 126'))) {
             if (runtime === 'Podman') {
               await this.diagnosePodmanError(interpolatedCommand, error.message);
             } else {
@@ -156,8 +165,9 @@ export abstract class BaseService implements Service {
           this.installationFailed = !interpolatedCommand.includes('volume');
           if (this.installationFailed) {
             console.log(`⏭️  Skipping ${this.name} due to ${runtime.toLowerCase()} issues`);
+          } else {
+            console.log(`💡 This might be temporary or the resource might already exist`);
           }
-          console.log(`💡 This might be temporary or the resource might already exist`);
           return;
         }
         
@@ -246,37 +256,74 @@ export abstract class BaseService implements Service {
     if (runMatch) {
       const cmdStart = runMatch.index! + runMatch[0].length;
       const after = command.slice(cmdStart);
-      const tokens = after.split(/\s+/);
-
-      const flagWithValue = new Set([
-        '-e', '--env', '--name', '-v', '--volume', '-p', '--publish',
-        '--network', '--restart', '--label', '-l', '--mount',
-        '--user', '-u', '-w', '--workdir', '--entrypoint',
-        '--health-cmd', '--health-interval', '--health-retries', '--health-timeout',
-        '--cpus', '--memory', '-m', '--dns', '--ip', '--ip6',
-        '--log-driver', '--log-opt', '--pid', '--privileged',
-        '--security-opt', '--sysctl', '--shm-size', '--tmpfs',
-        '--device', '--add-host', '--dns-opt', '--dns-search',
-        '-c', '--cpu-shares', '--cpuset-cpus', '--gpus',
-        '--cap-add', '--cap-drop', '--ulimit', '--env-file',
-      ]);
-
-      for (let i = 0; i < tokens.length; i++) {
-        const tok = tokens[i].replace(/\\$/, '');
-        if (!tok || tok.startsWith('#')) continue;
-        if (flagWithValue.has(tok)) { i++; continue; }
-        if (tok.startsWith('-') || tok === '\\') continue;
-        // This is the image name
-        const slashIdx = tok.indexOf('/');
-        if (slashIdx === -1 || !tok.slice(0, slashIdx).includes('.')) {
-          tokens[i] = `docker.io/${tok}`;
+      const image = this.findRunImageName(after);
+      if (image) {
+        const slashIdx = image.indexOf('/');
+        if (slashIdx === -1 || !image.slice(0, slashIdx).includes('.')) {
+          // Replace only the image name in the original command string
+          const imageIdx = command.indexOf(image, cmdStart);
+          if (imageIdx !== -1) {
+            command = command.slice(0, imageIdx) + `docker.io/${image}` + command.slice(imageIdx + image.length);
+          }
         }
-        break;
       }
-
-      command = command.slice(0, cmdStart) + tokens.join(' ');
     }
     return command;
+  }
+
+  /**
+   * Find the image name in `podman run` arguments.
+   * Parses line by line to handle multiline commands and flags with
+   * space-containing values (like `-e KEY=$(cat file path)`).
+   */
+  private findRunImageName(args: string): string | null {
+    const flagsWithValue = new Set([
+      '-e', '--env', '--env-file',
+      '--name', '-v', '--volume', '-p', '--publish',
+      '--network', '--restart', '--label', '-l', '--mount',
+      '--user', '-u', '-w', '--workdir', '--entrypoint',
+      '--health-cmd', '--health-interval', '--health-retries', '--health-timeout',
+      '--cpus', '--memory', '-m', '--dns', '--ip', '--ip6',
+      '--log-driver', '--log-opt', '--pid', '--privileged',
+      '--security-opt', '--sysctl', '--shm-size', '--tmpfs',
+      '--device', '--add-host', '--dns-opt', '--dns-search',
+      '-c', '--cpu-shares', '--cpuset-cpus', '--gpus',
+      '--cap-add', '--cap-drop', '--ulimit',
+    ]);
+
+    const lines = args.split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim().replace(/\\$/, '').trim();
+      if (!trimmed) continue;
+
+      const tokens = trimmed.split(/\s+/);
+      let i = 0;
+      while (i < tokens.length) {
+        const tok = tokens[i];
+        if (!tok) { i++; continue; }
+
+        // Flags like -e / --env: value extends to end of line (may contain spaces)
+        if (tok === '-e' || tok === '--env' || tok === '--env-file') {
+          break; // skip rest of this line, move to next
+        }
+
+        // Other flags that take the next token as value
+        if (flagsWithValue.has(tok)) {
+          i += 2;
+          continue;
+        }
+
+        // Standalone flags (no value)
+        if (tok.startsWith('-')) {
+          i++;
+          continue;
+        }
+
+        // Found the image name
+        return tok;
+      }
+    }
+    return null;
   }
 
   /**
@@ -450,28 +497,12 @@ export abstract class BaseService implements Service {
         }
       }
 
-      // Check image availability — find the actual image name, not the last token
+      // Check image availability — find the actual image name
       const runImageMatch = command.match(/(?:docker|podman)\s+run\s+/);
       let imageName: string | null = null;
       if (runImageMatch) {
-        // Extract first non-flag token after `run` (the image name)
         const afterRun = command.slice(runImageMatch.index! + runImageMatch[0].length);
-        const tokens = afterRun.split(/\s+/);
-        const flagWithValue = new Set([
-          '-e', '--env', '--name', '-v', '--volume', '-p', '--publish',
-          '--network', '--restart', '--label', '-l', '--mount',
-          '--user', '-u', '-w', '--workdir', '--entrypoint',
-          '--cpus', '--memory', '-m', '--dns', '--ip', '--ip6',
-          '--cap-add', '--cap-drop', '--ulimit',
-        ]);
-        for (let i = 0; i < tokens.length; i++) {
-          const t = tokens[i].replace(/\\$/, '');
-          if (!t || t === '\\') continue;
-          if (flagWithValue.has(t)) { i++; continue; }
-          if (t.startsWith('-') || t.startsWith('$')) continue;
-          imageName = t;
-          break;
-        }
+        imageName = this.findRunImageName(afterRun);
       } else {
         // For pull commands: image is the next word after 'pull'
         const pullMatch = command.match(/(?:docker|podman)\s+pull\s+(\S+)/);

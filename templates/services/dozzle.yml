@@ -12,11 +12,12 @@ commands:
           --name dozzle \
           --network {{NETWORK_NAME}} \
           -p 8097:8080 \
-          -v /var/run/docker.sock:/var/run/docker.sock:ro \
+          -v {{DOCKER_SOCKET_PATH}}:/var/run/docker.sock:ro \
           -v dozzle_data:/data \
           amir20/dozzle:latest
 variables:
   - NETWORK_NAME
+  - DOCKER_SOCKET_PATH
 ports:
   - "8097:8080"
 volumes:

@@ -11,9 +11,10 @@ commands:
           --name trivy \
           --network {{NETWORK_NAME}} \
           -p 8088:8080 \
-          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v {{DOCKER_SOCKET_PATH}}:/var/run/docker.sock \
           -v ~/{{DATA_PATH}}/trivy/cache:/root/.cache aquasec/trivy:latest server \
           --listen 0.0.0.0:8080
 variables:
   - NETWORK_NAME
+  - DOCKER_SOCKET_PATH
 dependencies: []

@@ -1,22 +1,22 @@
 :80 {
-    root * /app/public
-    
-    # Handle PHP files
-    @php {
-        path *.php
-    }
-    handle @php {
-        php
-    }
-    
-    # Serve index.php by default
-    @index {
-        path /
-    }
-    handle @index {
-        rewrite * /index.php
-        php
-    }
-    
-    file_server
+	root * /app/public
+
+	# Serve index.php by default
+	@index {
+		path /
+	}
+	handle @index {
+		rewrite * /index.php
+		php
+	}
+
+	# Handle other PHP files
+	@php {
+		path *.php
+	}
+	handle @php {
+		php
+	}
+
+	file_server
 }

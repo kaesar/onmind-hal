@@ -12,7 +12,7 @@ commands:
           --name floci \
           --network {{NETWORK_NAME}} \
           -p 4566:4566 \
-          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v {{DOCKER_SOCKET_PATH}}:/var/run/docker.sock \
           -v floci_data:/app/data \
           -e FLOCI_HOSTNAME=floci \
           -e FLOCI_STORAGE_MODE=persistent \
@@ -21,6 +21,7 @@ commands:
           floci/floci:latest
 variables:
   - NETWORK_NAME
+  - DOCKER_SOCKET_PATH
 ports:
   - "4566:4566"
 volumes:

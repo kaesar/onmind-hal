@@ -13,7 +13,7 @@ commands:
     - |-
       cat > ~/{{CONFIG_PATH}}/litellm/config.yaml << 'LITELLM_EOF'
       general_settings:
-        master_key: {{ADMIN_TOKEN}}
+        master_key: {{STORAGE_PASSWORD}}
         database_url: postgresql://llmproxy:{{STORAGE_PASSWORD}}@postgresql:5432/litellm
 
       model_list: []
@@ -25,7 +25,7 @@ commands:
           --network {{NETWORK_NAME}} \
           -p 4000:4000 \
           -e DATABASE_URL=postgresql://llmproxy:{{STORAGE_PASSWORD}}@postgresql:5432/litellm \
-          -e LITELLM_MASTER_KEY={{ADMIN_TOKEN}} \
+          -e LITELLM_MASTER_KEY={{STORAGE_PASSWORD}} \
           -e STORE_MODEL_IN_DB=True \
           -e REDIS_HOST=redis \
           -e REDIS_PORT=6379 \
@@ -36,7 +36,6 @@ commands:
 variables:
   - NETWORK_NAME
   - STORAGE_PASSWORD
-  - ADMIN_TOKEN
 ports:
   - "4000:4000"
 volumes:
@@ -45,7 +44,7 @@ volumes:
   - litellm_postgres_data:/var/lib/postgresql/data
 environment:
   DATABASE_URL: "postgresql://llmproxy:{{STORAGE_PASSWORD}}@postgresql:5432/litellm"
-  LITELLM_MASTER_KEY: "{{ADMIN_TOKEN}}"
+  LITELLM_MASTER_KEY: "{{STORAGE_PASSWORD}}"
   STORE_MODEL_IN_DB: "True"
   REDIS_HOST: "redis"
   REDIS_PORT: "6379"

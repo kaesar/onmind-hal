@@ -13,8 +13,9 @@ commands:
           -p 6610:6610 \
           -p 6611:6611 \
           -v ~/{{DATA_PATH}}/onedev/data:/opt/onedev \
-          -v /var/run/docker.sock:/var/run/docker.sock \
+          -v {{DOCKER_SOCKET_PATH}}:/var/run/docker.sock \
           1dev/server:latest
 variables:
   - NETWORK_NAME
+  - DOCKER_SOCKET_PATH
 dependencies: []

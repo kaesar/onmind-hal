@@ -15,4 +15,10 @@ commands:
           -v ~/{{DATA_PATH}}/duckdb/data:/app/data duckdb-frankenphp
 variables:
   - NETWORK_NAME
+ports:
+  - "4214:80"
+volumes:
+  - ~/{{DATA_PATH}}/duckdb/data:/app/data
+accessUrl: http://duckdb.{{DOMAIN}}:4214
 dependencies: []
+isCore: false
