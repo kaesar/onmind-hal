@@ -15,6 +15,27 @@ interface Service {
   color: string;
 }
 
+let cachedRuntime: string | null = null;
+
+async function detectRuntime(): Promise<string> {
+  if (cachedRuntime) return cachedRuntime;
+  if (process.env.CONTAINER_RUNTIME) {
+    cachedRuntime = process.env.CONTAINER_RUNTIME;
+    return cachedRuntime;
+  }
+  for (const rt of ["podman", "docker"]) {
+    try {
+      await execAsync(`${rt} --version`);
+      cachedRuntime = rt;
+      return rt;
+    } catch {
+      // not available
+    }
+  }
+  cachedRuntime = "podman";
+  return cachedRuntime;
+}
+
 async function getContainerStatus(
   container: string,
   runtime: string
@@ -37,7 +58,7 @@ export const Route = createFileRoute("/api/services/")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const runtime = process.env.CONTAINER_RUNTIME || "docker";
+        const runtime = await detectRuntime();
         const jsonPath = join(process.cwd(), "public", "data", "services.json");
 
         let services: Service[];

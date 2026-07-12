@@ -6,12 +6,33 @@ import { promisify } from "util";
 
 const execAsync = promisify(exec);
 
+let cachedRuntime: string | null = null;
+
+async function detectRuntime(): Promise<string> {
+  if (cachedRuntime) return cachedRuntime;
+  if (process.env.CONTAINER_RUNTIME) {
+    cachedRuntime = process.env.CONTAINER_RUNTIME;
+    return cachedRuntime;
+  }
+  for (const rt of ["podman", "docker"]) {
+    try {
+      await execAsync(`${rt} --version`);
+      cachedRuntime = rt;
+      return rt;
+    } catch {
+      // not available
+    }
+  }
+  cachedRuntime = "podman";
+  return cachedRuntime;
+}
+
 export const Route = createFileRoute("/api/services/$id/$action")({
   server: {
     handlers: {
       POST: async ({ request, params }) => {
         const { id, action } = params;
-        const runtime = process.env.CONTAINER_RUNTIME || "docker";
+        const runtime = await detectRuntime();
 
         if (!["start", "stop", "restart"].includes(action)) {
           return Response.json({ error: "Invalid action" }, { status: 400 });

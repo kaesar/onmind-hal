@@ -42,14 +42,15 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
         <style dangerouslySetInnerHTML={{ __html: `
           body { background: #eff6ff; color: #1e3a5f; }
+          .dark body { background: #0f172a; color: #e2e8f0; }
         ` }} />
       </head>
-      <body className="min-h-screen bg-blue-50 text-blue-900 antialiased">
+      <body className="min-h-screen bg-blue-50 text-blue-900 antialiased dark:bg-slate-900 dark:text-slate-100">
         <QueryClientProvider client={queryClient}>
           {children}
         </QueryClientProvider>

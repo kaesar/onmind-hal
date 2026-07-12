@@ -2,12 +2,12 @@ import { Link } from "@tanstack/react-router";
 
 export function DefaultCatchBoundary() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-blue-50 p-8 text-blue-900">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-blue-50 p-8 text-blue-900 dark:bg-slate-900 dark:text-slate-100">
       <h1 className="text-2xl font-bold">Something went wrong</h1>
-      <p className="mt-2 text-blue-400">An unexpected error occurred</p>
+      <p className="mt-2 text-blue-400 dark:text-blue-500">An unexpected error occurred</p>
       <Link
         to="/"
-        className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+        className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 cursor-pointer"
       >
         Go Home
       </Link>
