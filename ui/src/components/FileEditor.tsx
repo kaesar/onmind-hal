@@ -34,9 +34,13 @@ export function FileEditor({
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("hal-theme");
-    if (stored) {
-      setDarkMode(stored === "dark");
+    const raw = localStorage.getItem("onmind-hal");
+    let theme: string | undefined;
+    if (raw) {
+      try { theme = JSON.parse(raw).theme; } catch {}
+    }
+    if (theme) {
+      setDarkMode(theme === "dark");
     } else {
       setDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
     }

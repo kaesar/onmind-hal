@@ -5,10 +5,14 @@ export function ThemeToggle() {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("hal-theme");
+    const raw = localStorage.getItem("onmind-hal");
+    let theme: string | undefined;
+    if (raw) {
+      try { theme = JSON.parse(raw).theme; } catch {}
+    }
     const prefersDark =
-      stored === "dark" ||
-      (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      theme === "dark" ||
+      (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches);
     setDark(prefersDark);
     document.documentElement.classList.toggle("dark", prefersDark);
   }, []);
@@ -17,7 +21,11 @@ export function ThemeToggle() {
     const next = !dark;
     setDark(next);
     document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("hal-theme", next ? "dark" : "light");
+    const raw = localStorage.getItem("onmind-hal");
+    let obj: Record<string, unknown> = {};
+    if (raw) { try { obj = JSON.parse(raw); } catch {} }
+    obj.theme = next ? "dark" : "light";
+    localStorage.setItem("onmind-hal", JSON.stringify(obj));
   };
 
   return (
