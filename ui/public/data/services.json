@@ -1,4 +1,5 @@
 {
+  "configPath": "ws/init",
   "services": [
     {
       "id": "caddy",

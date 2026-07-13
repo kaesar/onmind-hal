@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiCaddyfileRouteImport } from './routes/api/caddyfile'
 import { Route as ApiServicesIndexRouteImport } from './routes/api/services.index'
 import { Route as ApiServicesIdActionRouteImport } from './routes/api/services.$id.$action'
 
@@ -22,6 +23,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiCaddyfileRoute = ApiCaddyfileRouteImport.update({
+  id: '/api/caddyfile',
+  path: '/api/caddyfile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiServicesIndexRoute = ApiServicesIndexRouteImport.update({
@@ -38,12 +44,14 @@ const ApiServicesIdActionRoute = ApiServicesIdActionRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/api/caddyfile': typeof ApiCaddyfileRoute
   '/api/services/': typeof ApiServicesIndexRoute
   '/api/services/$id/$action': typeof ApiServicesIdActionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/api/caddyfile': typeof ApiCaddyfileRoute
   '/api/services': typeof ApiServicesIndexRoute
   '/api/services/$id/$action': typeof ApiServicesIdActionRoute
 }
@@ -51,18 +59,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/api/caddyfile': typeof ApiCaddyfileRoute
   '/api/services/': typeof ApiServicesIndexRoute
   '/api/services/$id/$action': typeof ApiServicesIdActionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/api/services/' | '/api/services/$id/$action'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/api/caddyfile'
+    | '/api/services/'
+    | '/api/services/$id/$action'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/api/services' | '/api/services/$id/$action'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/api/caddyfile'
+    | '/api/services'
+    | '/api/services/$id/$action'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/api/caddyfile'
     | '/api/services/'
     | '/api/services/$id/$action'
   fileRoutesById: FileRoutesById
@@ -70,6 +90,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  ApiCaddyfileRoute: typeof ApiCaddyfileRoute
   ApiServicesIndexRoute: typeof ApiServicesIndexRoute
   ApiServicesIdActionRoute: typeof ApiServicesIdActionRoute
 }
@@ -88,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/caddyfile': {
+      id: '/api/caddyfile'
+      path: '/api/caddyfile'
+      fullPath: '/api/caddyfile'
+      preLoaderRoute: typeof ApiCaddyfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/services/': {
@@ -110,6 +138,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  ApiCaddyfileRoute: ApiCaddyfileRoute,
   ApiServicesIndexRoute: ApiServicesIndexRoute,
   ApiServicesIdActionRoute: ApiServicesIdActionRoute,
 }

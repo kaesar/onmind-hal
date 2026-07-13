@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -19,9 +20,11 @@ import {
   Mail,
   Cloud,
   Lock,
+  FileCode,
 } from "lucide-react";
 import type { ComponentType } from "react";
 import { ThemeToggle } from "~/components/ThemeToggle";
+import { FileEditor } from "~/components/FileEditor";
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
@@ -169,6 +172,7 @@ function ServiceCard({
 
 function Dashboard() {
   const queryClient = useQueryClient();
+  const [editorOpen, setEditorOpen] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["services"],
@@ -249,6 +253,15 @@ function Dashboard() {
         </div>
         <div className="flex items-center gap-2">
           <button
+            onClick={() =>
+              queryClient.invalidateQueries({ queryKey: ["services"] })
+            }
+            className="flex items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-700 shadow-sm transition cursor-pointer hover:bg-blue-50 dark:border-blue-800 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            Refresh
+          </button>
+          <button
             onClick={handleStartAll}
             disabled={mutation.isPending}
             className="flex items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-700 shadow-sm transition cursor-pointer hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-blue-800 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
@@ -257,13 +270,11 @@ function Dashboard() {
             Start All
           </button>
           <button
-            onClick={() =>
-              queryClient.invalidateQueries({ queryKey: ["services"] })
-            }
+            onClick={() => setEditorOpen(true)}
             className="flex items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-700 shadow-sm transition cursor-pointer hover:bg-blue-50 dark:border-blue-800 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
           >
-            <RefreshCw className="h-3.5 w-3.5" />
-            Refresh
+            <FileCode className="h-3.5 w-3.5" />
+            Caddyfile
           </button>
           <ThemeToggle />
         </div>
@@ -298,6 +309,14 @@ function Dashboard() {
           </div>
         </>
       )}
+      <FileEditor
+        open={editorOpen}
+        onClose={() => setEditorOpen(false)}
+        title="Caddyfile Editor"
+        filePath="~/ws/init/Caddyfile"
+        apiEndpoint="/api/caddyfile"
+        mode="groovy"
+      />
     </div>
   );
 }
