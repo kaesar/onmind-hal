@@ -25,6 +25,7 @@ import {
 import type { ComponentType } from "react";
 import { ThemeToggle } from "~/components/ThemeToggle";
 import { FileEditor } from "~/components/FileEditor";
+import { LogViewer } from "~/components/LogViewer";
 import { DropdownMenu, DropdownItem } from "~/components/DropdownMenu";
 
 export const Route = createFileRoute("/dashboard")({
@@ -105,10 +106,12 @@ async function executeAction(
 function ServiceCard({
   service,
   onAction,
+  onShowLogs,
   isPending,
 }: {
   service: Service;
   onAction: (action: "start" | "stop" | "restart") => void;
+  onShowLogs: (container: string) => void;
   isPending: boolean;
 }) {
   const Icon = getServiceIcon(service.icon);
@@ -126,11 +129,13 @@ function ServiceCard({
           <span
             className={`h-2 w-2 rounded-full ${getStatusDot(service.status)}`}
           />
-          <span
-            className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${getStatusColor(service.status)}`}
+          <button
+            onClick={() => onShowLogs(service.container)}
+            className={`rounded-full border px-2.5 py-0.5 text-xs font-medium transition cursor-pointer hover:opacity-80 ${getStatusColor(service.status)}`}
+            title={`View logs for ${service.container}`}
           >
             {service.status}
-          </span>
+          </button>
         </div>
       </div>
 
@@ -180,8 +185,9 @@ function Dashboard() {
     apiEndpoint: string;
     mode?: "text" | "yaml" | "json";
   } | null>(null);
+  const [logContainer, setLogContainer] = useState<string | null>(null);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, dataUpdatedAt } = useQuery({
     queryKey: ["services"],
     queryFn: fetchServices,
   });
@@ -245,7 +251,9 @@ function Dashboard() {
       .forEach((s) => mutation.mutate({ id: s.id, action: "start" }));
   };
 
-  const now = new Date().toLocaleTimeString();
+  const lastUpdated = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString()
+    : null;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -322,15 +330,18 @@ function Dashboard() {
 
       {data && (
         <>
-          <div className="mb-4 text-xs text-blue-300 dark:text-blue-600">
-            Last updated: {now}
-          </div>
+          {lastUpdated && (
+            <div className="mb-4 text-xs text-blue-300 dark:text-blue-600">
+              Last updated: {lastUpdated}
+            </div>
+          )}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {data.services.map((service) => (
               <ServiceCard
                 key={service.id}
                 service={service}
                 onAction={(action) => handleAction(service.id, action)}
+                onShowLogs={(container) => setLogContainer(container)}
                 isPending={mutation.isPending}
               />
             ))}
@@ -350,6 +361,11 @@ function Dashboard() {
           mode={editorConfig.mode}
         />
       )}
+      <LogViewer
+        open={logContainer !== null}
+        onClose={() => setLogContainer(null)}
+        container={logContainer || ""}
+      />
     </div>
   );
 }

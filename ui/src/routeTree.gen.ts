@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiLogsRouteImport } from './routes/api/logs'
 import { Route as ApiCloudflaredRouteImport } from './routes/api/cloudflared'
 import { Route as ApiCaddyfileRouteImport } from './routes/api/caddyfile'
 import { Route as ApiServicesIndexRouteImport } from './routes/api/services.index'
@@ -24,6 +25,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLogsRoute = ApiLogsRouteImport.update({
+  id: '/api/logs',
+  path: '/api/logs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCloudflaredRoute = ApiCloudflaredRouteImport.update({
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/api/caddyfile': typeof ApiCaddyfileRoute
   '/api/cloudflared': typeof ApiCloudflaredRoute
+  '/api/logs': typeof ApiLogsRoute
   '/api/services/': typeof ApiServicesIndexRoute
   '/api/services/$id/$action': typeof ApiServicesIdActionRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/api/caddyfile': typeof ApiCaddyfileRoute
   '/api/cloudflared': typeof ApiCloudflaredRoute
+  '/api/logs': typeof ApiLogsRoute
   '/api/services': typeof ApiServicesIndexRoute
   '/api/services/$id/$action': typeof ApiServicesIdActionRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/api/caddyfile': typeof ApiCaddyfileRoute
   '/api/cloudflared': typeof ApiCloudflaredRoute
+  '/api/logs': typeof ApiLogsRoute
   '/api/services/': typeof ApiServicesIndexRoute
   '/api/services/$id/$action': typeof ApiServicesIdActionRoute
 }
@@ -79,6 +88,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/api/caddyfile'
     | '/api/cloudflared'
+    | '/api/logs'
     | '/api/services/'
     | '/api/services/$id/$action'
   fileRoutesByTo: FileRoutesByTo
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/api/caddyfile'
     | '/api/cloudflared'
+    | '/api/logs'
     | '/api/services'
     | '/api/services/$id/$action'
   id:
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/api/caddyfile'
     | '/api/cloudflared'
+    | '/api/logs'
     | '/api/services/'
     | '/api/services/$id/$action'
   fileRoutesById: FileRoutesById
@@ -104,6 +116,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   ApiCaddyfileRoute: typeof ApiCaddyfileRoute
   ApiCloudflaredRoute: typeof ApiCloudflaredRoute
+  ApiLogsRoute: typeof ApiLogsRoute
   ApiServicesIndexRoute: typeof ApiServicesIndexRoute
   ApiServicesIdActionRoute: typeof ApiServicesIdActionRoute
 }
@@ -122,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/logs': {
+      id: '/api/logs'
+      path: '/api/logs'
+      fullPath: '/api/logs'
+      preLoaderRoute: typeof ApiLogsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/cloudflared': {
@@ -160,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   ApiCaddyfileRoute: ApiCaddyfileRoute,
   ApiCloudflaredRoute: ApiCloudflaredRoute,
+  ApiLogsRoute: ApiLogsRoute,
   ApiServicesIndexRoute: ApiServicesIndexRoute,
   ApiServicesIdActionRoute: ApiServicesIdActionRoute,
 }
