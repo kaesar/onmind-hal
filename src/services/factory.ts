@@ -101,6 +101,7 @@ import { FlociAZService } from './optional/flociaz.js';
 import { FlociGCPService } from './optional/flocigcp.js';
 import { LiteLLMService } from './optional/litellm.js';
 import { AnythingLLMService } from './optional/anythingllm.js';
+import { LightRAGService } from './optional/lightrag.js';
 import { VoiceboxService } from './optional/voicebox.js';
 import { CopilotKitService } from './optional/copilotkit.js';
 import { OpenClawService } from './optional/openclaw.js';
@@ -112,7 +113,6 @@ import { PlausibleService } from './optional/plausible.js';
 import { DirectusService } from './optional/directus.js';
 import { InsForgeService } from './optional/insforge.js';
 import { SparkService } from './optional/spark.js';
-import { OrcaRouterLiteService } from './optional/orcarouter-lite.js';
 import { HeadscaleService } from './optional/headscale.js';
 import { RustDeskService } from './optional/rustdesk.js';
 
@@ -431,6 +431,9 @@ export class ServiceFactory {
       case ServiceType.ANYTHINGLLM:
         service = new AnythingLLMService(config, this.templateEngine);
         break;
+      case ServiceType.LIGHTRAG:
+        service = new LightRAGService(config, this.templateEngine);
+        break;
       case ServiceType.VOICEBOX:
         service = new VoiceboxService(config, this.templateEngine);
         break;
@@ -463,9 +466,6 @@ export class ServiceFactory {
         break;
       case ServiceType.SPARK:
         service = new SparkService(config, this.templateEngine);
-        break;
-      case ServiceType.ORCAROUTERLITE:
-        service = new OrcaRouterLiteService(config, this.templateEngine);
         break;
       case ServiceType.HEADSCALE:
         service = new HeadscaleService(config, this.templateEngine);
@@ -654,6 +654,7 @@ export class ServiceFactory {
       ServiceType.FLOCIGCP,
       ServiceType.LITELLM,
       ServiceType.ANYTHINGLLM,
+      ServiceType.LIGHTRAG,
       ServiceType.VOICEBOX,
       ServiceType.COPILOTKIT,
       ServiceType.GOOSE,
@@ -698,7 +699,6 @@ export class ServiceFactory {
       ServiceType.DIRECTUS,
       ServiceType.INSFORGE,
       ServiceType.SPARK,
-      ServiceType.ORCAROUTERLITE,
       ServiceType.NTFY,
       ServiceType.MAILPIT,
       ServiceType.MAILSERVER,
@@ -847,7 +847,6 @@ export class ServiceFactory {
       'Directus': ServiceType.DIRECTUS,
       'InsForge': ServiceType.INSFORGE,
       'Apache Spark': ServiceType.SPARK,
-      'OrcaRouter Lite': ServiceType.ORCAROUTERLITE,
       'Ntfy': ServiceType.NTFY,
       'Mailpit': ServiceType.MAILPIT,
       'Docker Mailserver': ServiceType.MAILSERVER,
@@ -865,6 +864,7 @@ export class ServiceFactory {
       'Floci-GCP': ServiceType.FLOCIGCP,
       'LiteLLM': ServiceType.LITELLM,
       'AnythingLLM': ServiceType.ANYTHINGLLM,
+      'LightRAG': ServiceType.LIGHTRAG,
       'Voicebox': ServiceType.VOICEBOX,
       'CopilotKit': ServiceType.COPILOTKIT,
       'Goose': ServiceType.GOOSE,

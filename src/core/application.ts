@@ -924,9 +924,9 @@ export class HomelabApplication {
         'calibreweb',
         'immich',
         'libretranslate',
-        'orcarouterlite',
         'litellm',
         'anythingllm',
+        'lightrag',
         'voicebox',
         'copilotkit',
         'goose',
@@ -973,7 +973,6 @@ export class HomelabApplication {
           calibreweb: 'books',
           immich: 'photos',
           libretranslate: 'translate',
-          orcarouterlite: 'orcarouter',
           plausible: 'analytics',
           seafile: 'drive',
         };

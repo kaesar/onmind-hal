@@ -114,6 +114,7 @@ export enum ServiceType {
   FLOCIGCP = 'flocigcp',
   LITELLM = 'litellm',
   ANYTHINGLLM = 'anythingllm',
+  LIGHTRAG = 'lightrag',
   VOICEBOX = 'voicebox',
   COPILOTKIT = 'copilotkit',
   GOOSE = 'goose',

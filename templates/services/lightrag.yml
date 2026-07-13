@@ -1,0 +1,99 @@
+name: LightRAG
+description: Simple and fast graph-based Retrieval-Augmented Generation framework
+commands:
+  install:
+    - docker pull ghcr.io/hkuds/lightrag:latest
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/lightrag/data/rag_storage
+    - mkdir -p ~/{{DATA_PATH}}/lightrag/data/inputs
+    - mkdir -p ~/{{DATA_PATH}}/lightrag/data/prompts
+    - docker volume create lightrag_data
+    - echo 'LLM_BINDING=ollama' > ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'LLM_BINDING_HOST=http://host.docker.internal:11434' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'LLM_MODEL=llama2' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'EMBEDDING_BINDING=ollama' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'EMBEDDING_BINDING_HOST=http://host.docker.internal:11434' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'EMBEDDING_MODEL=nomic-embed-text:latest' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'EMBEDDING_DIM=768' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'LIGHTRAG_KV_STORAGE=PostgresKVStorage' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'LIGHTRAG_DOC_STATUS_STORAGE=PostgresDocStatusStorage' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'LIGHTRAG_GRAPH_STORAGE=NetworkXStorage' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'LIGHTRAG_VECTOR_STORAGE=PostgresVectorStorage' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'POSTGRES_HOST=postgresql' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'POSTGRES_PORT=5432' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'POSTGRES_USER=lightrag' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'POSTGRES_PASSWORD={{STORAGE_PASSWORD}}' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'POSTGRES_DATABASE=lightrag' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'REDIS_HOST=redis' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'REDIS_PORT=6379' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'HOST=0.0.0.0' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'PORT=9621' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'WORKING_DIR=/app/data/rag_storage' >> ~/{{DATA_PATH}}/lightrag/.env
+    - echo 'INPUT_DIR=/app/data/inputs' >> ~/{{DATA_PATH}}/lightrag/.env
+  run: |-
+    docker run \
+          -d \
+          --name lightrag \
+          --network {{NETWORK_NAME}} \
+          -p 9621:9621 \
+          -e WORKING_DIR=/app/data/rag_storage \
+          -e INPUT_DIR=/app/data/inputs \
+          -e HOST=0.0.0.0 \
+          -e PORT=9621 \
+          -e LLM_BINDING=ollama \
+          -e LLM_BINDING_HOST=http://host.docker.internal:11434 \
+          -e LLM_MODEL=llama2 \
+          -e EMBEDDING_BINDING=ollama \
+          -e EMBEDDING_BINDING_HOST=http://host.docker.internal:11434 \
+          -e EMBEDDING_MODEL=nomic-embed-text:latest \
+          -e EMBEDDING_DIM=768 \
+          -e LIGHTRAG_KV_STORAGE=PostgresKVStorage \
+          -e LIGHTRAG_DOC_STATUS_STORAGE=PostgresDocStatusStorage \
+          -e LIGHTRAG_GRAPH_STORAGE=NetworkXStorage \
+          -e LIGHTRAG_VECTOR_STORAGE=PostgresVectorStorage \
+          -e POSTGRES_HOST=postgresql \
+          -e POSTGRES_PORT=5432 \
+          -e POSTGRES_USER=lightrag \
+          -e POSTGRES_PASSWORD={{STORAGE_PASSWORD}} \
+          -e POSTGRES_DATABASE=lightrag \
+          -e REDIS_HOST=redis \
+          -e REDIS_PORT=6379 \
+          -v ~/{{DATA_PATH}}/lightrag/data/rag_storage:/app/data/rag_storage \
+          -v ~/{{DATA_PATH}}/lightrag/data/inputs:/app/data/inputs \
+          -v ~/{{DATA_PATH}}/lightrag/data/prompts:/app/data/prompts \
+          ghcr.io/hkuds/lightrag:latest
+variables:
+  - NETWORK_NAME
+  - ADMIN_TOKEN
+  - STORAGE_PASSWORD
+ports:
+  - "9621:9621"
+volumes:
+  - lightrag_data:/app/data
+environment:
+  HOST: "0.0.0.0"
+  PORT: "9621"
+  LLM_BINDING: "ollama"
+  LLM_BINDING_HOST: "http://host.docker.internal:11434"
+  LLM_MODEL: "llama2"
+  EMBEDDING_BINDING: "ollama"
+  EMBEDDING_BINDING_HOST: "http://host.docker.internal:11434"
+  EMBEDDING_MODEL: "nomic-embed-text:latest"
+  EMBEDDING_DIM: "768"
+  LIGHTRAG_KV_STORAGE: "PostgresKVStorage"
+  LIGHTRAG_DOC_STATUS_STORAGE: "PostgresDocStatusStorage"
+  LIGHTRAG_GRAPH_STORAGE: "NetworkXStorage"
+  LIGHTRAG_VECTOR_STORAGE: "PostgresVectorStorage"
+  POSTGRES_HOST: "postgresql"
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: "lightrag"
+  POSTGRES_PASSWORD: "{{STORAGE_PASSWORD}}"
+  POSTGRES_DATABASE: "lightrag"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+accessUrl: https://lightrag.{{DOMAIN}}
+dependencies:
+  - Ollama
+  - PostgreSQL
+  - Redis
+isCore: false

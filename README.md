@@ -147,7 +147,7 @@ bun run src/main.ts --list defaults,mongodb,mariadb,n8n,floci
 | 38 | **Karate** | `karate` | API, UI & performance test automation framework (VNC) | 5901 |
 | 39 | **RapiDoc** | `rapidoc` | WebComponent for OpenAPI Spec viewer | 8085 |
 | 40 | **Hoppscotch** | `hoppscotch` | Open-source API development ecosystem (Postman alternative) | 3080 |
-| 41 | **K6-OSS** | `k6` | Open-source load testing tool by Grafana Labs | 6565 |
+| 41 | **K6** | `k6` | Open-source load testing tool by Grafana (OSS) Labs | 6565 |
 | 42 | **Grafana** | `grafana` | Analytics and monitoring platform | 3001 |
 | 43 | **Loki** | `loki` | Log aggregation system by Grafana Labs | 3100 |
 | 44 | **Prometheus** | `prometheus` | Open-source systems monitoring and alerting toolkit | 9090 |
@@ -193,9 +193,9 @@ bun run src/main.ts --list defaults,mongodb,mariadb,n8n,floci
 | 84 | **Calibre-Web** | `calibreweb` | Web-based ebook library management and reader | 8083 |
 | 85 | **Immich** | `immich` | Self-hosted photo and video backup and management platform | 2283 |
 | 86 | **LibreTranslate** | `libretranslate` | Free and open source machine translation API | 5001 |
-| 87 | **OrcaRouter-Lite** | `orcarouterlite` | Lightweight LLM router with multi-provider support | 8000 |
-| 88 | **LiteLLM** | `litellm` | LLM proxy with unified API for 100+ LLMs | 4000 |
-| 89 | **AnythingLLM** | `anythingllm` | Multi-user AI platform with RAG, Agents, and local LLM support | 3007 |
+| 87 | **LiteLLM** | `litellm` | LLM proxy with unified API for 100+ LLMs | 4000 |
+| 88 | **AnythingLLM** | `anythingllm` | Multi-user AI platform with RAG, Agents, and local LLM support | 3007 |
+| 89 | **LightRAG** | `lightrag` | Simple and fast graph-based Retrieval-Augmented Generation | 9621 |
 | 90 | **Voicebox** | `voicebox` | Open-source AI voice studio with voice cloning, TTS, and dictation | 17493 |
 | 91 | **CopilotKit** | `copilotkit` | Open-source AI agent runtime with multi-provider support | 4201 |
 | 92 | **Goose** | `goose` | Open-source AI agent for code, workflows, and automation (AAIF/Linux Foundation) | 8300 |

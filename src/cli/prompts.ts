@@ -540,11 +540,6 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       short: 'LibreTranslate'
     },
     {
-      name: 'OrcaRouter Lite - Lightweight LLM router with multi-provider support',
-      value: ServiceType.ORCAROUTERLITE,
-      short: 'OrcaRouter Lite'
-    },
-    {
       name: 'LiteLLM - LLM proxy with unified API for 100+ LLMs',
       value: ServiceType.LITELLM,
       short: 'LiteLLM'
@@ -553,6 +548,11 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       name: 'AnythingLLM - Multi-user AI platform with RAG, Agents, and local LLM support',
       value: ServiceType.ANYTHINGLLM,
       short: 'AnythingLLM'
+    },
+    {
+      name: 'LightRAG - Simple and fast graph-based Retrieval-Augmented Generation',
+      value: ServiceType.LIGHTRAG,
+      short: 'LightRAG'
     },
     {
       name: 'Voicebox - Open-source AI voice studio with voice cloning and TTS',
