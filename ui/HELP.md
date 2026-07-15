@@ -225,6 +225,12 @@ const mutation = useMutation({
 CONTAINER_RUNTIME=podman  # o "docker"
 ```
 
+Para forzar un runtime específico sin modificar `.env`:
+
+```bash
+CONTAINER_RUNTIME=docker bun run dev
+```
+
 ### Estructura de datos: services.json
 
 ```json

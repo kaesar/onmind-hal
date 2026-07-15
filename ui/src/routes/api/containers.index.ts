@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { detectRuntime, resetRuntimeCache } from "~/utils/runtime";
+import { detectRuntime, resetRuntimeCache, execCommand } from "~/utils/runtime";
 
 interface Container {
   id: string;
@@ -16,7 +16,9 @@ export const Route = createFileRoute("/api/containers/")({
       GET: async () => {
         const runtime = await detectRuntime();
         try {
-          const stdout = await Bun.$`${runtime} ps -a --no-trunc --format '{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.State}}\t{{.Ports}}'`.text();
+          const stdout = await execCommand(
+            `${runtime} ps -a --no-trunc --format '{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.State}}\t{{.Ports}}'`
+          );
           const containers: Container[] = stdout
             .trim()
             .split("\n")

@@ -1,3 +1,8 @@
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
+
 let cachedRuntime: string | null = null;
 let hasLoggedDetection = false;
 
@@ -15,15 +20,17 @@ export async function detectRuntime(): Promise<string> {
 
   for (const rt of ["podman", "docker"]) {
     try {
-      const stdout = await Bun.$`${rt} --version`.text();
+      const { stdout } = await execAsync(`${rt} --version`);
       cachedRuntime = rt;
       if (!hasLoggedDetection) {
         console.log(`[OnMind-HAL] Runtime: ${rt} — ${stdout.trim()}`);
         hasLoggedDetection = true;
       }
       return rt;
-    } catch {
-      // not available
+    } catch (err: any) {
+      if (!hasLoggedDetection) {
+        console.log(`[OnMind-HAL] ${rt} not found: ${err.message}`);
+      }
     }
   }
 
@@ -38,4 +45,19 @@ export async function detectRuntime(): Promise<string> {
 export function resetRuntimeCache() {
   cachedRuntime = null;
   hasLoggedDetection = false;
+}
+
+export async function execCommand(cmd: string): Promise<string> {
+  const { stdout } = await execAsync(cmd);
+  return stdout;
+}
+
+export async function inspectContainer(
+  runtime: string,
+  container: string
+): Promise<string> {
+  const { stdout } = await execAsync(
+    `${runtime} inspect --format='{{.State.Status}}' ${container}`
+  );
+  return stdout;
 }

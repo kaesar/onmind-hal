@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { readFile } from "fs/promises";
 import { join } from "path";
-import { detectRuntime, resetRuntimeCache } from "~/utils/runtime";
+import { detectRuntime, resetRuntimeCache, inspectContainer } from "~/utils/runtime";
 
 interface Service {
   id: string;
@@ -17,7 +17,7 @@ async function getContainerStatus(
   runtime: string
 ): Promise<Service["status"]> {
   try {
-    const stdout = await Bun.$`${runtime} inspect --format='{{.State.Status}}' ${container}`.text();
+    const stdout = await inspectContainer(runtime, container);
     const status = stdout.trim();
     if (status === "running") return "running";
     if (status === "exited" || status === "created") return "stopped";

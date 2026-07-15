@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { readFile } from "fs/promises";
 import { join } from "path";
-import { detectRuntime, resetRuntimeCache } from "~/utils/runtime";
+import { detectRuntime, resetRuntimeCache, execCommand } from "~/utils/runtime";
 
 export const Route = createFileRoute("/api/services/$id/$action")({
   server: {
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/api/services/$id/$action")({
 
         console.log(`[OnMind-HAL] ${runtime} ${action} ${container}`);
         try {
-          await Bun.$`${runtime} ${action} ${container}`.text();
+          await execCommand(`${runtime} ${action} ${container}`);
           return Response.json({
             success: true,
             message: `Container ${action}ed successfully`,
