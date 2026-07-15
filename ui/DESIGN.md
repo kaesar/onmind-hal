@@ -1,4 +1,4 @@
-# HAL-UI Design System
+# OnMind-HAL UI Design System
 
 ## Color Palette
 

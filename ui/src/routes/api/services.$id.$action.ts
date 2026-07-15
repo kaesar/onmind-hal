@@ -27,6 +27,10 @@ async function detectRuntime(): Promise<string> {
   return cachedRuntime;
 }
 
+function resetRuntimeCache() {
+  cachedRuntime = null;
+}
+
 export const Route = createFileRoute("/api/services/$id/$action")({
   server: {
     handlers: {
@@ -69,6 +73,7 @@ export const Route = createFileRoute("/api/services/$id/$action")({
             message: `Container ${action}ed successfully`,
           });
         } catch (err: any) {
+          resetRuntimeCache();
           return Response.json(
             {
               success: false,

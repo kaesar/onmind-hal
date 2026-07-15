@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, lazy, Suspense } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -22,11 +22,12 @@ import {
 } from "lucide-react";
 import type { ComponentType } from "react";
 import { ThemeToggle } from "~/components/ThemeToggle";
-import { FileEditor } from "~/components/FileEditor";
 import { LogViewer } from "~/components/LogViewer";
 import { ContainersTable } from "~/components/ContainersTable";
 import { ServicesSetEditor } from "~/components/ServicesSetEditor";
 import { DropdownMenu, DropdownItem } from "~/components/DropdownMenu";
+
+const FileEditor = lazy(() => import("~/components/FileEditor").then((m) => ({ default: m.FileEditor })));
 
 export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
@@ -296,10 +297,10 @@ function Dashboard() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-blue-900 dark:text-blue-100">
-            HAL-UI
+            OnMind-HAL
           </h1>
           <p className="mt-1 text-sm text-blue-400 dark:text-blue-500">
-            Service dashboard
+            Container Services Dashboard
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -397,17 +398,19 @@ function Dashboard() {
         </>
       )}
       {editorConfig && (
-        <FileEditor
-          open={editorOpen}
-          onClose={() => {
-            setEditorOpen(false);
-            setEditorConfig(null);
-          }}
-          title={editorConfig.title}
-          filePath={editorConfig.filePath}
-          apiEndpoint={editorConfig.apiEndpoint}
-          mode={editorConfig.mode}
-        />
+        <Suspense fallback={null}>
+          <FileEditor
+            open={editorOpen}
+            onClose={() => {
+              setEditorOpen(false);
+              setEditorConfig(null);
+            }}
+            title={editorConfig.title}
+            filePath={editorConfig.filePath}
+            apiEndpoint={editorConfig.apiEndpoint}
+            mode={editorConfig.mode}
+          />
+        </Suspense>
       )}
       <LogViewer
         open={logContainer !== null}

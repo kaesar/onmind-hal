@@ -25,7 +25,7 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
-        title: "HAL-UI - Service Dashboard",
+        title: "OnMind-HAL - Container Services Dashboard",
         description:
           "Monitor and control your services from a clean dashboard.",
       },

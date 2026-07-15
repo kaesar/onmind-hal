@@ -34,6 +34,10 @@ async function detectRuntime(): Promise<string> {
   return cachedRuntime;
 }
 
+function resetRuntimeCache() {
+  cachedRuntime = null;
+}
+
 export const Route = createFileRoute("/api/containers/")({
   server: {
     handlers: {
@@ -64,6 +68,7 @@ export const Route = createFileRoute("/api/containers/")({
             });
           return Response.json({ containers });
         } catch (error) {
+          resetRuntimeCache();
           return Response.json(
             { error: "Failed to list containers", containers: [] },
             { status: 500 }

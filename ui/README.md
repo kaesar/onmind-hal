@@ -1,4 +1,4 @@
-# HAL-UI
+# OnMind-HAL UI
 
 Service control dashboard for container environments. Visualize Podman/Docker container status and execute actions (start, stop, restart) from a web interface.
 

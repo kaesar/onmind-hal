@@ -36,6 +36,10 @@ async function detectRuntime(): Promise<string> {
   return cachedRuntime;
 }
 
+function resetRuntimeCache() {
+  cachedRuntime = null;
+}
+
 async function getContainerStatus(
   container: string,
   runtime: string
@@ -51,6 +55,17 @@ async function getContainerStatus(
     return "unknown";
   } catch {
     return "unknown";
+  }
+}
+
+async function execWithRetry(cmd: string): Promise<{ stdout: string }> {
+  try {
+    return await execAsync(cmd);
+  } catch (err) {
+    resetRuntimeCache();
+    const runtime = await detectRuntime();
+    const retried = cmd.replace(/^(podman|docker)/, runtime);
+    return await execAsync(retried);
   }
 }
 

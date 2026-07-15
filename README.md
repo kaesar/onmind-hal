@@ -215,7 +215,7 @@ bun run src/main.ts --list defaults,mongodb,mariadb,n8n,floci
 | 106 | **RustDesk-Server** | `rustdesk` | Open-source remote desktop server | 21115 |
 
 <!--
-> *Perhaps, I will consider includes in a future*: GoCD, 9router, Jitsi, PeerTube, Mastodon, Plane, FRP, BackVault, Koffan
+> *Perhaps, I will consider includes in a future*: Karaf, Ignite, GoCD, 9router, Jitsi, PeerTube, Mastodon, Plane, FRP, BackVault, Koffan
 -->
 ## Project Structure
 

@@ -1,4 +1,4 @@
-# HAL-UI - Documentación Técnica
+# OnMind-HAL UI - Documentación Técnica
 
 Panel de control de servicios claves para entornos de contenedores. Permite visualizar el estado de contenedores Podman/Docker y ejecutar acciones (start, stop, restart) desde una interfaz web. Evita el uso o definición de `.sock` de docker, facilitando una implementación estándar al invocar comandos directos de `docker` o `podman`.
 
