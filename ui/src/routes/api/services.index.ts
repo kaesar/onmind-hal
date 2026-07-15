@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { readFile } from "fs/promises";
 import { join } from "path";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
+import { detectRuntime, resetRuntimeCache } from "~/utils/runtime";
 
 interface Service {
   id: string;
@@ -15,72 +12,36 @@ interface Service {
   color: string;
 }
 
-let cachedRuntime: string | null = null;
-
-async function detectRuntime(): Promise<string> {
-  if (cachedRuntime) return cachedRuntime;
-  if (process.env.CONTAINER_RUNTIME) {
-    cachedRuntime = process.env.CONTAINER_RUNTIME;
-    return cachedRuntime;
-  }
-  for (const rt of ["podman", "docker"]) {
-    try {
-      await execAsync(`${rt} --version`);
-      cachedRuntime = rt;
-      return rt;
-    } catch {
-      // not available
-    }
-  }
-  cachedRuntime = "podman";
-  return cachedRuntime;
-}
-
-function resetRuntimeCache() {
-  cachedRuntime = null;
-}
-
 async function getContainerStatus(
   container: string,
   runtime: string
 ): Promise<Service["status"]> {
   try {
-    const { stdout } = await execAsync(
-      `${runtime} inspect --format='{{.State.Status}}' ${container}`
-    );
+    const stdout [OnMind-HAL] t Bun.$`${runtime} inspect --format='{{.State.Status}}' ${container}`.text();
     const status = stdout.trim();
     if (status === "running") return "running";
     if (status === "exited" || status === "created") return "stopped";
     if (status === "restarting") return "restarting";
     return "unknown";
-  } catch {
+  } catch (err: any[OnMind-HAL] 
+    console.error(`[HAL] inspect ${container} failed:`, err.message);
     return "unknown";
   }
-}
-
-async function execWithRetry(cmd: string): Promise<{ stdout: string }> {
-  try {
-    return await execAsync(cmd);
-  } catch (err) {
-    resetRuntimeCache();
-    const runtime = await detectRuntime();
-    const retried = cmd.replace(/^(podman|docker)/, runtime);
-    return await execAsync(retried);
-  }
-}
+}[OnMind-HAL] 
 
 export const Route = createFileRoute("/api/services/")({
-  server: {
+  server: {[OnMind-HAL] 
     handlers: {
       GET: async ({ request }) => {
         const runtime = await detectRuntime();
         const jsonPath = join(process.cwd(), "public", "data", "services.json");
 
-        let services: Service[];
+        let ser[OnMind-HAL]  Service[];
         try {
           const raw = await readFile(jsonPath, "utf-8");
           services = JSON.parse(raw).services;
-        } catch {
+        } catch (err: any) {
+          console.error("[HAL] Failed to load services.json:", err.message);
           return Response.json(
             { error: "services.json not found" },
             { status: 500 }
@@ -91,7 +52,7 @@ export const Route = createFileRoute("/api/services/")({
           services.map(async (s) => ({
             ...s,
             status: await getContainerStatus(s.container, runtime),
-          }))
+          }))[OnMind-HAL] 
         );
 
         return Response.json({ services: enriched });
@@ -99,3 +60,4 @@ export const Route = createFileRoute("/api/services/")({
     },
   },
 });
+[OnMind-HAL] 

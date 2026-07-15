@@ -1,35 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { readFile } from "fs/promises";
 import { join } from "path";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
-
-let cachedRuntime: string | null = null;
-
-async function detectRuntime(): Promise<string> {
-  if (cachedRuntime) return cachedRuntime;
-  if (process.env.CONTAINER_RUNTIME) {
-    cachedRuntime = process.env.CONTAINER_RUNTIME;
-    return cachedRuntime;
-  }
-  for (const rt of ["podman", "docker"]) {
-    try {
-      await execAsync(`${rt} --version`);
-      cachedRuntime = rt;
-      return rt;
-    } catch {
-      // not available
-    }
-  }
-  cachedRuntime = "podman";
-  return cachedRuntime;
-}
-
-function resetRuntimeCache() {
-  cachedRuntime = null;
-}
+import { detectRuntime, resetRuntimeCache } from "~/utils/runtime";
 
 export const Route = createFileRoute("/api/services/$id/$action")({
   server: {
@@ -66,13 +38,16 @@ export const Route = createFileRoute("/api/services/$id/$action")({
         }
 
         const cmd = `${runtime} ${action} ${container}`;
+        console.log(`[OnMind-HAL] Executing: ${cmd}`);
         try {
-          await execAsync(cmd);
+          await Bun.$`${runtime} ${action} ${container}`.text();
+          console.log(`[OnMind-HAL] Container ${container} ${action}ed successfully`);
           return Response.json({
             success: true,
             message: `Container ${action}ed successfully`,
           });
         } catch (err: any) {
+          console.error(`[OnMind-HAL] Failed to ${action} container ${container}:`, err.message);
           resetRuntimeCache();
           return Response.json(
             {

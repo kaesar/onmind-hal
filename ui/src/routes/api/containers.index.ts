@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
+import { detectRuntime, resetRuntimeCache } from "~/utils/runtime";
 
 interface Container {
   id: string;
@@ -13,40 +10,13 @@ interface Container {
   ports: string;
 }
 
-let cachedRuntime: string | null = null;
-
-async function detectRuntime(): Promise<string> {
-  if (cachedRuntime) return cachedRuntime;
-  if (process.env.CONTAINER_RUNTIME) {
-    cachedRuntime = process.env.CONTAINER_RUNTIME;
-    return cachedRuntime;
-  }
-  for (const rt of ["podman", "docker"]) {
-    try {
-      await execAsync(`${rt} --version`);
-      cachedRuntime = rt;
-      return rt;
-    } catch {
-      // not available
-    }
-  }
-  cachedRuntime = "podman";
-  return cachedRuntime;
-}
-
-function resetRuntimeCache() {
-  cachedRuntime = null;
-}
-
 export const Route = createFileRoute("/api/containers/")({
   server: {
     handlers: {
       GET: async () => {
         const runtime = await detectRuntime();
         try {
-          const { stdout } = await execAsync(
-            `${runtime} ps -a --no-trunc --format '{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.State}}\t{{.Ports}}'`
-          );
+          const stdout = await Bun.$`${runtime} ps -a --no-trunc --format '{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.State}}\t{{.Ports}}'`.text();
           const containers: Container[] = stdout
             .trim()
             .split("\n")
@@ -67,7 +37,8 @@ export const Route = createFileRoute("/api/containers/")({
               };
             });
           return Response.json({ containers });
-        } catch (error) {
+        } catch (error: any) {
+          console.error("[OnMind-HAL] Failed to list containers:", error.message);
           resetRuntimeCache();
           return Response.json(
             { error: "Failed to list containers", containers: [] },
