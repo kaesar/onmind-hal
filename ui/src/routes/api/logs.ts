@@ -1,31 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { readFile } from "fs/promises";
-import { join } from "path";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
-
-let cachedRuntime: string | null = null;
-
-async function detectRuntime(): Promise<string> {
-  if (cachedRuntime) return cachedRuntime;
-  if (process.env.CONTAINER_RUNTIME) {
-    cachedRuntime = process.env.CONTAINER_RUNTIME;
-    return cachedRuntime;
-  }
-  for (const rt of ["podman", "docker"]) {
-    try {
-      await execAsync(`${rt} --version`);
-      cachedRuntime = rt;
-      return rt;
-    } catch {
-      // not available
-    }
-  }
-  cachedRuntime = "podman";
-  return cachedRuntime;
-}
+import { detectRuntime, execCommand } from "~/utils/runtime";
 
 export const Route = createFileRoute("/api/logs")({
   component: () => null,
@@ -45,10 +19,10 @@ export const Route = createFileRoute("/api/logs")({
 
         const runtime = await detectRuntime();
         try {
-          const { stdout } = await execAsync(
+          const logs = await execCommand(
             `${runtime} logs --tail ${lines} ${container} 2>&1`
           );
-          return Response.json({ logs: stdout, container });
+          return Response.json({ logs, container });
         } catch (err: any) {
           return Response.json(
             { error: err.message || "Failed to get logs" },
