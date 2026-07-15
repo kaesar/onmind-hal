@@ -21,11 +21,13 @@ import {
   Cloud,
   Lock,
   FileCode,
+  List,
 } from "lucide-react";
 import type { ComponentType } from "react";
 import { ThemeToggle } from "~/components/ThemeToggle";
 import { FileEditor } from "~/components/FileEditor";
 import { LogViewer } from "~/components/LogViewer";
+import { ContainersTable } from "~/components/ContainersTable";
 import { DropdownMenu, DropdownItem } from "~/components/DropdownMenu";
 
 export const Route = createFileRoute("/dashboard")({
@@ -50,7 +52,7 @@ const iconMap: Record<string, ComponentType<{ className?: string; style?: React.
   redis: Server,
   rustfs: Box,
   kafka: Radio,
-  pocketid: Lock,
+  tinyauth: Lock,
   ntfy: Bell,
   mailpit: Mail,
   cloudflared: Cloud,
@@ -186,6 +188,7 @@ function Dashboard() {
     mode?: "text" | "yaml" | "json";
   } | null>(null);
   const [logContainer, setLogContainer] = useState<string | null>(null);
+  const [containersOpen, setContainersOpen] = useState(false);
 
   const { data, isLoading, error, dataUpdatedAt } = useQuery({
     queryKey: ["services"],
@@ -311,6 +314,12 @@ function Dashboard() {
             >
               Cloudflared
             </DropdownItem>
+            <DropdownItem
+              onClick={() => setContainersOpen(true)}
+              icon={<List className="h-3.5 w-3.5" />}
+            >
+              List Containers
+            </DropdownItem>
           </DropdownMenu>
           <ThemeToggle />
         </div>
@@ -365,6 +374,10 @@ function Dashboard() {
         open={logContainer !== null}
         onClose={() => setLogContainer(null)}
         container={logContainer || ""}
+      />
+      <ContainersTable
+        open={containersOpen}
+        onClose={() => setContainersOpen(false)}
       />
     </div>
   );

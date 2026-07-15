@@ -42,10 +42,10 @@
       "color": "#1e40af"
     },
     {
-      "id": "pocketid",
-      "name": "PocketID",
-      "container": "pocketid",
-      "icon": "pocketid",
+      "id": "tinyauth",
+      "name": "Tinyauth",
+      "container": "tinyauth",
+      "icon": "tinyauth",
       "status": "stopped",
       "color": "#2563eb"
     },

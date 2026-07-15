@@ -15,7 +15,7 @@ commands:
           --name pocketid \
           --network {{NETWORK_NAME}} \
           -p 8093:80 \
-          -e PUBLIC_APP_URL=https://auth.{{DOMAIN}} \
+          -e PUBLIC_APP_URL=https://pocketid.{{DOMAIN}} \
           -e ENCRYPTION_KEY=$(cat ~/{{DATA_PATH}}/pocketid/encryption.key) \
           -v ~/{{DATA_PATH}}/pocketid:/app/backend/data \
           ghcr.io/pocket-id/pocket-id:latest
@@ -26,6 +26,6 @@ ports:
   - "8093:80"
 volumes:
   - ~/{{DATA_PATH}}/pocketid:/app/backend/data
-accessUrl: https://auth.{{DOMAIN}}
+accessUrl: https://pocketid.{{DOMAIN}}
 dependencies: []
 isCore: false

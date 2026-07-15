@@ -20,7 +20,7 @@ export const DEFAULT_OPTIONAL_SERVICES: ServiceType[] = [
   ServiceType.POSTGRESQL,
   ServiceType.REDIS,
   ServiceType.KAFKA,
-  ServiceType.POCKETID,
+  ServiceType.TINYAUTH,
   ServiceType.NTFY,
   ServiceType.MAILPIT,
   // ServiceType.INFISCAL,
@@ -233,6 +233,11 @@ export async function promptForOptionalServices(previousServices?: ServiceType[]
       name: 'Authelia - Authentication and authorization server (requires Redis)',
       value: ServiceType.AUTHELIA,
       short: 'Authelia'
+    },
+    {
+      name: 'Tinyauth - Lightweight OIDC authentication server with OAuth and LDAP support',
+      value: ServiceType.TINYAUTH,
+      short: 'Tinyauth',
     },
     {
       name: 'PocketID - OIDC provider with passkeys support (for Caddy + oauth2-proxy)',

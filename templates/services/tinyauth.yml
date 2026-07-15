@@ -1,0 +1,35 @@
+name: tinyauth-service
+description: Lightweight OIDC authentication server with OAuth and LDAP support
+commands:
+  install:
+    - docker pull ghcr.io/tinyauthapp/tinyauth:v5
+  setup:
+    - mkdir -p ~/{{DATA_PATH}}/tinyauth
+    - |
+      if [ ! -f ~/{{DATA_PATH}}/tinyauth/users.txt ]; then
+        docker run --rm ghcr.io/tinyauthapp/tinyauth:v5 user create \
+          --username admin --password '{{STORAGE_PASSWORD}}' 2>&1 \
+          | grep 'user=' | sed 's/.*user=//' | tr -d '\033' | sed 's/\[[0-9;]*m//g' \
+          > ~/{{DATA_PATH}}/tinyauth/users.txt
+      fi
+  run: |-
+    docker run \
+          -d \
+          --name tinyauth \
+          --network {{NETWORK_NAME}} \
+          -p 3011:3000 \
+          -e TINYAUTH_APPURL=https://auth.{{DOMAIN}} \
+          -e TINYAUTH_AUTH_USERSFILE=/data/users.txt \
+          -v ~/{{DATA_PATH}}/tinyauth:/data \
+          ghcr.io/tinyauthapp/tinyauth:v5
+variables:
+  - NETWORK_NAME
+  - DOMAIN
+  - STORAGE_PASSWORD
+ports:
+  - "3011:3000"
+volumes:
+  - ~/{{DATA_PATH}}/tinyauth:/data
+accessUrl: https://auth.{{DOMAIN}}
+dependencies: []
+isCore: false

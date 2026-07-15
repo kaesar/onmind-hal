@@ -204,6 +204,7 @@ export class CLIInterface {
       keystonejs: 'KeystoneJS (Headless CMS)',
       keycloak: 'Keycloak (Identity Management)',
       authelia: 'Authelia (Authentication)',
+      tinyauth: 'Tinyauth (Lightweight OIDC Auth)',
       pocketid: 'PocketID (OIDC + Passkeys)',
       apisix: 'Apache APISIX (API Gateway)',
       floci: 'Floci (AWS Emulator)',

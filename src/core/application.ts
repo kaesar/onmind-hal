@@ -657,14 +657,8 @@ export class HomelabApplication {
 
       // Step 3: Route DNS to tunnel
       console.log('\n📋 Step 3: Route DNS to tunnel');
-      try {
-        const routeResult = await $`sh -c "${runtime} run --rm --user root -v ${configDir}:/root/.cloudflared cloudflare/cloudflared:latest tunnel route dns ${tunnelName.trim()} ${tunnelDomain}"`.quiet();
-        console.log(`   ✓ DNS route created for ${tunnelDomain}`);
-      } catch (routeError) {
-        console.log(`   ⚠️  DNS route may already exist or will be configured manually`);
-        console.log(`   Run later: cloudflared tunnel route dns ${tunnelName.trim()} ${tunnelDomain}`);
-      }
       // Route wildcard so all subdomains resolve through the tunnel
+      // Note: Do NOT route the root domain - it may already have a CNAME record
       try {
         await $`sh -c "${runtime} run --rm --user root -v ${configDir}:/root/.cloudflared cloudflare/cloudflared:latest tunnel route dns ${tunnelName.trim()} '*.'${tunnelDomain}"`.quiet();
         console.log(`   ✓ Wildcard DNS route created for *.${tunnelDomain}`);
@@ -864,6 +858,7 @@ export class HomelabApplication {
         'keystonejs',
         'keycloak',
         'authelia',
+        'tinyauth',
         'pocketid',
         'apisix',
         'floci',
@@ -957,7 +952,7 @@ export class HomelabApplication {
         const subdomainMap: Record<string, string> = {
           copyparty: 'files',
           opennotebooklm: 'notebook',
-          pocketid: 'auth',
+          tinyauth: 'auth',
           floci: 'aws',
           flociaz: 'azure',
           flocigcp: 'gcp',

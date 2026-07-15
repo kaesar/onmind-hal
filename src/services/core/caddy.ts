@@ -89,7 +89,9 @@ export class CaddyService extends BaseService {
 
       for (const service of services) {
         content += `http://${service.subdomain}.${this.config.tunnelDomain} {\n`;
-        content += `    reverse_proxy ${service.container}:${service.port}\n`;
+        content += `    reverse_proxy ${service.container}:${service.port} {\n`;
+        content += '        header_up X-Forwarded-Proto https\n';
+        content += '    }\n';
         content += '}\n\n';
       }
     }
@@ -163,7 +165,8 @@ export class CaddyService extends BaseService {
       [ServiceType.KEYSTONEJS]: { subdomain: 'keystone', port: 3000, container: 'keystonejs' },
       [ServiceType.KEYCLOAK]: { subdomain: 'keycloak', port: 8080, container: 'keycloak' },
       [ServiceType.AUTHELIA]: { subdomain: 'authelia', port: 9091, container: 'authelia' },
-      [ServiceType.POCKETID]: { subdomain: 'auth', port: 80, container: 'pocketid' },
+      [ServiceType.TINYAUTH]: { subdomain: 'auth', port: 3011, container: 'tinyauth' },
+      [ServiceType.POCKETID]: { subdomain: 'pocketid', port: 8093, container: 'pocketid' },
       [ServiceType.APISIX]: { subdomain: 'apisix', port: 9000, container: 'apisix-dashboard' },
       [ServiceType.FLOCI]: { subdomain: 'floci', port: 4566, container: 'floci' },
       [ServiceType.K3D]: { subdomain: 'k3d', port: 6444, container: 'k3d' },

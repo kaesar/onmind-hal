@@ -110,6 +110,7 @@ describe('ServiceFactory', () => {
       ServiceType.KEYSTONEJS,
       ServiceType.KEYCLOAK,
       ServiceType.AUTHELIA,
+      ServiceType.TINYAUTH,
       ServiceType.POCKETID,
       ServiceType.APISIX,
       ServiceType.K3D,

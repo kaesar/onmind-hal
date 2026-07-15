@@ -19,6 +19,7 @@ export abstract class BaseService implements Service {
   protected templateEngine: TemplateEngine;
   protected serviceTemplate: any;
   private installationFailed: boolean = false;
+  private localImages: Set<string> = new Set();
 
   constructor(
     name: string,
@@ -98,6 +99,12 @@ export abstract class BaseService implements Service {
         if (interpolatedCommand.includes('docker ')) {
           const originalCommand = interpolatedCommand;
           interpolatedCommand = await ContainerRuntimeUtils.processCommand(interpolatedCommand);
+
+          // Track locally built images (docker build -t <image>)
+          const buildMatch = interpolatedCommand.match(/docker\s+build\s+.*-t\s+(\S+)/);
+          if (buildMatch) {
+            this.localImages.add(buildMatch[1]);
+          }
 
           // Qualify short image names with docker.io/ only for Podman (Docker handles short names natively)
           const runtime = ContainerRuntimeUtils.getCurrentRuntime();
@@ -238,12 +245,14 @@ export abstract class BaseService implements Service {
    * Qualify short image names with docker.io/ for Podman compatibility.
    * Podman requires fully qualified names; Docker Hub short names need docker.io/ prefix.
    * Skips names that already have a registry prefix (contain '.' before first '/').
+   * Skips locally built images (tracked via docker build -t commands).
    */
   private qualifyImageNames(command: string): string {
     // Handle `podman pull <image>` — image is the token after 'pull'
     command = command.replace(
       /((?:docker|podman)\s+pull\s+)(\S+)/g,
       (_match: string, prefix: string, image: string) => {
+        if (this.localImages.has(image)) return _match;
         const slashIdx = image.indexOf('/');
         if (slashIdx === -1 || !image.slice(0, slashIdx).includes('.')) {
           return `${prefix}docker.io/${image}`;
@@ -257,7 +266,7 @@ export abstract class BaseService implements Service {
       const cmdStart = runMatch.index! + runMatch[0].length;
       const after = command.slice(cmdStart);
       const image = this.findRunImageName(after);
-      if (image) {
+      if (image && !this.localImages.has(image)) {
         const slashIdx = image.indexOf('/');
         if (slashIdx === -1 || !image.slice(0, slashIdx).includes('.')) {
           // Replace only the image name in the original command string

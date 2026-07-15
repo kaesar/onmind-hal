@@ -27,6 +27,7 @@ import { KestraService } from './optional/kestra.js';
 import { KeystoneJSService } from './optional/keystonejs.js';
 import { KeycloakService } from './optional/keycloak.js';
 import { AutheliaService } from './optional/authelia.js';
+import { TinyauthService } from './optional/tinyauth.js';
 import { PocketIDService } from './optional/pocketid.js';
 import { ApisixService } from './optional/apisix.js';
 import { K3dService } from './optional/k3d.js';
@@ -211,6 +212,9 @@ export class ServiceFactory {
         break;
       case ServiceType.AUTHELIA:
         service = new AutheliaService(config, this.templateEngine);
+        break;
+      case ServiceType.TINYAUTH:
+        service = new TinyauthService(config, this.templateEngine);
         break;
       case ServiceType.POCKETID:
         service = new PocketIDService(config, this.templateEngine);
@@ -622,6 +626,7 @@ export class ServiceFactory {
       ServiceType.KEYSTONEJS,
       ServiceType.KEYCLOAK,
       ServiceType.AUTHELIA,
+      ServiceType.TINYAUTH,
       ServiceType.POCKETID,
       ServiceType.APISIX,
       ServiceType.K3D,
@@ -789,6 +794,7 @@ export class ServiceFactory {
       'KeystoneJS': ServiceType.KEYSTONEJS,
       'Keycloak': ServiceType.KEYCLOAK,
       'Authelia': ServiceType.AUTHELIA,
+      'Tinyauth': ServiceType.TINYAUTH,
       'PocketID': ServiceType.POCKETID,
       'Apache APISIX': ServiceType.APISIX,
       'k3d': ServiceType.K3D,

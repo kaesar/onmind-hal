@@ -368,7 +368,7 @@ If you need to remove all HAL services and start fresh:
 
 ```bash
 # Stop and remove all HAL containers
-docker ps -a --filter "name=caddy|dockhand|arcane|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|qdrant|kafka|rabbitmq|ollama|web|n8n|tooljet|kestra|keycloak|authelia|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|forge|dev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|prometheus|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|link|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|keystonejs|spark|medusa|twentycrm|calcom|huly|mattermost|jasperreports|stirlingpdf|libretranslate|router|llm|rag|opennotebooklm|hermes|goose|openclaw|openhuman|firecrawl|searxng|plausible|mailserver|zrok|ziti|cloudflared|wetty|rustdesk|seafile|copilot|surreal|docuseal|chat|adguard|listmonk|send|back|box|head|ntfy|immich|presenton" --format "{{.Names}}" | xargs -r docker rm -f
+docker ps -a --filter "name=caddy|dockhand|arcane|copyparty|rustfs|duckdb|postgresql|redis|mongodb|mariadb|scylladb|qdrant|kafka|rabbitmq|ollama|web|n8n|tooljet|kestra|keycloak|authelia|tinyauth|pocketid|apisix|etcd|k3d|codeserver|jupyterlab|floci|forge|dev|semaphore|sonarqube|trivy|karate|rapidoc|hoppscotch|k6|grafana|loki|prometheus|opensearch|coroot|redash|fluentbit|liquibase|uptimekuma|dozzle|registry|nexus|infisical|consul|vault|link|filestash|excalidraw|drawio|wisemapping|kroki|outline|grist|nocodb|directus|keystonejs|spark|medusa|twentycrm|calcom|huly|mattermost|jasperreports|stirlingpdf|libretranslate|router|llm|rag|opennotebooklm|hermes|goose|openclaw|openhuman|firecrawl|searxng|plausible|mail|zrok|ziti|cloudflared|wetty|rustdesk|seafile|copilot|surreal|docuseal|chat|adguard|listmonk|send|back|box|head|ntfy|immich|presenton" --format "{{.Names}}" | xargs -r docker rm -f
 
 # Remove HAL network
 docker network rm homelab-network 2>/dev/null || true
@@ -377,7 +377,7 @@ docker network rm homelab-network 2>/dev/null || true
 docker images -q | xargs -r docker rmi -f
 
 # Remove Docker volumes (optional)
-docker volume ls --filter "name=data|work|conf|logs|plug" --format "{{.Name}}" | xargs -r docker volume rm
+docker volume ls --filter "name=data|work|conf|logs|plug|libs" --format "{{.Name}}" | xargs -r docker volume rm
 
 # Remove data directories (optional)
 sudo rm -rf ~/ws/data

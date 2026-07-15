@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { X, Loader2, Terminal } from "lucide-react";
+import { X, Loader2, Terminal, RotateCcw } from "lucide-react";
 
 export interface LogViewerProps {
   open: boolean;
@@ -64,6 +64,7 @@ export function LogViewer({ open, onClose, container }: LogViewerProps) {
               onClick={() => refetch()}
               className="flex items-center gap-1.5 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-700 shadow-sm transition cursor-pointer hover:bg-blue-50 dark:border-blue-800 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
             >
+              <RotateCcw className="h-3.5 w-3.5" />
               Refresh
             </button>
             <button

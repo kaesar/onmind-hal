@@ -43,6 +43,7 @@ export enum ServiceType {
   KEYSTONEJS = 'keystonejs',
   KEYCLOAK = 'keycloak',
   AUTHELIA = 'authelia',
+  TINYAUTH = 'tinyauth',
   POCKETID = 'pocketid',
   APISIX = 'apisix',
   K3D = 'k3d',

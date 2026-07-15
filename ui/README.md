@@ -2,7 +2,7 @@
 
 Service control dashboard for container environments. Visualize Podman/Docker container status and execute actions (start, stop, restart) from a web interface.
 
-> Services to manage: `caddy`, `rustfs`, `postgresql`, `redis`, `kafka`, `pocketid`, `ntfy`, `cloudflared`.
+> Services to manage: `caddy`, `rustfs`, `postgresql`, `redis`, `kafka`, `tinyauth`, `ntfy`, `cloudflared`.
 
 ## Features
 
