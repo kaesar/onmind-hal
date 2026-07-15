@@ -37,17 +37,15 @@ export const Route = createFileRoute("/api/services/$id/$action")({
           );
         }
 
-        const cmd = `${runtime} ${action} ${container}`;
-        console.log(`[OnMind-HAL] Executing: ${cmd}`);
+        console.log(`[OnMind-HAL] ${runtime} ${action} ${container}`);
         try {
           await Bun.$`${runtime} ${action} ${container}`.text();
-          console.log(`[OnMind-HAL] Container ${container} ${action}ed successfully`);
           return Response.json({
             success: true,
             message: `Container ${action}ed successfully`,
           });
         } catch (err: any) {
-          console.error(`[OnMind-HAL] Failed to ${action} container ${container}:`, err.message);
+          console.error(`[OnMind-HAL] Failed to ${action} ${container}:`, err.message);
           resetRuntimeCache();
           return Response.json(
             {

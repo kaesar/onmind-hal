@@ -17,31 +17,31 @@ async function getContainerStatus(
   runtime: string
 ): Promise<Service["status"]> {
   try {
-    const stdout [OnMind-HAL] t Bun.$`${runtime} inspect --format='{{.State.Status}}' ${container}`.text();
+    const stdout = await Bun.$`${runtime} inspect --format='{{.State.Status}}' ${container}`.text();
     const status = stdout.trim();
     if (status === "running") return "running";
     if (status === "exited" || status === "created") return "stopped";
     if (status === "restarting") return "restarting";
     return "unknown";
-  } catch (err: any[OnMind-HAL] 
-    console.error(`[HAL] inspect ${container} failed:`, err.message);
+  } catch (err: any) {
+    console.error(`[OnMind-HAL] inspect ${container} failed:`, err.message);
     return "unknown";
   }
-}[OnMind-HAL] 
+}
 
 export const Route = createFileRoute("/api/services/")({
-  server: {[OnMind-HAL] 
+  server: {
     handlers: {
       GET: async ({ request }) => {
         const runtime = await detectRuntime();
         const jsonPath = join(process.cwd(), "public", "data", "services.json");
 
-        let ser[OnMind-HAL]  Service[];
+        let services: Service[];
         try {
           const raw = await readFile(jsonPath, "utf-8");
           services = JSON.parse(raw).services;
         } catch (err: any) {
-          console.error("[HAL] Failed to load services.json:", err.message);
+          console.error("[OnMind-HAL] Failed to load services.json:", err.message);
           return Response.json(
             { error: "services.json not found" },
             { status: 500 }
@@ -52,7 +52,7 @@ export const Route = createFileRoute("/api/services/")({
           services.map(async (s) => ({
             ...s,
             status: await getContainerStatus(s.container, runtime),
-          }))[OnMind-HAL] 
+          }))
         );
 
         return Response.json({ services: enriched });
@@ -60,4 +60,3 @@ export const Route = createFileRoute("/api/services/")({
     },
   },
 });
-[OnMind-HAL] 

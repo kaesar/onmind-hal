@@ -7,7 +7,7 @@ export async function detectRuntime(): Promise<string> {
   if (process.env.CONTAINER_RUNTIME) {
     cachedRuntime = process.env.CONTAINER_RUNTIME;
     if (!hasLoggedDetection) {
-      console.log(`[HAL] Runtime: ${cachedRuntime} (configured)`);
+      console.log(`[OnMind-HAL] Runtime: ${cachedRuntime} (configured)`);
       hasLoggedDetection = true;
     }
     return cachedRuntime;
@@ -18,7 +18,7 @@ export async function detectRuntime(): Promise<string> {
       const stdout = await Bun.$`${rt} --version`.text();
       cachedRuntime = rt;
       if (!hasLoggedDetection) {
-        console.log(`[HAL] Runtime: ${rt} — ${stdout.trim()}`);
+        console.log(`[OnMind-HAL] Runtime: ${rt} — ${stdout.trim()}`);
         hasLoggedDetection = true;
       }
       return rt;
@@ -29,7 +29,7 @@ export async function detectRuntime(): Promise<string> {
 
   cachedRuntime = "podman";
   if (!hasLoggedDetection) {
-    console.log("[HAL] Runtime: podman (default)");
+    console.log("[OnMind-HAL] Runtime: podman (default)");
     hasLoggedDetection = true;
   }
   return cachedRuntime;
