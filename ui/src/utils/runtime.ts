@@ -6,13 +6,22 @@ const execAsync = promisify(exec);
 let cachedRuntime: string | null = null;
 let hasLoggedDetection = false;
 
+async function isRuntimeAvailable(rt: string): Promise<boolean> {
+  try {
+    await execAsync(`${rt} version`, { timeout: 5000 });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function detectRuntime(): Promise<string> {
   if (cachedRuntime) return cachedRuntime;
 
   if (process.env.CONTAINER_RUNTIME) {
     cachedRuntime = process.env.CONTAINER_RUNTIME;
     if (!hasLoggedDetection) {
-      console.log(`[OnMind-HAL] Runtime: ${cachedRuntime} (configured)`);
+      console.log(`\n[OnMind-HAL] Runtime: ${cachedRuntime} (configured)`);
       hasLoggedDetection = true;
     }
     return cachedRuntime;
@@ -20,23 +29,25 @@ export async function detectRuntime(): Promise<string> {
 
   for (const rt of ["podman", "docker"]) {
     try {
-      const { stdout } = await execAsync(`${rt} --version`);
-      cachedRuntime = rt;
-      if (!hasLoggedDetection) {
-        console.log(`[OnMind-HAL] Runtime: ${rt} — ${stdout.trim()}`);
-        hasLoggedDetection = true;
+      const { stdout } = await execAsync(`${rt} --version`, { timeout: 5000 });
+      if (await isRuntimeAvailable(rt)) {
+        cachedRuntime = rt;
+        if (!hasLoggedDetection) {
+          console.log(`\n[OnMind-HAL] Runtime: ${rt} — ${stdout.trim()}`);
+          hasLoggedDetection = true;
+        }
+        return rt;
       }
-      return rt;
     } catch (err: any) {
       if (!hasLoggedDetection) {
-        console.log(`[OnMind-HAL] ${rt} not found: ${err.message}`);
+        console.log(`\n[OnMind-HAL] ${rt} not found: ${err.message}`);
       }
     }
   }
 
   cachedRuntime = "podman";
   if (!hasLoggedDetection) {
-    console.log("[OnMind-HAL] Runtime: podman (default)");
+    console.log(`\n[OnMind-HAL] Runtime: podman (default)`);
     hasLoggedDetection = true;
   }
   return cachedRuntime;

@@ -55,7 +55,7 @@ export const Route = createFileRoute("/api/services/")({
           }))
         );
 
-        return Response.json({ services: enriched });
+        return Response.json({ services: enriched, runtime });
       },
     },
   },

@@ -44,6 +44,7 @@ interface Service {
 
 interface ServicesResponse {
   services: Service[];
+  runtime: string;
 }
 
 function readServicesSet(): { id: string; name: string; container: string; icon: string; color: string }[] {
@@ -381,7 +382,9 @@ function Dashboard() {
         <>
           {lastUpdated && (
             <div className="mb-4 text-xs text-blue-300 dark:text-blue-600">
-              Last updated: {lastUpdated}
+              {data.runtime && (
+                <span className="font-medium capitalize">{data.runtime}</span>
+              )}{data.runtime && " - "}Last updated: {lastUpdated}
             </div>
           )}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
