@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -8,11 +8,7 @@ import {
   RefreshCw,
   Database,
   Server,
-  HardDrive,
-  Globe,
-  Cpu,
   Shield,
-  Layers,
   Zap,
   Box,
   Radio,
@@ -22,12 +18,14 @@ import {
   Lock,
   FileCode,
   List,
+  Puzzle,
 } from "lucide-react";
 import type { ComponentType } from "react";
 import { ThemeToggle } from "~/components/ThemeToggle";
 import { FileEditor } from "~/components/FileEditor";
 import { LogViewer } from "~/components/LogViewer";
 import { ContainersTable } from "~/components/ContainersTable";
+import { ServicesSetEditor } from "~/components/ServicesSetEditor";
 import { DropdownMenu, DropdownItem } from "~/components/DropdownMenu";
 
 export const Route = createFileRoute("/dashboard")({
@@ -45,6 +43,17 @@ interface Service {
 
 interface ServicesResponse {
   services: Service[];
+}
+
+function readServicesSet(): { id: string; name: string; container: string; icon: string; color: string }[] {
+  try {
+    const raw = localStorage.getItem("onmind-hal");
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    return data.servicesSet || [];
+  } catch {
+    return [];
+  }
 }
 
 const iconMap: Record<string, ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
@@ -189,11 +198,34 @@ function Dashboard() {
   } | null>(null);
   const [logContainer, setLogContainer] = useState<string | null>(null);
   const [containersOpen, setContainersOpen] = useState(false);
+  const [servicesSetOpen, setServicesSetOpen] = useState(false);
+  const [customServices, setCustomServices] = useState(readServicesSet);
 
   const { data, isLoading, error, dataUpdatedAt } = useQuery({
     queryKey: ["services"],
     queryFn: fetchServices,
   });
+
+  const { data: containersData } = useQuery({
+    queryKey: ["containers"],
+    queryFn: async () => {
+      const res = await fetch("/api/containers/");
+      if (!res.ok) return { containers: [] };
+      return res.json();
+    },
+    refetchInterval: 10000,
+  });
+
+  const allServices = useMemo(() => {
+    const apiServices = data?.services || [];
+    const containers: { name: string; state: string }[] = containersData?.containers || [];
+    const containerMap = new Map(containers.map((c) => [c.name, c.state]));
+    const custom: Service[] = customServices.map((s) => ({
+      ...s,
+      status: (containerMap.get(s.container) || "unknown") as Service["status"],
+    }));
+    return [...apiServices, ...custom];
+  }, [data, customServices, containersData]);
 
   const mutation = useMutation({
     mutationFn: ({
@@ -230,12 +262,14 @@ function Dashboard() {
       }
     },
     onSettled: () => {
-      // Recheck after 6s and 12s to catch state changes
+      queryClient.invalidateQueries({ queryKey: ["containers"] });
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ["services"] });
+        queryClient.invalidateQueries({ queryKey: ["containers"] });
       }, 6000);
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ["services"] });
+        queryClient.invalidateQueries({ queryKey: ["containers"] });
       }, 12000);
     },
   });
@@ -248,8 +282,7 @@ function Dashboard() {
   };
 
   const handleStartAll = () => {
-    if (!data) return;
-    data.services
+    data?.services
       .filter((s) => s.status !== "running")
       .forEach((s) => mutation.mutate({ id: s.id, action: "start" }));
   };
@@ -315,6 +348,12 @@ function Dashboard() {
               Cloudflared
             </DropdownItem>
             <DropdownItem
+              onClick={() => setServicesSetOpen(true)}
+              icon={<Puzzle className="h-3.5 w-3.5" />}
+            >
+              Custom Services
+            </DropdownItem>
+            <DropdownItem
               onClick={() => setContainersOpen(true)}
               icon={<List className="h-3.5 w-3.5" />}
             >
@@ -345,7 +384,7 @@ function Dashboard() {
             </div>
           )}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {data.services.map((service) => (
+            {allServices.map((service) => (
               <ServiceCard
                 key={service.id}
                 service={service}
@@ -378,6 +417,11 @@ function Dashboard() {
       <ContainersTable
         open={containersOpen}
         onClose={() => setContainersOpen(false)}
+      />
+      <ServicesSetEditor
+        open={servicesSetOpen}
+        onClose={() => setServicesSetOpen(false)}
+        onSave={(services) => setCustomServices(services)}
       />
     </div>
   );
