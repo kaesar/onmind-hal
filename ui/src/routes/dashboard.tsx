@@ -109,9 +109,14 @@ async function fetchServices(): Promise<ServicesResponse> {
 
 async function executeAction(
   id: string,
-  action: "start" | "stop" | "restart"
+  action: "start" | "stop" | "restart",
+  container?: string
 ): Promise<{ success: boolean; message: string }> {
-  const res = await fetch(`/api/services/${id}/${action}`, { method: "POST" });
+  const res = await fetch(`/api/services/${id}/${action}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: container ? JSON.stringify({ container }) : undefined,
+  });
   if (!res.ok) throw new Error(`Failed to ${action} service`);
   return res.json();
 }
@@ -233,10 +238,12 @@ function Dashboard() {
     mutationFn: ({
       id,
       action,
+      container,
     }: {
       id: string;
       action: "start" | "stop" | "restart";
-    }) => executeAction(id, action),
+      container?: string;
+    }) => executeAction(id, action, container),
     onMutate: async ({ id, action }) => {
       await queryClient.cancelQueries({ queryKey: ["services"] });
       const previous = queryClient.getQueryData<ServicesResponse>([
@@ -278,15 +285,16 @@ function Dashboard() {
 
   const handleAction = (
     id: string,
-    action: "start" | "stop" | "restart"
+    action: "start" | "stop" | "restart",
+    container?: string
   ) => {
-    mutation.mutate({ id, action });
+    mutation.mutate({ id, action, container });
   };
 
   const handleStartAll = () => {
-    data?.services
+    allServices
       .filter((s) => s.status !== "running")
-      .forEach((s) => mutation.mutate({ id: s.id, action: "start" }));
+      .forEach((s) => mutation.mutate({ id: s.id, action: "start", container: s.container }));
   };
 
   const lastUpdated = dataUpdatedAt
@@ -392,7 +400,7 @@ function Dashboard() {
               <ServiceCard
                 key={service.id}
                 service={service}
-                onAction={(action) => handleAction(service.id, action)}
+                onAction={(action) => handleAction(service.id, action, service.container)}
                 onShowLogs={(container) => setLogContainer(container)}
                 isPending={mutation.isPending}
               />

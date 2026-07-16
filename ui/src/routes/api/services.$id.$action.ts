@@ -14,20 +14,32 @@ export const Route = createFileRoute("/api/services/$id/$action")({
           return Response.json({ error: "Invalid action" }, { status: 400 });
         }
 
-        const jsonPath = join(
-          process.cwd(),
-          "public",
-          "data",
-          "services.json"
-        );
         let container: string | undefined;
+
+        // Accept container name from request body (for custom services)
         try {
-          const raw = await readFile(jsonPath, "utf-8");
-          const services = JSON.parse(raw).services;
-          const found = services.find((s: { id: string }) => s.id === id);
-          container = found?.container;
+          const body = await request.json();
+          container = body?.container;
         } catch {
-          // ignore
+          // No body or invalid JSON, fall through to services.json lookup
+        }
+
+        // Fall back to services.json lookup
+        if (!container) {
+          const jsonPath = join(
+            process.cwd(),
+            "public",
+            "data",
+            "services.json"
+          );
+          try {
+            const raw = await readFile(jsonPath, "utf-8");
+            const services = JSON.parse(raw).services;
+            const found = services.find((s: { id: string }) => s.id === id);
+            container = found?.container;
+          } catch {
+            // ignore
+          }
         }
 
         if (!container) {
